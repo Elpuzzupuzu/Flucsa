@@ -5,6 +5,9 @@ import HeroSection from './components/HeroSection/HeroSection';
 import CategoryGrid from './components/CategoryGrid/CategoryGrid';
 import LinkSection from './components/LinkSection/LinkSection';
 import ProductSlider from './components/ProductSlider/ProductSlider';
+import ProductSliderPrototype from './components/ShopSlider/ShopSlider';
+import AboutUs from './components/AboutUs/AboutUs';
+import Footer from './components/Footer/Footer';
 
 function App() {
   return (
@@ -14,8 +17,12 @@ function App() {
       <main>
         <ProductSlider/>
         <HeroSection/>
+        <ProductSliderPrototype/>
         <CategoryGrid />
-        <LinkSection />
+        <AboutUs/>
+        <Footer/>
+
+        {/* <LinkSection /> */}
       </main>
     </div>
   );

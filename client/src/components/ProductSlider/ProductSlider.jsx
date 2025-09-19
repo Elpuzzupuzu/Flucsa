@@ -7,7 +7,7 @@ const offers = [
     title: '50% DE DESCUENTO',
     subtitle: 'MEGA OFERTA',
     description: 'En toda nuestra línea de productos industriales. No pierdas esta oportunidad única.',
-    image: 'https://agruquero.com/wp-content/uploads/2024/10/diferencias-valvulas-industriales.webp',
+    image: 'https://es.dombor.com/wp-content/uploads/2021/09/image-edited.png',
     bgGradient: 'from-blue-600 via-blue-700 to-indigo-800',
     btnColor: 'bg-gradient-to-r from-yellow-400 to-orange-500',
     btnText: 'Ver Ofertas',
