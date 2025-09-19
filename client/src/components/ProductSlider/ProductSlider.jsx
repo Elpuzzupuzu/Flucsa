@@ -70,14 +70,14 @@ const ProductSlider = () => {
   const currentOffer = offers[currentSlide];
 
   return (
-    <div className="relative py-8 bg-gradient-to-b from-blue-900 to-blue-800 overflow-hidden">
+    <div className="relative py-20 bg-gradient-to-b from-blue-900 to-blue-800 overflow-hidden">
       {/* Elementos decorativos de fondo */}
       <div className="absolute top-10 left-10 w-20 h-20 bg-cyan-400/20 rounded-full blur-xl"></div>
       <div className="absolute bottom-20 right-20 w-32 h-32 bg-purple-400/20 rounded-lg blur-2xl rotate-45"></div>
       <div className="absolute top-1/2 left-1/4 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
       <div className="absolute top-1/3 right-1/3 w-3 h-3 bg-green-400 rounded-full animate-pulse delay-1000"></div>
 
-      <div className="max-w-5xl mx-auto px-4 relative z-10">
+      <div className="w-full relative z-10">
         {/* Header */}
         <div className="text-center mb-6">
           <div className="inline-block px-3 py-1 bg-white/10 backdrop-blur-sm text-white rounded-full text-xs font-semibold mb-2">
@@ -90,10 +90,10 @@ const ProductSlider = () => {
 
         {/* Main Slider */}
         <div className="relative">
-          <div className={`bg-gradient-to-r ${currentOffer.bgGradient} rounded-3xl shadow-2xl overflow-hidden border border-white/10`}>
+          <div className={`bg-gradient-to-r ${currentOffer.bgGradient} rounded-3xl shadow-2xl overflow-hidden border border-white/10 mx-auto max-w-7xl`}>
             <div className="flex flex-col lg:flex-row items-center justify-between">
               {/* Content Side */}
-              <div className="lg:w-1/2 p-4 md:p-6 text-center lg:text-left">
+              <div className="lg:w-1/2 p-8 text-center lg:text-left">
                 {/* Badge */}
                 <div className="inline-flex items-center gap-1 bg-white/20 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs font-semibold mb-2">
                   {currentOffer.icon}
@@ -135,7 +135,7 @@ const ProductSlider = () => {
               </div>
 
               {/* Image Side */}
-              <div className="lg:w-1/2 p-4 md:p-6">
+              <div className="lg:w-1/2 p-6">
                 <div className="relative group">
                   <div className="absolute -inset-2 bg-white/10 rounded-xl blur-lg group-hover:bg-white/20 transition-all duration-300"></div>
                   <img 
