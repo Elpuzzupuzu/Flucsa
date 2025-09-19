@@ -1,43 +1,9 @@
 import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import Navigation from '../Navigation/Navigation';
+import Search from './Search/Search';
 
-// Componentes simulados para el ejemplo
-const Search = () => (
-  <div className="relative">
-    <input
-      type="text"
-      placeholder="Buscar productos..."
-      className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-4 py-2 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/30 focus:bg-white/20 transition-all duration-300 w-64"
-    />
-  </div>
-);
-
-const Navigation = ({ isMobile }) => {
-  const navItems = ['Inicio', 'Productos', 'Servicios', 'Nosotros', 'Contacto'];
-  
-  return (
-    <nav className={isMobile ? 'flex flex-col space-y-4' : 'flex space-x-8'}>
-      {navItems.map((item) => (
-        <a
-          key={item}
-          href="#"
-          className={`font-medium transition-all duration-300 relative group ${
-            isMobile
-              ? 'text-[#1C2E82] hover:text-[#ED0000] py-2 border-b border-slate-200 last:border-b-0'
-              : 'text-white hover:text-white/90'
-          }`}
-        >
-          {item}
-          {!isMobile && (
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
-          )}
-        </a>
-      ))}
-    </nav>
-  );
-};
-
-const Header = () => {
+const Header = ({ setCurrentPage }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -45,7 +11,7 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <div className="flex items-center group cursor-pointer">
+          <div className="flex items-center group cursor-pointer" onClick={() => setCurrentPage('home')}>
             <div className="relative">
               {/* Contenedor del logo con efectos */}
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
@@ -75,7 +41,7 @@ const Header = () => {
 
           {/* Menú de navegación y búsqueda - Desktop */}
           <div className="hidden lg:flex items-center space-x-8">
-            <Navigation isMobile={false} />
+            <Navigation isMobile={false} setCurrentPage={setCurrentPage} />
             <div className="h-6 w-px bg-white/30"></div>
             <Search />
           </div>
@@ -118,7 +84,7 @@ const Header = () => {
             </div>
             
             {/* Navegación */}
-            <Navigation isMobile={true} />
+            <Navigation isMobile={true} setCurrentPage={setCurrentPage} />
             
             {/* Información adicional en mobile */}
             <div className="mt-6 pt-6 border-t border-white/20">
