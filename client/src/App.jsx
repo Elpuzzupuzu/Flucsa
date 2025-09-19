@@ -12,8 +12,8 @@ function App() {
       <TopBar />
       <Header/>
       <main>
-        <HeroSection/>
         <ProductSlider/>
+        <HeroSection/>
         <CategoryGrid />
         <LinkSection />
       </main>

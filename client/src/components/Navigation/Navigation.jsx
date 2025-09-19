@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Navigation = ({ isMobile }) => {
-  const baseClasses = "text-gray-700 font-semibold hover:text-blue-600 transition-colors py-2";
+  const baseClasses = "text-white font-semibold hover:text-black transition-colors py-2";
   const mobileClasses = "block border-b border-gray-200";
 
   return (

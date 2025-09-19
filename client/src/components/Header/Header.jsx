@@ -9,10 +9,10 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="bg-white px-8 py-5 flex justify-between items-center relative z-20 shadow-sm">
+    <header className="bg-red-600 px-8 py-5 flex justify-between items-center relative z-20 shadow-sm"> 
       {/* Logo */}
       <div className="flex items-center">
-        <span className="font-extrabold text-2xl text-blue-600">Flucsa</span>
+        <span className="font-extrabold text-2xl text-white">Flucsa</span>
         <span className="w-2 h-2 bg-red-500 rounded-full ml-1"></span>
       </div>
 
