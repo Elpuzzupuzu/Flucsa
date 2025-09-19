@@ -6,8 +6,6 @@ const Search = () => {
 
   const handleSearch = () => {
     console.log("Buscando productos con el término:", searchTerm);
-    // Aquí es donde en el futuro implementarás la lógica para
-    // llamar al backend, actualizar el estado de Redux, etc.
   };
 
   return (
@@ -22,16 +20,16 @@ const Search = () => {
             handleSearch();
           }
         }}
-        className="w-40 py-2 pl-4 pr-10 rounded-full text-sm outline-none bg-gray-100 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 transition-all"
+        className="w-full md:w-48 py-2 pl-4 pr-10 rounded-full text-sm outline-none bg-gray-100 placeholder-gray-500 focus:ring-2 focus:ring-blue-500 transition-all"
       />
       <button 
         onClick={handleSearch}
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-blue-600 transition-colors"
+        className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-blue-600 transition-colors"
       >
         <SearchIcon size={20} />
       </button>
     </div>
   );
-}
+};
 
 export default Search;

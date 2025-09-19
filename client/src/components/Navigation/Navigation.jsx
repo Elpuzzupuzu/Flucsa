@@ -1,17 +1,20 @@
 import React from 'react';
 
-const Navigation = () => {
+const Navigation = ({ isMobile }) => {
+  const baseClasses = "text-gray-700 font-semibold hover:text-blue-600 transition-colors py-2";
+  const mobileClasses = "block border-b border-gray-200";
+
   return (
-    <nav className="hidden md:flex items-center space-x-6 text-gray-700 font-semibold">
-      <a href="#" className="hover:text-blue-600 transition-colors">Inicio</a>
-      <a href="#" className="hover:text-blue-600 transition-colors">Catálogo</a>
-      <a href="#" className="hover:text-blue-600 transition-colors">Productos</a>
-      <a href="#" className="hover:text-blue-600 transition-colors">Sobre nosotros</a>
-      <a href="#" className="hover:text-blue-600 transition-colors">Contacto</a>
+    <nav className={isMobile ? "flex flex-col space-y-2" : "hidden md:flex items-center space-x-6"}>
+      <a href="#" className={isMobile ? `${baseClasses} ${mobileClasses}` : baseClasses}>Inicio</a>
+      <a href="#" className={isMobile ? `${baseClasses} ${mobileClasses}` : baseClasses}>Catálogo</a>
+      <a href="#" className={isMobile ? `${baseClasses} ${mobileClasses}` : baseClasses}>Productos</a>
+      <a href="#" className={isMobile ? `${baseClasses} ${mobileClasses}` : baseClasses}>Sobre nosotros</a>
+      <a href="#" className={isMobile ? `${baseClasses} ${mobileClasses}` : baseClasses}>Contacto</a>
       <a href="#" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Industrial</a>
       <a href="#" className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">Searte</a>
     </nav>
   );
-}
+};
 
 export default Navigation;
