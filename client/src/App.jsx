@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Header from './components/Header/Header';
 import TopBar from './components/TopBar/TopBar';
-import Home from './pages/Home';
-import ProductsPage from './pages/Products';
+import Home from './pages/Home/Home';
+import ProductsPage from './pages/Products/Products';
 
 function App() {
   // Estado para rastrear la página actual. 'home' es la página por defecto.
