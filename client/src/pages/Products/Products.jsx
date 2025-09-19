@@ -1,67 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Search, Filter, Grid3X3, List } from 'lucide-react';
-
-// Mock ProductCard component
-const ProductCard = ({ product, viewMode }) => {
-  if (viewMode === 'list') {
-    return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-          <div className="relative flex-shrink-0">
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-24 h-24 object-cover rounded-lg"
-            />
-            {product.badge && (
-              <span className="absolute -top-2 -right-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs px-2 py-1 rounded-full font-semibold">
-                {product.badge}
-              </span>
-            )}
-          </div>
-          <div className="flex-grow w-full">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">{product.name}</h3>
-            <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
-            <div className="flex items-center justify-between">
-              <span className="text-2xl font-bold text-blue-600">{product.price}</span>
-              <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-medium text-sm sm:text-base">
-                Ver Detalles
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-2 group">
-      <div className="relative overflow-hidden">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-        {product.badge && (
-          <span className="absolute top-3 left-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs px-3 py-1 rounded-full font-semibold">
-            {product.badge}
-          </span>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-      </div>
-      <div className="p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">{product.name}</h3>
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
-        <div className="flex items-center justify-between">
-          <span className="text-2xl font-bold text-blue-600">{product.price}</span>
-          <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-medium text-sm">
-            Ver Detalles
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+import ProductCard from '../Products/ProductCard/ProductCard'; // Importación del componente
+import Footer from '../../components/Footer/Footer';
 
 const productsData = [
   {
@@ -260,7 +200,7 @@ const App = () => {
               }}
               className="px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
             >
-              <option value={6}>6 por página</option>
+              <option value={6}>3 por página</option>
               <option value={12}>12 por página</option>
               <option value={24}>24 por página</option>
             </select>
@@ -302,7 +242,7 @@ const App = () => {
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
           </div>
         ) : currentProducts.length > 0 ? (
-          <div className={viewMode === 'grid' 
+          <div className={viewMode === 'grid'
             ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"
             : "space-y-6 mb-12"
           }>
@@ -363,8 +303,14 @@ const App = () => {
           </div>
         )}
       </div>
+      <Footer />
+
     </div>
+           
+
+    
   );
+  
 };
 
 export default App;
