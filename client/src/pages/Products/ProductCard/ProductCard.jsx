@@ -1,212 +1,224 @@
 import React, { useState } from 'react';
-import { ShoppingCart, Heart, Star } from 'lucide-react';
+import { ShoppingCart, Heart, Eye, Star, Zap, Award, Tag } from 'lucide-react';
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, viewMode }) => {
   const [isLiked, setIsLiked] = useState(false);
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
-  const handleAddToCart = () => {
-    setIsAddingToCart(true);
-    setTimeout(() => setIsAddingToCart(false), 600);
+  // Generate random rating for demo purposes
+  const rating = (4 + Math.random()).toFixed(1);
+  const reviews = Math.floor(Math.random() * 50) + 10;
+
+  const getBadgeIcon = (badge) => {
+    switch (badge.toLowerCase()) {
+      case 'más vendido':
+        return <Award className="w-3 h-3" />;
+      case 'nuevo':
+        return <Zap className="w-3 h-3" />;
+      case 'oferta':
+        return <Tag className="w-3 h-3" />;
+      default:
+        return null;
+    }
   };
 
-  // Datos de ejemplo si no se pasan props
-  const defaultProduct = {
-    id: 1,
-    name: "MacBook Pro M3",
-    description: "La nueva generación de MacBook Pro con chip M3, pantalla Liquid Retina XDR y hasta 22 horas de duración de batería.",
-    price: "$2,299",
-    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=300&fit=crop",
-    badge: "Nuevo",
-    rating: 4.8,
-    reviews: 124,
-    discount: 15
+  const getBadgeColors = (badge) => {
+    switch (badge.toLowerCase()) {
+      case 'más vendido':
+        return 'from-amber-400 via-orange-500 to-red-500';
+      case 'nuevo':
+        return 'from-emerald-400 via-cyan-500 to-blue-500';
+      case 'oferta':
+        return 'from-pink-400 via-purple-500 to-indigo-500';
+      default:
+        return 'from-blue-600 to-purple-600';
+    }
   };
 
-  const prod = product || defaultProduct;
+  if (viewMode === 'list') {
+    return (
+      <div 
+        className="bg-white/80 backdrop-blur-lg rounded-2xl border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 group overflow-hidden"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/5 via-purple-600/5 to-pink-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        
+        <div className="relative p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+            <div className="relative flex-shrink-0 group/image">
+              <div className="relative overflow-hidden rounded-2xl">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-28 h-28 object-cover transition-all duration-500 group-hover/image:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-tr from-black/20 via-transparent to-white/20 opacity-0 group-hover/image:opacity-100 transition-opacity duration-300" />
+              </div>
+              
+              {product.badge && (
+                <div className={`absolute -top-3 -right-3 bg-gradient-to-r ${getBadgeColors(product.badge)} text-white text-xs px-3 py-2 rounded-full font-bold shadow-lg flex items-center gap-1 animate-pulse`}>
+                  {getBadgeIcon(product.badge)}
+                  {product.badge}
+                </div>
+              )}
 
-  return (
-    <div className="group relative bg-gradient-to-br from-white via-gray-50 to-white rounded-3xl shadow-xl overflow-hidden transform transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:-translate-y-3 border border-gray-100/50 backdrop-blur-sm">
-      
-      {/* Efecto de brillo animado */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none"></div>
-      
-      {/* Badge y botón de favorito */}
-      <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-20">
-        {prod.badge && (
-          <div className="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg animate-pulse">
-            {prod.badge}
-          </div>
-        )}
-        {prod.discount && (
-          <div className="bg-gradient-to-r from-green-400 to-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg ml-2">
-            -{prod.discount}%
-          </div>
-        )}
-        <button
-          onClick={() => setIsLiked(!isLiked)}
-          className={`p-2 rounded-full backdrop-blur-md transition-all duration-300 ${
-            isLiked 
-              ? 'bg-red-500 text-white shadow-lg scale-110' 
-              : 'bg-white/80 text-gray-600 hover:bg-white hover:scale-110'
-          }`}
-        >
-          <Heart 
-            size={16} 
-            className={`transition-all duration-300 ${isLiked ? 'fill-current' : ''}`} 
-          />
-        </button>
-      </div>
+              <button
+                onClick={() => setIsLiked(!isLiked)}
+                className={`absolute top-2 right-2 p-2 rounded-full backdrop-blur-lg transition-all duration-300 ${
+                  isLiked 
+                    ? 'bg-red-500/90 text-white scale-110' 
+                    : 'bg-white/70 text-gray-600 hover:bg-white/90 hover:text-red-500'
+                }`}
+              >
+                <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+              </button>
+            </div>
 
-      {/* Contenedor de imagen con efectos avanzados */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
-        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <img
-          src={prod.image}
-          alt={prod.name}
-          className="w-full h-56 object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
-        />
-        {/* Efecto de partículas flotantes */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/60 rounded-full animate-ping delay-100"></div>
-          <div className="absolute top-1/2 right-1/3 w-1 h-1 bg-white/40 rounded-full animate-ping delay-300"></div>
-          <div className="absolute bottom-1/3 left-1/2 w-1.5 h-1.5 bg-white/50 rounded-full animate-ping delay-500"></div>
+            <div className="flex-grow w-full space-y-3">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors duration-300">
+                  {product.name}
+                </h3>
+                <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
+                  {product.description}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star 
+                      key={i} 
+                      className={`w-4 h-4 ${i < Math.floor(rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+                    />
+                  ))}
+                </div>
+                <span className="text-sm font-medium text-gray-700">{rating}</span>
+                <span className="text-sm text-gray-500">({reviews} reseñas)</span>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <span className="text-3xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    {product.price}
+                  </span>
+                  <div className="text-xs text-green-600 font-medium">
+                    ✓ Envío gratis disponible
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-3">
+                  <button className="p-3 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-blue-600 transition-all duration-300 hover:scale-110">
+                    <Eye className="w-5 h-5" />
+                  </button>
+                  <button className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white px-8 py-3 rounded-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 font-bold text-sm flex items-center gap-2 relative overflow-hidden group/button">
+                    <div className="absolute inset-0 bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 opacity-0 group-hover/button:opacity-100 transition-opacity duration-300" />
+                    <ShoppingCart className="w-4 h-4 relative z-10" />
+                    <span className="relative z-10">Agregar</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+    );
+  }
 
-      {/* Contenido de la tarjeta */}
-      <div className="p-6 relative">
-        {/* Rating */}
-        {prod.rating && (
-          <div className="flex items-center gap-2 mb-3">
+  return (
+    <div 
+      className="bg-white/80 backdrop-blur-lg rounded-3xl border border-white/20 overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 group relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Animated gradient border */}
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse" style={{padding: '1px'}}>
+        <div className="bg-white/80 backdrop-blur-lg rounded-3xl h-full" />
+      </div>
+      
+      <div className="relative z-10">
+        <div className="relative overflow-hidden rounded-t-3xl">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-full h-56 object-cover group-hover:scale-110 transition-all duration-700"
+          />
+          
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-all duration-500" />
+          
+          {/* Floating action buttons */}
+          <div className={`absolute top-4 right-4 flex flex-col gap-2 transition-all duration-500 ${isHovered ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'}`}>
+            <button
+              onClick={() => setIsLiked(!isLiked)}
+              className={`p-3 rounded-full backdrop-blur-lg transition-all duration-300 hover:scale-110 ${
+                isLiked 
+                  ? 'bg-red-500/90 text-white shadow-lg shadow-red-500/30' 
+                  : 'bg-white/70 text-gray-600 hover:bg-white/90 hover:text-red-500'
+              }`}
+            >
+              <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+            </button>
+            <button className="p-3 rounded-full bg-white/70 backdrop-blur-lg text-gray-600 hover:bg-white/90 hover:text-blue-600 transition-all duration-300 hover:scale-110">
+              <Eye className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Badge */}
+          {product.badge && (
+            <div className={`absolute top-4 left-4 bg-gradient-to-r ${getBadgeColors(product.badge)} text-white text-sm px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 animate-bounce`}>
+              {getBadgeIcon(product.badge)}
+              {product.badge}
+            </div>
+          )}
+        </div>
+
+        <div className="p-6 space-y-4">
+          <div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300 line-clamp-2">
+              {product.name}
+            </h3>
+            <p className="text-gray-600 text-sm leading-relaxed line-clamp-2 mb-3">
+              {product.description}
+            </p>
+          </div>
+
+          {/* Rating */}
+          <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
               {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  size={14}
-                  className={`${
-                    i < Math.floor(prod.rating)
-                      ? 'text-yellow-400 fill-current'
-                      : 'text-gray-300'
-                  } transition-colors duration-200`}
+                <Star 
+                  key={i} 
+                  className={`w-4 h-4 ${i < Math.floor(rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
                 />
               ))}
             </div>
-            <span className="text-sm font-medium text-gray-600">
-              {prod.rating} ({prod.reviews || 0})
-            </span>
+            <span className="text-sm font-medium text-gray-700">{rating}</span>
+            <span className="text-sm text-gray-500">({reviews})</span>
           </div>
-        )}
 
-        <h2 className="text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2 group-hover:from-purple-600 group-hover:to-pink-600 transition-all duration-300">
-          {prod.name}
-        </h2>
-        
-        <p className="text-gray-600 mb-6 line-clamp-2 leading-relaxed text-sm">
-          {prod.description}
-        </p>
-
-        {/* Footer con precio y botón */}
-        <div className="flex items-center justify-between pt-4 border-t border-gradient-to-r from-transparent via-gray-200 to-transparent">
-          <div className="flex flex-col">
-            <span className="text-2xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              {prod.price}
-            </span>
-            {prod.discount && (
-              <span className="text-xs text-gray-400 line-through">
-                ${(parseFloat(prod.price.replace('$', '').replace(',', '')) * (1 + prod.discount/100)).toFixed(0)}
+          {/* Price and action */}
+          <div className="space-y-4">
+            <div className="text-center">
+              <span className="text-3xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent block">
+                {product.price}
               </span>
-            )}
+              <div className="text-xs text-green-600 font-medium mt-1">
+                ✓ Envío gratis disponible
+              </div>
+            </div>
+            
+            <button className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-4 rounded-2xl hover:shadow-2xl hover:scale-105 transition-all duration-300 font-bold text-lg flex items-center justify-center gap-3 relative overflow-hidden group/button">
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 opacity-0 group-hover/button:opacity-100 transition-opacity duration-300" />
+              <ShoppingCart className="w-5 h-5 relative z-10 group-hover/button:animate-bounce" />
+              <span className="relative z-10">Agregar al Carrito</span>
+            </button>
           </div>
-          
-          <button 
-            onClick={handleAddToCart}
-            disabled={isAddingToCart}
-            className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-semibold shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95 ${
-              isAddingToCart
-                ? 'bg-green-500 text-white'
-                : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
-            }`}
-          >
-            {isAddingToCart ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                Agregado
-              </>
-            ) : (
-              <>
-                Añadir
-                <ShoppingCart 
-                  size={18} 
-                  className="transform transition-transform duration-200 group-hover:scale-125 group-hover:rotate-12" 
-                />
-              </>
-            )}
-          </button>
         </div>
       </div>
     </div>
   );
 };
 
-// Componente de demostración
-const Demo = () => {
-  const sampleProducts = [
-    {
-      id: 1,
-      name: "iPhone 15 Pro Max",
-      description: "El iPhone más avanzado con cámara profesional de 48MP, chip A17 Pro y diseño de titanio ultra resistente.",
-      price: "$1,199",
-      image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=300&fit=crop",
-      badge: "Pro",
-      rating: 4.9,
-      reviews: 2847,
-      discount: 10
-    },
-    {
-      id: 2,
-      name: "MacBook Air M2",
-      description: "Ultrabook perfecta para trabajo y creatividad con chip M2, pantalla Liquid Retina de 13.6 pulgadas.",
-      price: "$1,099",
-      image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=300&fit=crop",
-      badge: "Popular",
-      rating: 4.7,
-      reviews: 1523,
-      discount: 15
-    },
-    {
-      id: 3,
-      name: "iPad Pro 12.9\"",
-      description: "La tablet más potente con chip M2, pantalla Liquid Retina XDR y compatibilidad con Apple Pencil.",
-      price: "$1,099",
-      image: "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=300&fit=crop",
-      badge: "Nuevo",
-      rating: 4.8,
-      reviews: 945,
-      discount: 5
-    }
-  ];
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-            ProductCard Mejorado
-          </h1>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Diseño moderno con efectos visuales avanzados, animaciones fluidas y mejor experiencia de usuario
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {sampleProducts.map(product => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default Demo;
+export default ProductCard;

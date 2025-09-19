@@ -152,7 +152,7 @@ const App = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 font-sans">
       {/* Header with improved gradient */}
-      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white py-16">
+      {/* <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white py-16">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center">
             <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
@@ -163,7 +163,7 @@ const App = () => {
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Toolbar */}

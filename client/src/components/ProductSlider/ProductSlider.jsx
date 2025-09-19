@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight, Star, ArrowRight, Zap, Gift, Truck } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Star, ArrowRight, Zap, Gift, Truck, Play, Pause } from 'lucide-react';
 
 const offers = [
   {
@@ -8,9 +8,6 @@ const offers = [
     subtitle: 'MEGA OFERTA',
     description: 'En toda nuestra línea de productos industriales. No pierdas esta oportunidad única.',
     image: 'https://es.dombor.com/wp-content/uploads/2021/09/image-edited.png',
-    bgGradient: 'from-blue-600 via-blue-700 to-indigo-800',
-    btnColor: 'bg-gradient-to-r from-yellow-400 to-orange-500',
-    btnText: 'Ver Ofertas',
     icon: <Zap className="w-6 h-6" />,
     badge: 'LIMITADO'
   },
@@ -20,9 +17,6 @@ const offers = [
     subtitle: 'SOLO ESTE MES',
     description: 'Equipos de piscina con la mejor tecnología. Transforma tu espacio.',
     image: 'https://piscinaselifra.com/wp-content/uploads/2021/05/piscina-8x4-piscinas-elifra_de-dia.jpeg',
-    bgGradient: 'from-cyan-500 via-blue-600 to-blue-800',
-    btnColor: 'bg-gradient-to-r from-cyan-400 to-blue-500',
-    btnText: 'Comprar Ahora',
     icon: <Gift className="w-6 h-6" />,
     badge: 'EXCLUSIVO'
   },
@@ -32,9 +26,6 @@ const offers = [
     subtitle: 'SIN COSTO ADICIONAL',
     description: 'En pedidos mayores a $1000 MXN. Recibe tus productos en la comodidad de tu hogar.',
     image: 'https://marketing4ecommerce.mx/wp-content/uploads/2019/07/env%C3%ADo-gratis-ecommerce.jpg',
-    bgGradient: 'from-purple-600 via-purple-700 to-indigo-800',
-    btnColor: 'bg-gradient-to-r from-purple-400 to-pink-500',
-    btnText: 'Aprovechar',
     icon: <Truck className="w-6 h-6" />,
     badge: 'POPULAR'
   },
@@ -43,149 +34,204 @@ const offers = [
 const ProductSlider = () => {
   const [currentSlide, setCurrentSlide] = React.useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = React.useState(true);
+  const [progress, setProgress] = React.useState(0);
 
-  // Auto-play functionality
+  // Auto-play functionality with progress
   React.useEffect(() => {
     if (!isAutoPlaying) return;
     
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % offers.length);
-    }, 5000);
+    const progressInterval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) {
+          setCurrentSlide(current => (current + 1) % offers.length);
+          return 0;
+        }
+        return prev + 2; // 2% every 100ms = 5 seconds total
+      });
+    }, 100);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(progressInterval);
   }, [isAutoPlaying]);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % offers.length);
+    setProgress(0);
   };
 
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + offers.length) % offers.length);
+    setProgress(0);
   };
 
   const goToSlide = (index) => {
     setCurrentSlide(index);
+    setProgress(0);
+  };
+
+  const toggleAutoPlay = () => {
+    setIsAutoPlaying(!isAutoPlaying);
   };
 
   const currentOffer = offers[currentSlide];
 
   return (
-    <div className="relative py-20 bg-gradient-to-b from-blue-900 to-blue-800 overflow-hidden">
-      {/* Elementos decorativos de fondo */}
-      <div className="absolute top-10 left-10 w-20 h-20 bg-cyan-400/20 rounded-full blur-xl"></div>
-      <div className="absolute bottom-20 right-20 w-32 h-32 bg-purple-400/20 rounded-lg blur-2xl rotate-45"></div>
-      <div className="absolute top-1/2 left-1/4 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
-      <div className="absolute top-1/3 right-1/3 w-3 h-3 bg-green-400 rounded-full animate-pulse delay-1000"></div>
+    <div className="relative py-12 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
+      {/* Elementos decorativos simplificados */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+        <div className="absolute top-10 left-10 w-24 h-24 bg-red-100/30 rounded-full blur-2xl"></div>
+        <div className="absolute bottom-10 right-10 w-32 h-32 bg-gray-100/40 rounded-full blur-2xl"></div>
+      </div>
 
-      <div className="w-full relative z-10">
-        {/* Header */}
-        <div className="text-center mb-6">
-          <div className="inline-block px-3 py-1 bg-white/10 backdrop-blur-sm text-white rounded-full text-xs font-semibold mb-2">
+      <div className="w-full relative z-10 px-4 sm:px-6 lg:px-8">
+        {/* Header simplificado */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-full text-sm font-bold mb-3 shadow-lg">
+            <Zap className="w-4 h-4" />
             Ofertas Especiales
           </div>
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
-            No Te Pierdas Nuestras <span className="text-cyan-400">Promociones</span>
+          <h2 className="text-3xl md:text-4xl font-black text-gray-800 mb-2">
+            No Te Pierdas Nuestras{' '}
+            <span className="text-red-500">Promociones</span>
           </h2>
+          <p className="text-gray-600 text-base max-w-2xl mx-auto">
+            Descubre las mejores ofertas en productos industriales y equipos especializados
+          </p>
         </div>
 
-        {/* Main Slider */}
-        <div className="relative">
-          <div className={`bg-gradient-to-r ${currentOffer.bgGradient} rounded-3xl shadow-2xl overflow-hidden border border-white/10 mx-auto max-w-7xl`}>
-            <div className="flex flex-col lg:flex-row items-center justify-between">
-              {/* Content Side */}
-              <div className="lg:w-1/2 p-8 text-center lg:text-left">
-                {/* Badge */}
-                <div className="inline-flex items-center gap-1 bg-white/20 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs font-semibold mb-2">
-                  {currentOffer.icon}
-                  {currentOffer.badge}
-                </div>
-
-                {/* Subtitle */}
-                <p className="text-cyan-300 text-sm font-medium mb-1">{currentOffer.subtitle}</p>
-
-                {/* Main Title */}
-                <h3 className="text-2xl md:text-3xl font-black text-white mb-2 leading-tight">
-                  {currentOffer.title}
-                </h3>
-
-                {/* Description */}
-                <p className="text-blue-100 text-sm md:text-base mb-4 leading-relaxed max-w-md">
-                  {currentOffer.description}
-                </p>
-
-                {/* CTA Button */}
-                <button 
-                  className={`inline-flex items-center gap-2 ${currentOffer.btnColor} text-white font-bold py-2 px-4 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group text-sm`}
-                  onMouseEnter={() => setIsAutoPlaying(false)}
-                  onMouseLeave={() => setIsAutoPlaying(true)}
-                >
-                  {currentOffer.btnText}
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
-
-                {/* Rating */}
-                <div className="flex items-center justify-center lg:justify-start gap-2 mt-3">
-                  <div className="flex text-yellow-400">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3 h-3 fill-current" />
-                    ))}
+        {/* Main Slider Card - Altura reducida, foco en imagen */}
+        <div className="relative -mx-4 sm:-mx-6 lg:-mx-8">
+          <div className="bg-white shadow-xl overflow-hidden border-y border-gray-200">
+            <div className="flex flex-col lg:flex-row h-[400px]">
+              {/* Content Side - Más compacto */}
+              <div className="lg:w-1/3 p-6 lg:p-8 flex flex-col justify-center relative bg-gray-50">
+                <div className="relative z-10 max-w-sm">
+                  {/* Badge con rojo */}
+                  <div className="inline-flex items-center gap-2 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold mb-3">
+                    {currentOffer.icon}
+                    {currentOffer.badge}
                   </div>
-                  <span className="text-blue-200 text-xs">4.9 (2,341 reseñas)</span>
+
+                  {/* Subtitle */}
+                  <p className="text-gray-600 text-sm font-semibold mb-2 uppercase tracking-wide">
+                    {currentOffer.subtitle}
+                  </p>
+
+                  {/* Main Title - Ajustado */}
+                  <h3 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-tight">
+                    {currentOffer.title}
+                  </h3>
+
+                  {/* Description - Más compacta */}
+                  <p className="text-gray-600 text-base mb-5 leading-relaxed">
+                    {currentOffer.description}
+                  </p>
+
+                  {/* CTA Button con rojo */}
+                  <button 
+                    className="inline-flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 group text-base mb-4"
+                    onMouseEnter={() => setIsAutoPlaying(false)}
+                    onMouseLeave={() => setIsAutoPlaying(true)}
+                  >
+                    Ver Ofertas
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </button>
+
+                  {/* Rating compacto */}
+                  <div className="flex items-center gap-3">
+                    <div className="flex text-amber-400">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-current" />
+                      ))}
+                    </div>
+                    <span className="text-gray-900 font-bold">4.9</span>
+                    <span className="text-gray-500 text-sm">(2,341 reseñas)</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Image Side */}
-              <div className="lg:w-1/2 p-6">
-                <div className="relative group">
-                  <div className="absolute -inset-2 bg-white/10 rounded-xl blur-lg group-hover:bg-white/20 transition-all duration-300"></div>
-                  <img 
-                    src={currentOffer.image} 
-                    alt={currentOffer.title}
-                    className="relative w-full h-40 md:h-48 object-cover rounded-xl shadow-xl transform group-hover:scale-105 transition-transform duration-300"
-                  />
-                  {/* Overlay decorativo */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
+              {/* Image Side - Protagonista visual */}
+              <div className="lg:w-2/3 relative group overflow-hidden">
+                {/* Overlay sutil para contraste */}
+                <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-transparent z-10"></div>
+                
+                <img 
+                  src={currentOffer.image} 
+                  alt={currentOffer.title}
+                  className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                />
+                
+                {/* Badge flotante con rojo */}
+                <div className="absolute top-4 right-4 z-20">
+                  <div className="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center shadow-lg">
+                    <span className="text-white font-bold text-lg">%</span>
+                  </div>
+                </div>
+                
+                {/* Texto flotante */}
+                <div className="absolute bottom-4 right-4 z-20">
+                  <div className="bg-white/95 px-3 py-1 rounded-full shadow-lg">
+                    <span className="text-gray-900 font-bold text-sm">¡Oferta Limitada!</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
+        {/* Controls - Simplificados y sobre la imagen */}
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center justify-center gap-6 z-30">
           {/* Navigation Arrows */}
           <button 
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-sm text-white p-3 rounded-full hover:bg-white/20 transition-all duration-300 group"
+            className="bg-white/90 text-gray-700 p-2 rounded-lg shadow-md hover:bg-white hover:shadow-lg transition-all duration-200"
           >
-            <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+            <ChevronLeft className="w-5 h-5" />
           </button>
+
+          {/* Pagination Dots */}
+          <div className="flex items-center gap-2">
+            {offers.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`transition-all duration-300 ${
+                  index === currentSlide
+                    ? 'w-8 h-2 bg-red-500 rounded-full'
+                    : 'w-2 h-2 bg-white/60 rounded-full hover:bg-white/80'
+                }`}
+              />
+            ))}
+          </div>
+
           <button 
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-sm text-white p-3 rounded-full hover:bg-white/20 transition-all duration-300 group"
+            className="bg-white/90 text-gray-700 p-2 rounded-lg shadow-md hover:bg-white hover:shadow-lg transition-all duration-200"
           >
-            <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+            <ChevronRight className="w-5 h-5" />
+          </button>
+
+          {/* Auto-play control */}
+          <button
+            onClick={toggleAutoPlay}
+            className="bg-red-500 text-white p-2 rounded-lg shadow-md hover:bg-red-600 transition-all duration-200 ml-2"
+          >
+            {isAutoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
           </button>
         </div>
 
-        {/* Pagination Dots */}
-        <div className="flex justify-center items-center gap-2 mt-4">
-          {offers.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`transition-all duration-300 ${
-                index === currentSlide
-                  ? 'w-6 h-2 bg-cyan-400 rounded-full'
-                  : 'w-2 h-2 bg-white/30 rounded-full hover:bg-white/50'
-              }`}
-            />
-          ))}
+        {/* Progress Bar - Con rojo */}
+        <div className="w-full bg-gray-200 rounded-full h-1 mt-4 overflow-hidden max-w-sm mx-auto">
+          <div 
+            className="bg-red-500 h-1 rounded-full transition-all duration-100"
+            style={{ width: `${progress}%` }}
+          ></div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="w-full bg-white/20 rounded-full h-1 mt-2">
-          <div 
-            className="bg-cyan-400 h-1 rounded-full transition-all duration-300"
-            style={{ width: `${((currentSlide + 1) / offers.length) * 100}%` }}
-          ></div>
+        {/* Slide counter */}
+        <div className="text-center mt-2">
+          <span className="text-gray-600 text-sm font-medium">
+            {currentSlide + 1} de {offers.length}
+          </span>
         </div>
       </div>
     </div>
