@@ -9,7 +9,7 @@ const Header = ({ setCurrentPage }) => {
 
   return (
     <header className="sticky top-0 bg-gradient-to-r from-[#1C2E82] to-[#2d4bc7] shadow-xl border-b border-white/10 z-50">
-      <div className="max-w-7xl mx-auto px-6 py-4">
+      <div className="max-w-7xl mx-auto px-6 py-1"> {/* Cambio aquí: de py-4 a py-3 */}
         <div className="flex justify-between items-center">
           {/* Logo */}
           <div
