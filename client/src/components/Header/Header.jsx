@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ShoppingCart as ShoppingCartIcon } from 'lucide-react';
 import Navigation from '../Navigation/Navigation';
 import Search from './Search/Search';
 import Logo from '../../assets/images/logoc.jpg';
 
-const Header = ({ setCurrentPage }) => {
+// Ajuste: Recibe cartItems y onCartToggle como props
+const Header = ({ setCurrentPage, cartItems, onCartToggle }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // Calcula el total de ítems en el carrito si existen
+  const totalCartItems = cartItems ? cartItems.reduce((sum, item) => sum + item.quantity, 0) : 0;
 
   return (
     <header className="sticky top-0 bg-gradient-to-r from-[#1C2E82] to-[#2d4bc7] shadow-xl border-b border-white/10 z-50">
-      <div className="max-w-7xl mx-auto px-6 py-1"> {/* Cambio aquí: de py-4 a py-3 */}
+      <div className="max-w-7xl mx-auto px-6 py-1">
         <div className="flex justify-between items-center">
           {/* Logo */}
           <div
@@ -17,20 +20,19 @@ const Header = ({ setCurrentPage }) => {
             onClick={() => setCurrentPage('home')}
           >
             <div className="relative flex-shrink-0">
-              {/* Contenedor del logo con efectos - Aumentado a w-20 h-20 */}
               <div className="w-20 h-20 bg-white rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-2xl transition-all duration-300">
                 <img
                   src={Logo}
                   alt="Flucsa Logo"
-                  className="w-12 h-12 object-contain rounded-lg" // Imagen del logo aumentada
+                  className="w-12 h-12 object-contain rounded-lg"
                 />
               </div>
               <div className="absolute inset-0 bg-gradient-to-br from-white/30 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
 
             {/* Texto del logo */}
-            <div className="ml-4"> {/* Margen ajustado */}
-              <span className="font-['Archivo'] font-black text-3xl text-white tracking-tight drop-shadow-lg"> {/* Tamaño de texto aumentado */}
+            <div className="ml-4">
+              <span className="font-['Archivo'] font-black text-3xl text-white tracking-tight drop-shadow-lg">
                 FLUCSA
               </span>
               <div className="mt-1">
@@ -41,18 +43,46 @@ const Header = ({ setCurrentPage }) => {
             </div>
           </div>
 
-          {/* Menú de navegación y búsqueda - Desktop */}
-          <div className="hidden lg:flex items-center space-x-10 text-lg"> {/* space-x y text-lg añadidos */}
+          {/* Menú de navegación, búsqueda y carrito - Desktop */}
+          <div className="hidden lg:flex items-center space-x-10 text-lg">
             <Navigation isMobile={false} setCurrentPage={setCurrentPage} />
             <div className="h-6 w-px bg-white/30"></div>
             <Search />
+            
+            {/* Botón del carrito para escritorio */}
+            <button
+              onClick={onCartToggle}
+              className="relative p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-105"
+            >
+              <ShoppingCartIcon className="w-5 h-5" />
+              {/* Contador de ítems en el carrito */}
+              {totalCartItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                  {totalCartItems}
+                </span>
+              )}
+            </button>
           </div>
 
-          {/* Búsqueda y menú - Tablet/Mobile */}
+          {/* Búsqueda, carrito y menú - Tablet/Mobile */}
           <div className="flex lg:hidden items-center space-x-4">
             <div className="hidden md:block">
               <Search />
             </div>
+            
+            {/* Botón del carrito para móvil */}
+            <button
+              onClick={onCartToggle}
+              className="relative p-2 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-105"
+            >
+              <ShoppingCartIcon className="w-5 h-5" />
+              {totalCartItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium text-[10px]">
+                  {totalCartItems}
+                </span>
+              )}
+            </button>
+
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="relative w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 flex items-center justify-center text-white hover:bg-white/20 hover:border-[#ED0000] transition-all duration-300 hover:scale-105"
