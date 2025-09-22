@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; // Importa Link
+import { Link } from 'react-router-dom';
 import { Menu, X, ShoppingCart as ShoppingCartIcon } from 'lucide-react';
 import Navigation from '../Navigation/Navigation';
 import Search from './Search/Search';
 import Logo from '../../assets/images/logoc.jpg';
 
-// Ajuste: Ahora recibe cartItems y onCartToggle como props, no setCurrentPage
 const Header = ({ cartItems, onCartToggle }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const totalCartItems = cartItems ? cartItems.reduce((sum, item) => sum + item.quantity, 0) : 0;
@@ -16,7 +15,7 @@ const Header = ({ cartItems, onCartToggle }) => {
         <div className="flex justify-between items-center">
           {/* Logo - Usa Link para navegar */}
           <Link
-            to="/" // Redirige a la página de inicio
+            to="/"
             className="flex items-center group cursor-pointer transition-all duration-300 hover:scale-105"
           >
             <div className="relative flex-shrink-0">
@@ -43,7 +42,8 @@ const Header = ({ cartItems, onCartToggle }) => {
 
           {/* Menú de navegación, búsqueda y carrito - Desktop */}
           <div className="hidden lg:flex items-center space-x-10 text-lg">
-            <Navigation isMobile={false} /> {/* Ya no necesita setCurrentPage */}
+            {/* Aquí se renderiza la navegación */}
+            <Navigation /> 
             <div className="h-6 w-px bg-white/30"></div>
             <Search />
             <button
@@ -99,7 +99,8 @@ const Header = ({ cartItems, onCartToggle }) => {
             <div className="md:hidden mb-6">
               <Search />
             </div>
-            <Navigation isMobile={true} /> {/* Ya no necesita setCurrentPage */}
+            {/* Aquí se renderiza la navegación del menú móvil */}
+            <Navigation isMobile={true} /> 
             <div className="mt-6 pt-6 border-t border-white/20">
               <div className="flex items-center justify-center space-x-4 text-white/80 text-sm">
                 <span>📞 +123 456 7890</span>
