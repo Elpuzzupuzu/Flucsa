@@ -4,7 +4,7 @@ import CategoryGrid from '../../components/CategoryGrid/CategoryGrid';
 import LinkSection from '../../components/LinkSection/LinkSection';
 import ProductSlider from '../../components/ProductSlider/ProductSlider';
 import ProductSliderPrototype from '../../components/ShopSlider/ShopSlider';
-import AboutUs from '../../components/AboutUs/AboutUs';
+import AboutUs from '../../components/Location/Location';
 import Footer from '../../components/Footer/Footer';
 
 function Home() {

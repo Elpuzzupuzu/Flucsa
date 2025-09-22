@@ -13,7 +13,7 @@ const AboutUsPage = () => {
     const stats = [
         { icon: Calendar, number: '2015', key: 'years', label: 'Año de Fundación' },
         { icon: Users, number: '500+', key: 'clients', label: 'Clientes Satisfechos' },
-        { icon: Award, number: '15', key: 'experience', label: 'Años de Experiencia' },
+        { icon: Award, number: '10', key: 'experience', label: 'Años de Experiencia' },
         { icon: TrendingUp, number: '98%', key: 'satisfaction', label: 'Satisfacción del Cliente' },
     ];
 
@@ -83,7 +83,7 @@ const AboutUsPage = () => {
         {
             icon: Users,
             title: "Confianza",
-            description: "15 años construyendo relaciones duraderas con nuestros clientes"
+            description: "10 años construyendo relaciones duraderas con nuestros clientes"
         },
         {
             icon: TrendingUp,
@@ -253,7 +253,7 @@ const AboutUsPage = () => {
                                 </div>
                                 <div className="flex items-center bg-white rounded-full px-4 py-2 shadow-md">
                                     <CheckCircle className="w-4 h-4 text-[#ED0000] mr-2" />
-                                    <span className="font-medium text-slate-700">15 Años de Experiencia</span>
+                                    <span className="font-medium text-slate-700">10 Años de Experiencia</span>
                                 </div>
                                 <div className="flex items-center bg-white rounded-full px-4 py-2 shadow-md">
                                     <CheckCircle className="w-4 h-4 text-[#ED0000] mr-2" />
