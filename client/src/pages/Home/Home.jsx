@@ -16,7 +16,6 @@ function Home() {
         <ProductSliderPrototype />
         <CategoryGrid />
         <AboutUs />
-        <Footer />
         {/* <LinkSection /> */}
       </main>
     </>

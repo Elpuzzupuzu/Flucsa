@@ -2,17 +2,19 @@ import React, { useState } from 'react';
 import Header from './components/Header/Header';
 import TopBar from './components/TopBar/TopBar';
 import Home from './pages/Home/Home';
-import ProductsPage from './pages/Products/Products'; // Ahora importas la página de productos corregida
-import ShoppingCart from './pages/Products/ShoppingCart/ShoppingCart'; // Se importará aquí para que sea global
+import ProductsPage from './pages/Products/Products';
+import ShoppingCart from './pages/Products/ShoppingCart/ShoppingCart';
+import ProductDetails from './pages/ProductDetails/ProductDetails'; // 1. Importa el componente ProductDetails
+import Footer from './components/Footer/Footer';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
-  // Mueve el estado del carrito a este componente
+  const [selectedProductId, setSelectedProductId] = useState(null);
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Mueve las funciones del carrito aquí
   const onCartToggle = () => setIsCartOpen(!isCartOpen);
+  
   const addToCart = (product) => {
     setCartItems(prev => {
       const existing = prev.find(item => item.id === product.id);
@@ -26,16 +28,25 @@ function App() {
       return [...prev, { ...product, quantity: 1 }];
     });
   };
+  
   const updateCartQuantity = (id, quantity) => {
     setCartItems(prev => prev.map(item =>
       item.id === id ? { ...item, quantity } : item
     ));
   };
+  
   const removeFromCart = (id) => {
     setCartItems(prev => prev.filter(item => item.id !== id));
   };
+  
   const handleProceedToCheckout = () => {
     alert('Redirigiendo al checkout...');
+  };
+
+  // Función de navegación para la vista de detalles
+  const handleViewDetails = (productId) => {
+    setSelectedProductId(productId);
+    setCurrentPage('details');
   };
 
   const renderPage = () => {
@@ -43,25 +54,27 @@ function App() {
       case 'home':
         return <Home />;
       case 'products':
-        // Pasa las funciones del carrito como props a ProductsPage
-        return <ProductsPage addToCart={addToCart} />;
+        // Pasa la función de navegación a ProductsPage
+        return <ProductsPage addToCart={addToCart} handleViewDetails={handleViewDetails} />;
+      case 'details':
+        // Renderiza la página de detalles
+        return <ProductDetails productId={selectedProductId} onAddToCart={addToCart} />;
       default:
         return <Home />;
     }
   };
 
   return (
-    <div className="font-sans min-h-screen bg-gray-100">
+    <div className="font-sans min-h-screen bg-gray-100 flex flex-col">
       <TopBar />
-      {/* Pasa el estado del carrito al Header */}
       <Header
         setCurrentPage={setCurrentPage}
         cartItems={cartItems}
         onCartToggle={onCartToggle}
       />
-      {renderPage()}
-
-      {/* El carrito ahora se renderiza globalmente aquí */}
+      <main className="flex-1">
+        {renderPage()}
+      </main>
       <ShoppingCart
         isOpen={isCartOpen}
         onClose={onCartToggle}
@@ -70,6 +83,7 @@ function App() {
         onRemoveItem={removeFromCart}
         onProceedToCheckout={handleProceedToCheckout}
       />
+      <Footer />
     </div>
   );
 }

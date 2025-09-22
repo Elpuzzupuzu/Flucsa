@@ -1,12 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Search, Grid3X3, List } from 'lucide-react';
 
-// Importa los componentes necesarios, no el Header ni el Carrito
+// Importa solo los componentes necesarios para la página
 import FilterSidebar from './ProductFilter/ProductFilter';
 import ProductCard from './ProductCard/ProductCard';
-import Footer from '../../components/Footer/Footer';
 
-// Mock data
+// Mock data (la puedes mantener aquí o en un archivo aparte)
 const productsData = [
   {
     id: 1,
@@ -74,9 +73,8 @@ const productsData = [
   }
 ];
 
-
-// Recibe la función `addToCart` como una prop
-const ProductsPage = ({ addToCart }) => {
+// Recibe las props `addToCart` y `handleViewDetails`
+const ProductsPage = ({ addToCart, handleViewDetails }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(6);
   const [viewMode, setViewMode] = useState('grid');
@@ -88,16 +86,12 @@ const ProductsPage = ({ addToCart }) => {
     priceRange: ''
   });
 
-  // La lógica de filtrado y ordenamiento se mantiene aquí
   const filteredProducts = useMemo(() => {
-    // ... (tu lógica de filtrado)
     return productsData.filter(product => {
       const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.description.toLowerCase().includes(searchTerm.toLowerCase());
-
       const matchesCategory = filters.categories.length === 0 ||
         filters.categories.some(cat => product.name.toLowerCase().includes(cat.toLowerCase()));
-
       let matchesPrice = true;
       if (filters.priceRange) {
         const price = parseFloat(product.price.replace(/[^0-9.]/g, '')) || 0;
@@ -121,7 +115,6 @@ const ProductsPage = ({ addToCart }) => {
   }, [searchTerm, filters]);
 
   const sortedProducts = useMemo(() => {
-    // ... (tu lógica de ordenamiento)
     return [...filteredProducts].sort((a, b) => {
       switch (sortBy) {
         case 'name':
@@ -178,10 +171,8 @@ const ProductsPage = ({ addToCart }) => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* ¡Eliminado el Header duplicado! */}
-      {/* ... */}
       <div className="flex flex-1">
-        {/* Filter Sidebar */}
+        {/* Sidebar de filtros */}
         <FilterSidebar
           filters={filters}
           onFilterChange={setFilters}
@@ -189,8 +180,85 @@ const ProductsPage = ({ addToCart }) => {
           onToggleCollapsed={() => setIsFilterCollapsed(!isFilterCollapsed)}
         />
         <div className="flex-1 overflow-y-auto px-6 py-8">
-          {/* ... */}
-          {/* Product Grid/List */}
+          {/* Encabezado y barra de herramientas */}
+          <div className="mb-8">
+            <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
+              <span>Inicio</span>
+              <ChevronRight className="w-4 h-4" />
+              <span className="text-blue-600">Productos</span>
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">Nuestros Productos</h1>
+            <p className="text-gray-600 mt-2">Descubre nuestra amplia gama de productos de plomería y equipos industriales</p>
+          </div>
+          <div className="mb-8 space-y-4 lg:space-y-0 lg:flex lg:items-center lg:justify-between bg-white p-4 rounded-lg shadow-sm">
+            <div className="relative flex-1 max-w-lg">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Buscar productos..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div className="flex items-center gap-3 flex-wrap justify-end">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              >
+                <option value="name">Ordenar por nombre</option>
+                <option value="price">Ordenar por precio</option>
+              </select>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => {
+                  setItemsPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              >
+                <option value={6}>6 por página</option>
+                <option value={12}>12 por página</option>
+                <option value={24}>24 por página</option>
+              </select>
+              <div className="flex bg-gray-100 border border-gray-200 rounded-lg p-0.5">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded-md transition-colors ${
+                    viewMode === 'grid'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-600 hover:text-blue-600'
+                  }`}
+                >
+                  <Grid3X3 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded-md transition-colors ${
+                    viewMode === 'list'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-600 hover:text-blue-600'
+                  }`}
+                >
+                  <List className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="mb-6 text-sm text-gray-600 flex items-center justify-between">
+            <span>
+              Mostrando {indexOfFirstItem + 1} - {Math.min(indexOfLastItem, sortedProducts.length)} de {sortedProducts.length} productos
+            </span>
+            {(filters.categories.length > 0 || filters.priceRange) && (
+              <button
+                onClick={() => setFilters({ categories: [], priceRange: '' })}
+                className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+              >
+                Limpiar filtros
+              </button>
+            )}
+          </div>
           {currentProducts.length > 0 ? (
             <div className={viewMode === 'grid'
               ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12"
@@ -201,7 +269,9 @@ const ProductsPage = ({ addToCart }) => {
                   key={product.id}
                   product={product}
                   viewMode={viewMode}
-                  onAddToCart={addToCart} // Usa la prop recibida
+                  onAddToCart={addToCart}
+                  // Pasa la función `handleViewDetails` como prop a ProductCard
+                  onViewDetails={() => handleViewDetails(product.id)}
                 />
               ))}
             </div>
@@ -212,7 +282,6 @@ const ProductsPage = ({ addToCart }) => {
               <p className="text-gray-500">Intenta con otros términos de búsqueda o ajusta los filtros</p>
             </div>
           )}
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-center space-x-2 flex-wrap">
               <button
@@ -253,7 +322,7 @@ const ProductsPage = ({ addToCart }) => {
           )}
         </div>
       </div>
-      <Footer/>
+      {/* El footer se debe manejar globalmente en App.jsx, no en esta página */}
     </div>
   );
 };
