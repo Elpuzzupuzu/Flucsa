@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, ShoppingCart as ShoppingCartIcon } from 'lucide-react';
 import Navigation from '../Navigation/Navigation';
@@ -7,7 +7,31 @@ import Logo from '../../assets/images/logoc.jpg';
 
 const Header = ({ cartItems, onCartToggle }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isCartAnimating, setIsCartAnimating] = useState(false);
+  const [previousCartCount, setPreviousCartCount] = useState(0);
+  const [showAddedBadge, setShowAddedBadge] = useState(false);
+  
   const totalCartItems = cartItems ? cartItems.reduce((sum, item) => sum + item.quantity, 0) : 0;
+
+  // Detectar cuando se añade un producto al carrito
+  useEffect(() => {
+    if (totalCartItems > previousCartCount) {
+      // Se añadió un producto
+      setIsCartAnimating(true);
+      setShowAddedBadge(true);
+      
+      // Quitar la animación después de 600ms
+      setTimeout(() => {
+        setIsCartAnimating(false);
+      }, 600);
+      
+      // Quitar el badge "+" después de 1.5s
+      setTimeout(() => {
+        setShowAddedBadge(false);
+      }, 1500);
+    }
+    setPreviousCartCount(totalCartItems);
+  }, [totalCartItems, previousCartCount]);
 
   return (
     <header className="sticky top-0 bg-gradient-to-r from-[#1C2E82] to-[#2d4bc7] shadow-xl border-b border-white/10 z-50">
@@ -46,15 +70,52 @@ const Header = ({ cartItems, onCartToggle }) => {
             <Navigation /> 
             <div className="h-6 w-px bg-white/30"></div>
             <Search />
+            
+            {/* Botón del carrito con animaciones mejoradas */}
             <button
               onClick={onCartToggle}
-              className="relative p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-105"
+              className={`relative p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-105 ${
+                isCartAnimating ? 'animate-bounce scale-110' : ''
+              }`}
             >
-              <ShoppingCartIcon className="w-5 h-5" />
+              {/* Efecto de pulso cuando se añade producto */}
+              {isCartAnimating && (
+                <>
+                  <div className="absolute inset-0 bg-green-400/30 rounded-xl animate-ping"></div>
+                  <div className="absolute inset-0 bg-green-400/20 rounded-xl animate-pulse"></div>
+                </>
+              )}
+              
+              <ShoppingCartIcon 
+                className={`w-5 h-5 relative z-10 transition-all duration-300 ${
+                  isCartAnimating ? 'text-green-300' : ''
+                }`} 
+              />
+              
+              {/* Badge del contador principal */}
               {totalCartItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+                <span className={`absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium transition-all duration-300 ${
+                  isCartAnimating ? 'animate-pulse scale-125 bg-green-500' : ''
+                }`}>
                   {totalCartItems}
                 </span>
+              )}
+              
+              {/* Badge temporal "+" cuando se añade producto */}
+              {showAddedBadge && (
+                <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold animate-bounce">
+                  +
+                </span>
+              )}
+              
+              {/* Partículas de celebración */}
+              {isCartAnimating && (
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute top-0 left-0 w-1 h-1 bg-yellow-300 rounded-full animate-ping" style={{animationDelay: '0ms'}}></div>
+                  <div className="absolute top-0 right-0 w-1 h-1 bg-green-300 rounded-full animate-ping" style={{animationDelay: '100ms'}}></div>
+                  <div className="absolute bottom-0 left-0 w-1 h-1 bg-blue-300 rounded-full animate-ping" style={{animationDelay: '200ms'}}></div>
+                  <div className="absolute bottom-0 right-0 w-1 h-1 bg-pink-300 rounded-full animate-ping" style={{animationDelay: '300ms'}}></div>
+                </div>
               )}
             </button>
           </div>
@@ -64,17 +125,55 @@ const Header = ({ cartItems, onCartToggle }) => {
             <div className="hidden md:block">
               <Search />
             </div>
+            
+            {/* Botón del carrito móvil con animaciones */}
             <button
               onClick={onCartToggle}
-              className="relative p-2 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-105"
+              className={`relative p-2 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 text-white hover:bg-white/20 transition-all duration-300 hover:scale-105 ${
+                isCartAnimating ? 'animate-bounce scale-110' : ''
+              }`}
             >
-              <ShoppingCartIcon className="w-5 h-5" />
+              {/* Efecto de pulso cuando se añade producto */}
+              {isCartAnimating && (
+                <>
+                  <div className="absolute inset-0 bg-green-400/30 rounded-xl animate-ping"></div>
+                  <div className="absolute inset-0 bg-green-400/20 rounded-xl animate-pulse"></div>
+                </>
+              )}
+              
+              <ShoppingCartIcon 
+                className={`w-5 h-5 relative z-10 transition-all duration-300 ${
+                  isCartAnimating ? 'text-green-300' : ''
+                }`} 
+              />
+              
+              {/* Badge del contador principal */}
               {totalCartItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium text-[10px]">
+                <span className={`absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium text-[10px] transition-all duration-300 ${
+                  isCartAnimating ? 'animate-pulse scale-125 bg-green-500' : ''
+                }`}>
                   {totalCartItems}
                 </span>
               )}
+              
+              {/* Badge temporal "+" cuando se añade producto */}
+              {showAddedBadge && (
+                <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full w-3 h-3 flex items-center justify-center font-bold animate-bounce text-[8px]">
+                  +
+                </span>
+              )}
+              
+              {/* Partículas de celebración (versión móvil más pequeña) */}
+              {isCartAnimating && (
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute top-0 left-0 w-0.5 h-0.5 bg-yellow-300 rounded-full animate-ping" style={{animationDelay: '0ms'}}></div>
+                  <div className="absolute top-0 right-0 w-0.5 h-0.5 bg-green-300 rounded-full animate-ping" style={{animationDelay: '100ms'}}></div>
+                  <div className="absolute bottom-0 left-0 w-0.5 h-0.5 bg-blue-300 rounded-full animate-ping" style={{animationDelay: '200ms'}}></div>
+                  <div className="absolute bottom-0 right-0 w-0.5 h-0.5 bg-pink-300 rounded-full animate-ping" style={{animationDelay: '300ms'}}></div>
+                </div>
+              )}
             </button>
+            
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="relative w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 flex items-center justify-center text-white hover:bg-white/20 hover:border-[#ED0000] transition-all duration-300 hover:scale-105"
@@ -93,6 +192,7 @@ const Header = ({ cartItems, onCartToggle }) => {
             </button>
           </div>
         </div>
+        
         {/* Navegación desplegable para móviles */}
         <div className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${isMenuOpen ? 'max-h-96 opacity-100 mt-6' : 'max-h-0 opacity-0'}`}>
           <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6 shadow-2xl">
