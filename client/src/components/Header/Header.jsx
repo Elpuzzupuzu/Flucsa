@@ -4,7 +4,7 @@ import { Menu, X, ShoppingCart as ShoppingCartIcon } from 'lucide-react';
 import Navigation from '../Navigation/Navigation';
 import Search from './Search/Search';
 // Importar una imagen de alta resolución del logo completo
-import LogoCompleto from '../../assets/images/flucsalogo.jpg'; // Cambia esta ruta por la imagen correcta
+import LogoCompleto from '../../assets/images/flucsa2.jpg'; // Cambia esta ruta por la imagen correcta
 
 const Header = ({ cartItems, onCartToggle }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
