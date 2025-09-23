@@ -1,9 +1,16 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { 
+  Home, 
+  Package, 
+  Settings, 
+  Users, 
+  Phone
+} from 'lucide-react';
 
 const Navigation = ({ isMobile, onLinkClick }) => {
   const commonClasses = "font-medium transition-all duration-300 relative group";
-  const mobileClasses = "text-white hover:text-[#ED0000] py-3 px-2 border-b border-white/20 last:border-b-0 block w-full text-left rounded-lg hover:bg-white/10";
+  const mobileClasses = "text-white hover:text-[#ED0000] flex items-center justify-between p-3 rounded-lg hover:bg-white/10 transition-all duration-200";
   const desktopClasses = "text-white hover:text-white/90 whitespace-nowrap";
 
   const handleMobileClick = () => {
@@ -14,50 +21,55 @@ const Navigation = ({ isMobile, onLinkClick }) => {
   };
 
   const navItems = [
-    { path: "/", label: "Inicio" },
-    { path: "/productos", label: "Productos" },
-    { path: "/servicios", label: "Servicios" },
-    { path: "/acerca-de-nosotros", label: "Nosotros" },
-    { path: "/contacto", label: "Contacto" }
+    { path: "/", label: "Inicio", icon: Home },
+    { path: "/productos", label: "Productos", icon: Package },
+    { path: "/servicios", label: "Servicios", icon: Settings },
+    { path: "/acerca-de-nosotros", label: "Nosotros", icon: Users },
+    { path: "/contacto", label: "Contacto", icon: Phone }
   ];
 
+  if (isMobile) {
+    return (
+      <nav className="flex justify-around items-center py-3">
+        {navItems.map(({ path, label, icon: Icon }) => (
+          <NavLink 
+            key={path}
+            to={path}
+            onClick={handleMobileClick}
+            className={({ isActive }) => 
+              `flex flex-col items-center space-y-1 p-2 rounded-lg transition-all duration-200 ${
+                isActive 
+                  ? 'text-[#ED0000] bg-white/10 scale-110' 
+                  : 'text-white/70 hover:text-white hover:bg-white/5 hover:scale-105'
+              }`
+            }
+            title={label}
+          >
+            <Icon size={18} className="drop-shadow-sm" />
+            <span className="text-[10px] font-medium tracking-wide">{label}</span>
+          </NavLink>
+        ))}
+      </nav>
+    );
+  }
+
+  // Desktop version (sin cambios)
   return (
-    <nav className={isMobile ? "flex flex-col space-y-1" : "hidden lg:flex items-center space-x-6"}>
+    <nav className="hidden lg:flex items-center space-x-6">
       {navItems.map(({ path, label }) => (
         <NavLink 
           key={path}
           to={path}
-          onClick={handleMobileClick}
           className={({ isActive }) => 
-            `${commonClasses} ${isMobile ? mobileClasses : desktopClasses} ${
-              isActive 
-                ? (isMobile 
-                    ? 'text-[#ED0000] bg-white/10 border-[#ED0000]' 
-                    : 'text-white font-semibold') 
-                : ''
+            `${commonClasses} ${desktopClasses} ${
+              isActive ? 'text-white font-semibold' : ''
             }`
           }
         >
           {label}
-          {!isMobile && (
-            <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-[#ED0000] transition-all duration-300 transform scale-x-0 group-hover:scale-x-100"></span>
-          )}
+          <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-[#ED0000] transition-all duration-300 transform scale-x-0 group-hover:scale-x-100"></span>
         </NavLink>
       ))}
-
-      {/* Botones adicionales comentados - descomenta si los necesitas */}
-      {/* 
-      {isMobile && (
-        <div className="mt-4 pt-4 border-t border-white/20 space-y-2">
-          <button className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
-            Industrial
-          </button>
-          <button className="w-full bg-red-500 text-white px-4 py-3 rounded-lg hover:bg-red-600 transition-colors font-medium">
-            Searte
-          </button>
-        </div>
-      )}
-      */}
     </nav>
   );
 };

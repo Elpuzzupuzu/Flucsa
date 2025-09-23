@@ -220,8 +220,7 @@ const Header = ({ cartItems, onCartToggle }) => {
               <Navigation isMobile={true} onLinkClick={() => setIsMenuOpen(false)} /> 
               <div className="mt-4 pt-4 border-t border-white/20">
                 <div className="flex items-center justify-center space-x-4 text-white/80 text-sm">
-                  <span>📞 +123 456 7890</span>
-                  <span>✉️ info@flucsa.com</span>
+                 
                 </div>
               </div>
             </div>
