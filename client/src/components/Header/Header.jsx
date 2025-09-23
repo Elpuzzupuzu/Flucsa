@@ -35,7 +35,7 @@ const Header = ({ cartItems, onCartToggle }) => {
   }, [totalCartItems, previousCartCount]);
 
   return (
-    <header className="sticky top-0 bg-gradient-to-r from-[#0f0f68] to-[#2d4bc7] shadow-xl border-b border-white/10 z-50">
+    <header className="sticky top-0 bg-gradient-to-r from-[#1C2E82] to-[#2d4bc7] shadow-xl border-b border-white/10 z-50">
       <div className="max-w-7xl mx-auto px-4 py-2">
         {/* LÍNEA MODIFICADA: Ahora usa justify-start y un espacio entre elementos */}
         <div className="flex justify-start items-center space-x-12">
@@ -54,29 +54,6 @@ const Header = ({ cartItems, onCartToggle }) => {
               <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
             </div>
             
-            {/* Opción 2: Si prefieres mantener el logo circular + texto (como alternativa) */}
-            {/* Descomenta esta sección y comenta la anterior si prefieres esta opción */}
-            {/*
-            <div className="relative flex-shrink-0">
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 border-2 border-white/20">
-                <img
-                  src={Logo}
-                  alt="Flucsa Logo"
-                  className="w-8 h-8 object-contain rounded-full"
-                />
-              </div>
-            </div>
-            <div className="ml-3">
-              <span className="font-['Archivo'] font-black text-xl text-white tracking-tight drop-shadow-lg">
-                FLUCSA
-              </span>
-              <div className="mt-0">
-                <span className="font-['Archivo'] font-medium text-[10px] text-white/90 uppercase tracking-wider">
-                  SOLUCIONES A TU MEDIDA
-                </span>
-              </div>
-            </div>
-            */}
           </Link>
 
           {/* Menú de navegación, búsqueda y carrito - Desktop */}

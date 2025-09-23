@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header/Header';
 import TopBar from './components/TopBar/TopBar';
 import Home from './pages/Home/Home';
@@ -10,6 +10,9 @@ import AboutUsPage from './pages/AboutUs/AboutUsPage';
 import ServicesPage from './pages/Servicios/ServicesPage';
 import ContactPage from './pages/Contact/ContactPage';
 import Footer from './components/Footer/Footer';
+import ScrollToTop from './hooks/Scrolltop';
+
+
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
@@ -47,6 +50,8 @@ function App() {
 
   return (
     <BrowserRouter>
+      {/* Añade el componente ScrollToTop dentro de BrowserRouter para que detecte los cambios de ruta */}
+      <ScrollToTop />
       <div className="font-sans min-h-screen bg-gray-100 flex flex-col">
         <TopBar />
         <Header
