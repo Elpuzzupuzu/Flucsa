@@ -62,7 +62,11 @@ const Navigation = ({ isMobile }) => {
       {/* <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Industrial</button>
       <button className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">Searte</button> */}
     </nav>
+
+
+
   );
 };
 
 export default Navigation;
+
