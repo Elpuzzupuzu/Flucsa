@@ -5,9 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Zap } from "lucide-react";
 
 // Importa tus imágenes locales
-import bannerOne from "../../assets/images/pool.jpg";
+import bannerOne from "../../assets/images/bombita.jpg";
 import bannerTwo from "../../assets/images/pvc.jpg";
-import bannerThree from "../../assets/images/pool2.jpg";
+import bannerThree from "../../assets/images/bombapool.jpg";
 
 // Datos de los slides con tus imágenes
 const slidesData = [
