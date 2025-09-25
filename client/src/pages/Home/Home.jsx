@@ -6,12 +6,14 @@ import ProductSlider from '../../components/ProductSlider/ProductSlider';
 import ProductSliderPrototype from '../../components/ShopSlider/ShopSlider';
 import AboutUs from '../../components/Location/Location';
 import Footer from '../../components/Footer/Footer';
+import HeroSlider from '../../components/BannerSlider/HeroSlider';
 
 function Home() {
   return (
     <>
       <main>
-        <ProductSlider />
+        {/* <ProductSlider /> */}
+        <HeroSlider/>
         <HeroSection />
         <ProductSliderPrototype />
         <CategoryGrid />
