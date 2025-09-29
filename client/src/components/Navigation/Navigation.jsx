@@ -22,7 +22,7 @@ const Navigation = ({ isMobile = false, onLinkClick }) => {
 
   if (isMobile) {
     return (
-      <nav className="flex flex-col space-y-4 mt-10">
+      <nav className="flex flex-col space-y-4">
         {navItems.map(({ path, label, icon: Icon }) => (
           <NavLink
             key={path}
