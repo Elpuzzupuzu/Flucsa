@@ -103,7 +103,7 @@ const ServiceMenuPage = () => {
               </div>
             </div>
 
-            {/* Grid de servicios con espacio para imágenes */}
+            {/* Grid de servicios con imágenes dinámicas */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {selectedCategory.items.map((item, index) => (
                 <div
@@ -112,14 +112,38 @@ const ServiceMenuPage = () => {
                 >
                   {/* Espacio para imagen */}
                   <div className={`relative h-48 bg-gradient-to-br ${selectedCategory.color} overflow-hidden`}>
-                    {/* Placeholder para imagen - Reemplazar con <img src={item.image} /> */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <IconComponent 
-                        className="text-white/30" 
-                        size={80} 
-                        strokeWidth={1.5} 
-                      />
-                    </div>
+                    {/* Imagen dinámica o fallback al icono */}
+                    {item.image ? (
+                      <>
+                        <img 
+                          src={item.image} 
+                          alt={item.name}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          onError={(e) => {
+                            // Si la imagen no carga, mostrar el icono
+                            e.target.style.display = 'none';
+                            e.target.nextElementSibling.style.display = 'flex';
+                          }}
+                        />
+                        {/* Fallback al icono (oculto por defecto) */}
+                        <div className="absolute inset-0 hidden items-center justify-center">
+                          <IconComponent 
+                            className="text-white/30" 
+                            size={80} 
+                            strokeWidth={1.5} 
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      /* Si no hay imagen, mostrar icono */
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <IconComponent 
+                          className="text-white/30" 
+                          size={80} 
+                          strokeWidth={1.5} 
+                        />
+                      </div>
+                    )}
                     
                     {/* Overlay decorativo */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
