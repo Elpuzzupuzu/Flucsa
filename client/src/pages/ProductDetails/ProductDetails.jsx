@@ -177,10 +177,10 @@ const ProductDetails = ({ onAddToCart }) => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 min-h-screen py-10 px-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 min-h-screen py-6 px-4 md:px-6">
+      <div className="max-w-6xl mx-auto">
         {/* Breadcrumb animado */}
-        <div className="flex items-center gap-2 text-sm text-gray-500 mb-8 animate-fadeIn">
+        <div className="flex items-center gap-2 text-sm text-gray-500 mb-6 animate-fadeIn">
           <Link 
             to="/" 
             className="hover:text-blue-600 transition-all duration-300 hover:scale-105 hover:underline"
@@ -198,9 +198,9 @@ const ProductDetails = ({ onAddToCart }) => {
           <span className="text-blue-600 font-medium animate-fadeIn">{product.name}</span>
         </div>
 
-        <div className="lg:flex lg:gap-12 lg:items-start">
+        <div className="lg:flex lg:gap-8 lg:items-start">
           {/* Columna de la imagen */}
-          <div className="lg:w-1/2 mb-8 lg:mb-0 animate-slideInLeft">
+          <div className="lg:w-1/2 mb-6 lg:mb-0 animate-slideInLeft">
             <div className="relative group">
               {/* Badge animado */}
               {product.badge && (
@@ -255,11 +255,11 @@ const ProductDetails = ({ onAddToCart }) => {
             <div className="space-y-6">
               {/* Título y precio */}
               <div className="animate-fadeInUp" style={{animationDelay: '0.2s'}}>
-                <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-3 leading-tight">
+                <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2 leading-tight">
                   {product.name}
                 </h1>
-                <div className="flex items-center space-x-4 mb-4">
-                  <p className="text-3xl text-blue-600 font-bold animate-pulse">
+                <div className="flex items-center space-x-4 mb-3">
+                  <p className="text-2xl text-blue-600 font-bold animate-pulse">
                     {product.price}
                   </p>
                   {product.badge === 'Oferta' && (
@@ -272,7 +272,7 @@ const ProductDetails = ({ onAddToCart }) => {
 
               {/* Rating */}
               <div className="animate-fadeInUp" style={{animationDelay: '0.3s'}}>
-                <div className="flex items-center space-x-2 mb-6">
+                <div className="flex items-center space-x-2 mb-4">
                   <div className="flex items-center space-x-1">
                     {renderStars(product.rating)}
                   </div>
@@ -284,8 +284,8 @@ const ProductDetails = ({ onAddToCart }) => {
 
               {/* Descripción */}
               <div className="animate-fadeInUp" style={{animationDelay: '0.4s'}}>
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <h2 className="text-base font-semibold text-gray-800 mb-2 flex items-center">
                     <div className="w-2 h-2 bg-blue-600 rounded-full mr-2 animate-pulse"></div>
                     Descripción del Producto
                   </h2>
@@ -299,7 +299,7 @@ const ProductDetails = ({ onAddToCart }) => {
                   <button
                     onClick={handleAddToCart}
                     disabled={addingToCart}
-                    className={`flex-1 flex items-center justify-center px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg ${
+                    className={`flex-1 flex items-center justify-center px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg ${
                       addingToCart
                         ? 'bg-gray-400 cursor-not-allowed'
                         : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-md hover:shadow-xl'
@@ -317,7 +317,7 @@ const ProductDetails = ({ onAddToCart }) => {
                       </>
                     )}
                   </button>
-                  <button className="flex-1 px-8 py-4 bg-white text-gray-800 border border-gray-300 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 transform hover:scale-105 hover:shadow-md">
+                  <button className="flex-1 px-6 py-3 bg-white text-gray-800 border border-gray-300 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 transform hover:scale-105 hover:shadow-md">
                     Contactar para más información
                   </button>
                 </div>

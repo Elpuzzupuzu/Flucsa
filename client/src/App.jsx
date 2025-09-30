@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header/Header';
 import TopBar from './components/TopBar/TopBar';
 import Home from './pages/Home/Home';
@@ -8,11 +8,10 @@ import ShoppingCart from './pages/Products/ShoppingCart/ShoppingCart';
 import ProductDetails from './pages/ProductDetails/ProductDetails';
 import AboutUsPage from './pages/AboutUs/AboutUsPage';
 import ServicesPage from './pages/Servicios/ServicesPage';
+import ServiceMenuPage from './pages/serviceMenu/serviceMenuPage';  // ✅ Nuevo
 import ContactPage from './pages/Contact/ContactPage';
 import Footer from './components/Footer/Footer';
 import ScrollToTop from './hooks/Scrolltop';
-
-
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
@@ -50,7 +49,6 @@ function App() {
 
   return (
     <BrowserRouter>
-      {/* Añade el componente ScrollToTop dentro de BrowserRouter para que detecte los cambios de ruta */}
       <ScrollToTop />
       <div className="font-sans min-h-screen bg-gray-100 flex flex-col">
         <TopBar />
@@ -65,6 +63,7 @@ function App() {
             <Route path="/productos/:id" element={<ProductDetails onAddToCart={addToCart} />} />
             <Route path="/acerca-de-nosotros" element={<AboutUsPage />} />
             <Route path="/servicios" element={<ServicesPage />} />
+            <Route path="/servicios/:category" element={<ServiceMenuPage />} /> {/* ✅ Nuevo */}
             <Route path="/contacto" element={<ContactPage />} />
           </Routes>
         </main>

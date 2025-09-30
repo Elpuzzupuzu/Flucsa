@@ -142,6 +142,14 @@ const ProductsPage = ({ addToCart }) => {
     setCurrentPage(1);
   }, [sortedProducts]);
 
+  // ✅ SOLUCIÓN: Scroll al inicio cuando cambie la página
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }, [currentPage]);
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentProducts = sortedProducts.slice(indexOfFirstItem, indexOfLastItem);

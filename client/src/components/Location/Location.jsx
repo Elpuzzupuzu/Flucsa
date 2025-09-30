@@ -34,7 +34,7 @@ const Location = () => {
           </div>
           
           <h2 className="text-5xl font-black bg-gradient-to-r from-[#1C2E82] via-[#2d4bc7] to-[#4361ee] bg-clip-text text-transparent mb-4 tracking-tight leading-tight">
-            Nuestra Ubicación
+            Donde nos ubicamos?
           </h2>
           
           <div className="flex items-center justify-center mb-6">
@@ -44,7 +44,7 @@ const Location = () => {
           </div>
           
           <p className="text-slate-700 text-xl max-w-2xl mx-auto leading-relaxed font-medium">
-            Visítanos y conoce nuestra planta. Estamos estratégicamente ubicados para brindarte el mejor servicio.
+            Visítanos y conoce nuestra sucursal más cercana. Estamos estratégicamente ubicados para brindarte el mejor servicio.
           </p>
         </div>
 
