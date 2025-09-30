@@ -5,14 +5,14 @@ import {
 
 export const services = [
   { 
-    id: "sistemas-riego", // ✅ nuevo ID
+    id: "sistemas-riego",
     icon: Droplet, 
     title: 'Sistemas de Riego Residencial', 
-    description: 'Diseño e instalación de sistemas de riego automáticos que optimizan el consumo de agua para el cuidado de jardines, césped y áreas verdes.',
-    items: [ // ✅ antes "features"
-      { name: 'Riego automatizado', details: 'Control inteligente del riego en zonas específicas' },
-      { name: 'Sensores de humedad', details: 'Ajustes en tiempo real para evitar desperdicio' },
-      { name: 'Ahorro hasta 40% de agua', details: 'Mayor eficiencia en consumo de recursos' }
+    description: 'Diseño e instalación de sistemas de riego automáticos que optimizan el consumo de agua, garantizando jardines y áreas verdes saludables.',
+    items: [
+      { name: 'Riego automatizado', details: 'Control inteligente y programable por zonas para eficiencia máxima.' },
+      { name: 'Sensores de humedad', details: 'Ajustes en tiempo real para evitar desperdicio de agua.' },
+      { name: 'Ahorro hasta 40% de agua', details: 'Optimización de recursos sin comprometer la salud de tus plantas.' }
     ],
     color: 'from-blue-600 to-cyan-500'
   },
@@ -20,11 +20,11 @@ export const services = [
     id: "equipos-piscinas",
     icon: Sun, 
     title: 'Equipos para Piscinas', 
-    description: 'Soluciones completas para el mantenimiento de piscinas, incluyendo bombas de alta eficiencia, filtros, calentadores y sistemas de limpieza.',
+    description: 'Proveemos soluciones completas para mantener tu piscina en perfectas condiciones durante todo el año.',
     items: [
-      { name: 'Bombas eficientes', details: 'Equipos de alto rendimiento y bajo consumo' },
-      { name: 'Filtros premium', details: 'Agua limpia y cristalina todo el año' },
-      { name: 'Limpieza automática', details: 'Sistemas inteligentes de limpieza continua' }
+      { name: 'Bombas eficientes', details: 'Máximo rendimiento con bajo consumo energético.' },
+      { name: 'Filtros premium', details: 'Agua cristalina y libre de impurezas constantemente.' },
+      { name: 'Limpieza automática', details: 'Sistemas inteligentes que mantienen la piscina limpia sin esfuerzo.' }
     ],
     color: 'from-orange-500 to-yellow-500'
   },
@@ -32,11 +32,11 @@ export const services = [
     id: "plomeria-reparaciones",
     icon: Wrench, 
     title: 'Plomería y Reparaciones', 
-    description: 'Servicio de plomería profesional para diagnosticar y reparar fugas, grifos, inodoros y cualquier problema en el sistema de tuberías.',
+    description: 'Servicios profesionales para cualquier problema hidráulico, garantizando funcionamiento seguro y confiable.',
     items: [
-      { name: 'Detección de fugas', details: 'Tecnología avanzada para localizar problemas' },
-      { name: 'Reparaciones 24/7', details: 'Disponibilidad inmediata para emergencias' },
-      { name: 'Garantía extendida', details: 'Confianza y respaldo en cada trabajo' }
+      { name: 'Detección de fugas', details: 'Localización precisa para reparación rápida y eficaz.' },
+      { name: 'Reparaciones 24/7', details: 'Atención inmediata para emergencias en cualquier momento.' },
+      { name: 'Garantía extendida', details: 'Confianza total en cada servicio realizado.' }
     ],
     color: 'from-gray-600 to-slate-500'
   },
@@ -44,11 +44,11 @@ export const services = [
     id: "iluminacion-exterior",
     icon: Lightbulb, 
     title: 'Instalaciones de Iluminación', 
-    description: 'Iluminación especializada para exteriores y jardines, creando ambientes acogedores y seguros con luces LED de bajo consumo.',
+    description: 'Creamos ambientes seguros y acogedores con sistemas de iluminación modernos y eficientes.',
     items: [
-      { name: 'Iluminación LED', details: 'Tecnología moderna y eficiente' },
-      { name: 'Diseños modernos', details: 'Ambientes únicos y personalizados' },
-      { name: 'Bajo consumo', details: 'Reduce tu factura de electricidad' }
+      { name: 'Iluminación LED', details: 'Eficiente y de bajo consumo, con larga duración.' },
+      { name: 'Diseños modernos', details: 'Estética innovadora que realza tus espacios.' },
+      { name: 'Bajo consumo', details: 'Ahorro energético sin sacrificar luminosidad.' }
     ],
     color: 'from-yellow-500 to-amber-400'
   },
@@ -56,11 +56,11 @@ export const services = [
     id: "mantenimiento-preventivo",
     icon: Handshake, 
     title: 'Mantenimiento Preventivo', 
-    description: 'Planes de mantenimiento personalizados para sistemas hidráulicos y equipos, asegurando su óptimo funcionamiento y prolongando su vida útil.',
+    description: 'Planes adaptados a tus necesidades para prolongar la vida útil de tus equipos y sistemas.',
     items: [
-      { name: 'Planes personalizados', details: 'Ajustados a las necesidades de tu hogar o empresa' },
-      { name: 'Revisiones periódicas', details: 'Detección temprana de fallas' },
-      { name: 'Vida útil extendida', details: 'Maximiza el rendimiento de tus equipos' }
+      { name: 'Planes personalizados', details: 'Diseñados según el tipo y uso de tus instalaciones.' },
+      { name: 'Revisiones periódicas', details: 'Detección temprana de fallas antes de convertirse en problemas.' },
+      { name: 'Vida útil extendida', details: 'Mayor durabilidad y funcionamiento óptimo de tus sistemas.' }
     ],
     color: 'from-green-600 to-emerald-500'
   },
@@ -68,11 +68,11 @@ export const services = [
     id: "impermeabilizacion-azoteas",
     icon: ShieldCheck, 
     title: 'Impermeabilización de Azoteas', 
-    description: 'Aplicación de productos impermeabilizantes de alta calidad para proteger tu hogar de la humedad y filtraciones.',
+    description: 'Protege tu hogar de filtraciones y humedad con materiales de alta calidad y garantía comprobada.',
     items: [
-      { name: 'Materiales premium', details: 'Durabilidad y resistencia garantizada' },
-      { name: 'Protección total', details: 'Aislamiento contra filtraciones de agua' },
-      { name: 'Garantía 5 años', details: 'Respaldo de nuestro servicio' }
+      { name: 'Materiales premium', details: 'Productos resistentes y duraderos.' },
+      { name: 'Protección total', details: 'Aislamiento completo contra filtraciones de agua.' },
+      { name: 'Garantía 5 años', details: 'Respaldo confiable de nuestro servicio profesional.' }
     ],
     color: 'from-indigo-600 to-purple-500'
   },
@@ -80,11 +80,11 @@ export const services = [
     id: "sistemas-hidroneumaticos",
     icon: Zap, 
     title: 'Sistemas Hidroneumáticos', 
-    description: 'Instalación y reparación de equipos hidroneumáticos para garantizar una presión de agua constante y uniforme.',
+    description: 'Instalación y mantenimiento de sistemas que garantizan presión constante y eficiente en toda tu red de agua.',
     items: [
-      { name: 'Presión constante', details: 'Agua siempre disponible con la misma fuerza' },
-      { name: 'Equipos eficientes', details: 'Menor consumo eléctrico y mayor durabilidad' },
-      { name: 'Instalación profesional', details: 'Técnicos certificados a tu disposición' }
+      { name: 'Presión constante', details: 'Distribución uniforme del agua en toda la instalación.' },
+      { name: 'Equipos eficientes', details: 'Menor consumo eléctrico con máximo rendimiento.' },
+      { name: 'Instalación profesional', details: 'Técnicos certificados para asegurar funcionamiento óptimo.' }
     ],
     color: 'from-purple-600 to-pink-500'
   },
@@ -92,11 +92,11 @@ export const services = [
     id: "diseno-jardines",
     icon: Sprout, 
     title: 'Diseño de Jardines', 
-    description: 'Asesoría y diseño de jardines que se adaptan a tu espacio y estilo, con un enfoque en la sostenibilidad.',
+    description: 'Transformamos tu espacio exterior en un entorno estético, funcional y sostenible.',
     items: [
-      { name: 'Diseño personalizado', details: 'Cada espacio es único y reflejará tu estilo' },
-      { name: 'Plantas nativas', details: 'Mayor durabilidad y menos mantenimiento' },
-      { name: 'Sostenible', details: 'Ecológico y en armonía con el entorno' }
+      { name: 'Diseño personalizado', details: 'Jardines únicos adaptados a tu estilo y espacio.' },
+      { name: 'Plantas nativas', details: 'Bajo mantenimiento y mayor adaptación al clima local.' },
+      { name: 'Sostenible', details: 'Prácticas ecológicas que promueven la conservación del medio ambiente.' }
     ],
     color: 'from-green-500 to-teal-400'
   },
@@ -104,11 +104,11 @@ export const services = [
     id: "cisternas-tinacos",
     icon: Leaf, 
     title: 'Cisternas y Tinacos', 
-    description: 'Instalación profesional y sanitización de tanques de almacenamiento de agua, asegurando un suministro limpio y seguro.',
+    description: 'Instalación y sanitización de tanques de agua asegurando calidad y seguridad en el suministro.',
     items: [
-      { name: 'Instalación segura', details: 'Montaje especializado para evitar fugas' },
-      { name: 'Sanitización completa', details: 'Limpieza profunda certificada' },
-      { name: 'Agua limpia', details: 'Garantía de suministro confiable y saludable' }
+      { name: 'Instalación segura', details: 'Montaje profesional para evitar fugas y problemas.' },
+      { name: 'Sanitización completa', details: 'Limpieza profunda certificada para agua potable.' },
+      { name: 'Agua limpia', details: 'Garantía de suministro confiable y saludable para tu familia.' }
     ],
     color: 'from-teal-600 to-cyan-500'
   }
@@ -118,21 +118,21 @@ export const whyChooseUs = [
   {
     icon: Award,
     title: "15 Años de Experiencia",
-    description: "Más de una década perfeccionando nuestros servicios"
+    description: "Más de una década perfeccionando nuestros servicios con innovación y calidad."
   },
   {
     icon: Users,
     title: "500+ Clientes Satisfechos",
-    description: "Una comunidad creciente que confía en nosotros"
+    description: "Una comunidad creciente que confía en nuestro compromiso y profesionalismo."
   },
   {
     icon: Clock,
     title: "Servicio 24/7",
-    description: "Disponibles cuando más nos necesitas"
+    description: "Disponibles cuando más nos necesitas, atención rápida y confiable."
   },
   {
     icon: CheckCircle,
     title: "Garantía Extendida",
-    description: "Respaldamos la calidad de nuestro trabajo"
+    description: "Respaldamos cada trabajo para ofrecer seguridad y confianza a nuestros clientes."
   }
 ];
