@@ -246,17 +246,17 @@ export const whyChooseUs = [
   },
   {
     icon: Users,
-    title: "500+ Clientes Satisfechos",
+    title: "Satisfacción al cliete",
     description: "Una comunidad creciente que confía en nuestro compromiso y profesionalismo."
   },
   {
     icon: Clock,
-    title: "Servicio 24/7",
+    title: "Servicio eficiente",
     description: "Disponibles cuando más nos necesitas, atención rápida y confiable."
   },
   {
     icon: CheckCircle,
-    title: "Garantía Extendida",
+    title: "Garantía",
     description: "Respaldamos cada trabajo para ofrecer seguridad y confianza a nuestros clientes."
   }
 ];
