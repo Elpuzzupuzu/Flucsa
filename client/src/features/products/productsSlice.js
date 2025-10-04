@@ -26,6 +26,19 @@ export const addProduct = createAsyncThunk(
   }
 );
 
+// Nuevo thunk para actualizar producto
+export const updateProduct = createAsyncThunk(
+  "products/updateProduct",
+  async (updatedProduct, thunkAPI) => {
+    try {
+      const response = await api.put(`/products/${updatedProduct.id}`, updatedProduct);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || "Error al actualizar producto");
+    }
+  }
+);
+
 // Slice
 const productsSlice = createSlice({
   name: "products",
@@ -53,6 +66,14 @@ const productsSlice = createSlice({
       // addProduct
       .addCase(addProduct.fulfilled, (state, action) => {
         state.items.push(action.payload);
+      })
+      // updateProduct
+      .addCase(updateProduct.fulfilled, (state, action) => {
+        const index = state.items.findIndex((p) => p.id === action.payload.id);
+        if (index !== -1) state.items[index] = action.payload;
+      })
+      .addCase(updateProduct.rejected, (state, action) => {
+        state.error = action.payload;
       });
   },
 });

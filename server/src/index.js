@@ -5,7 +5,8 @@ import cookieParser from "cookie-parser";
 import "express-async-errors"; // Para manejar errores async sin try/catch en cada ruta
 
 import { supabase } from "./config/supabaseClient.js";
-import productsRoutes from "./routes/productsRoutes.js"; // Importamos rutas de productos
+import productsRoutes from "./routes/productsRoutes.js"; // Rutas públicas de productos
+import adminRouter from "../src/admin/routes/adminRoutes.js"; // Importamos rutas del admin
 
 // Inicializar variables de entorno
 dotenv.config();
@@ -26,8 +27,11 @@ app.get("/", (req, res) => {
   res.send("🚀 Servidor Flucsa corriendo...");
 });
 
-// Rutas de productos
+// Rutas públicas de productos
 app.use("/api/products", productsRoutes);
+
+// Rutas de admin
+app.use("/api", adminRouter); // Todas las rutas de admin estarán bajo /api/admin/*
 
 // Middleware de manejo de errores (centralizado)
 app.use((err, req, res, next) => {
@@ -40,7 +44,7 @@ app.listen(PORT, () => {
   console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
 });
 
-// Test de conexión a DB (opcional, se puede quitar luego)
+// Test de conexión a DB (opcional)
 async function testDB() {
   const { data, error } = await supabase.from("productos").select("*").limit(1);
   if (error) console.error("❌ Error DB:", error);

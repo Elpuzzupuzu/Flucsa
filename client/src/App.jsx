@@ -8,17 +8,20 @@ import ShoppingCart from './pages/Products/ShoppingCart/ShoppingCart';
 import ProductDetails from './pages/ProductDetails/ProductDetails';
 import AboutUsPage from './pages/AboutUs/AboutUsPage';
 import ServicesPage from './pages/Servicios/ServicesPage';
-import ServiceMenuPage from './pages/serviceMenu/serviceMenuPage';  // ✅ Nuevo
+import ServiceMenuPage from './pages/serviceMenu/serviceMenuPage';  
 import ContactPage from './pages/Contact/ContactPage';
 import Footer from './components/Footer/Footer';
 import ScrollToTop from './hooks/Scrolltop';
+
+// Import del admin (dummy por ahora)
+import AdminProducts from './admin/products/AdminProducts';
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const onCartToggle = () => setIsCartOpen(!isCartOpen);
-  
+  const onCartToggle = () => setIsCartOpen(prev => !prev);
+
   const addToCart = (product) => {
     setCartItems(prev => {
       const existing = prev.find(item => item.id === product.id);
@@ -31,18 +34,19 @@ function App() {
       }
       return [...prev, { ...product, quantity: 1 }];
     });
+    setIsCartOpen(true);
   };
-  
+
   const updateCartQuantity = (id, quantity) => {
     setCartItems(prev => prev.map(item =>
       item.id === id ? { ...item, quantity } : item
     ));
   };
-  
+
   const removeFromCart = (id) => {
     setCartItems(prev => prev.filter(item => item.id !== id));
   };
-  
+
   const handleProceedToCheckout = () => {
     console.log('Redirigiendo al checkout...');
   };
@@ -52,10 +56,7 @@ function App() {
       <ScrollToTop />
       <div className="font-sans min-h-screen bg-gray-100 flex flex-col">
         <TopBar />
-        <Header
-          cartItems={cartItems}
-          onCartToggle={onCartToggle}
-        />
+        <Header cartItems={cartItems} onCartToggle={onCartToggle} />
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -63,8 +64,11 @@ function App() {
             <Route path="/productos/:id" element={<ProductDetails onAddToCart={addToCart} />} />
             <Route path="/acerca-de-nosotros" element={<AboutUsPage />} />
             <Route path="/servicios" element={<ServicesPage />} />
-            <Route path="/servicios/:category" element={<ServiceMenuPage />} /> {/* ✅ Nuevo */}
+            <Route path="/servicios/:category" element={<ServiceMenuPage />} />
             <Route path="/contacto" element={<ContactPage />} />
+
+            {/* Ruta dummy para admin */}
+            <Route path="/admin/products" element={<AdminProducts />} />
           </Routes>
         </main>
         <ShoppingCart

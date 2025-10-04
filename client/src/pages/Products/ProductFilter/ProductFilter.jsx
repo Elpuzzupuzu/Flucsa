@@ -21,7 +21,7 @@ const FilterSidebar = ({
   const [isAnimating, setIsAnimating] = useState(false);
 
   const categories = [
-    { name: 'Válvulas', icon: Droplets },
+    { name: 'Valvulas', icon: Droplets },
     { name: 'Tuberías', icon: Link },
     { name: 'Bombas', icon: CircleDot },
     { name: 'Filtros', icon: Filter },
