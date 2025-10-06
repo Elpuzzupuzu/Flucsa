@@ -6,7 +6,8 @@ export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async (_, thunkAPI) => {
     try {
-      const response = await api.get("/products");
+      // Evitar caché agregando un timestamp
+      const response = await api.get(`/products?timestamp=${Date.now()}`);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || "Error al obtener productos");
@@ -26,12 +27,21 @@ export const addProduct = createAsyncThunk(
   }
 );
 
-// Nuevo thunk para actualizar producto
 export const updateProduct = createAsyncThunk(
   "products/updateProduct",
-  async (updatedProduct, thunkAPI) => {
+  async ({ id, updates, file }, thunkAPI) => {
     try {
-      const response = await api.put(`/products/${updatedProduct.id}`, updatedProduct);
+      const dataToSend = new FormData();
+
+      if (updates.nombre) dataToSend.append("nombre", updates.nombre);
+      if (updates.descripcion) dataToSend.append("descripcion", updates.descripcion);
+      if (updates.precio) dataToSend.append("precio", updates.precio);
+      if (file) dataToSend.append("imagen", file);
+
+      const response = await api.put(`/products/${id}`, dataToSend, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || "Error al actualizar producto");

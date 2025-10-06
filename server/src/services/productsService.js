@@ -25,11 +25,15 @@ export const ProductsService = {
   },
 
   // Actualizar un producto existente
-  async updateProduct(id, updates) {
-    const existing = await ProductsRepository.getProductById(id);
-    if (!existing) throw new Error("Producto no encontrado");
-    return await ProductsRepository.updateProduct(id, updates);
-  },
+ async updateProduct(id, updates) {
+  const existing = await ProductsRepository.getProductById(id);
+  if (!existing) throw new Error("Producto no encontrado");
+  const updated = await ProductsRepository.updateProduct(id, updates);
+  console.log("Producto actualizado en service:", updated); // log de verificación
+  return updated;
+}
+
+,
 
   // Eliminar un producto
   async deleteProduct(id) {

@@ -2,11 +2,12 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import "express-async-errors"; // Para manejar errores async sin try/catch en cada ruta
+import "express-async-errors"; // Manejo de errores async
 
 import { supabase } from "./config/supabaseClient.js";
 import productsRoutes from "./routes/productsRoutes.js"; // Rutas públicas de productos
-import adminRouter from "../src/admin/routes/adminRoutes.js"; // Importamos rutas del admin
+import adminRouter from "../src/admin/routes/adminRoutes.js"; // Rutas de admin
+import imageRoutes from "../src/admin/routes/imageRoutes.js"; // Nueva ruta para subida de imágenes
 
 // Inicializar variables de entorno
 dotenv.config();
@@ -14,9 +15,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Middlewares básicos
+// Middlewares
 app.use(cors({
-  origin: "http://localhost:5173", // Ajusta según tu client (React)
+  origin: "http://localhost:5173", // Ajusta según tu frontend
   credentials: true
 }));
 app.use(express.json());
@@ -30,25 +31,19 @@ app.get("/", (req, res) => {
 // Rutas públicas de productos
 app.use("/api/products", productsRoutes);
 
-// Rutas de admin
-app.use("/api", adminRouter); // Todas las rutas de admin estarán bajo /api/admin/*
+// Rutas de subida de imágenes
+app.use("/api/products", imageRoutes); // /upload-image
 
-// Middleware de manejo de errores (centralizado)
+// Rutas de admin
+app.use("/api", adminRouter); // Todas las rutas admin bajo /api/admin/*
+
+// Middleware de manejo de errores centralizado
 app.use((err, req, res, next) => {
   console.error("❌ Error:", err.message);
   res.status(500).json({ error: "Error interno del servidor" });
 });
 
-// Levantar el servidor
+// Levantar servidor
 app.listen(PORT, () => {
   console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
 });
-
-// Test de conexión a DB (opcional)
-async function testDB() {
-  const { data, error } = await supabase.from("productos").select("*").limit(1);
-  if (error) console.error("❌ Error DB:", error);
-  else console.log("✅ DB conectada, ejemplo de producto:", data);
-}
-
-testDB();
