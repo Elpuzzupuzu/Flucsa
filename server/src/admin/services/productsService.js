@@ -5,11 +5,13 @@ export const getAllProducts = async () => {
   const { data, error } = await supabase
     .from("productos")
     .select("*")
-    .order("nombre", { ascending: true });
+    .order("nombre", { ascending: true })
+    .limit(50); // Limita a 50 registros
 
   if (error) throw new Error("Error al obtener productos: " + error.message);
   return data;
 };
+
 
 // Obtener producto por ID
 export const getProductById = async (id) => {
