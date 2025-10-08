@@ -10,27 +10,10 @@ export const fetchProducts = createAsyncThunk(
       const response = await api.get(`/products?timestamp=${Date.now()}`);
       return response.data;
     } catch (error) {
-      // Mensaje predeterminado
-      let message = "Error al obtener productos";
-
-      // Si el servidor respondió con un error
-      if (error.response) {
-        message = error.response.data?.message || `Error del servidor (${error.response.status})`;
-      }
-      // Si no hubo respuesta (problema de conexión)
-      else if (error.request) {
-        message = "No se pudo conectar al servidor. Revisa tu conexión.";
-      }
-      // Otros errores inesperados
-      else if (error.message) {
-        message = `Error inesperado: ${error.message}`;
-      }
-
-      return thunkAPI.rejectWithValue({ message, status: error.response?.status || null });
+      return thunkAPI.rejectWithValue(error.response?.data || "Error al obtener productos");
     }
   }
 );
-
 
 export const addProduct = createAsyncThunk(
   "products/addProduct",
