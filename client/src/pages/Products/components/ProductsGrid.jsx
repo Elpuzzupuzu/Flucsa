@@ -21,7 +21,8 @@ const ProductsGrid = ({ products, viewMode, addToCart }) => {
         {products.map((product, index) => (
           <div
             key={product.id}
-            className="transform transition-all duration-500 hover:scale-[1.02] scale-[0.85]" // Escala un poco mayor para no verse demasiado pequeñas
+            // CLASE AJUSTADA: Eliminé 'scale-[0.85]' para que la tarjeta ocupe su espacio completo.
+            className="transform transition-all duration-500 hover:scale-[1.02]" 
             style={{
               animation: 'fadeInUp 0.6s ease-out forwards',
               animationDelay: `${index * 75}ms`,
@@ -43,7 +44,7 @@ const ProductsGrid = ({ products, viewMode, addToCart }) => {
         ))}
       </div>
 
-      {/* CSS Animations */}
+      {/* CSS Animations (Sin cambios, ya que son correctas) */}
       <style jsx>{`
         @keyframes fadeInUp {
           from {
