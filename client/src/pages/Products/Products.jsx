@@ -1,3 +1,5 @@
+// components/ProductsPage.jsx
+
 import React, { useRef } from "react";
 import { useProductsLogic } from "./hooks/useProductsLogic";
 import ProductsHeader from "./components/ProductsHeader";
@@ -40,12 +42,14 @@ const ProductsPage = ({ addToCart }) => {
   if (error) return <div className="text-center text-red-600 p-20">Error: {error}</div>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-100">
+    // Se agregó 'overflow-x-hidden' para recortar cualquier contenido
+    // que se desborde horizontalmente y evitar el scroll lateral.
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-100 overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <ProductsHeader />
 
         <ProductsToolbar
-          ref={toolbarRef}  // <-- aquí pasamos la referencia
+          ref={toolbarRef} 
           {...{
             searchTerm,
             setSearchTerm,
@@ -72,7 +76,7 @@ const ProductsPage = ({ addToCart }) => {
               totalPages={totalPages}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
-              scrollToRef={toolbarRef} // <-- pasamos la referencia
+              scrollToRef={toolbarRef}
             />
           </>
         ) : (
