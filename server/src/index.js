@@ -15,24 +15,38 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Middlewares
+// --- INICIO: CAMBIOS EN LA LÓGICA DE CORS ---
+
+// 1. Definimos los orígenes permitidos
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://flucsa.onrender.com"
+  "http://localhost:5173", // Origen local para desarrollo
 ];
 
+// 2. Agregamos el origen de producción si está definido en las variables de entorno (Render)
+const productionOrigin = process.env.FRONTEND_ORIGIN;
+if (productionOrigin) {
+    // Esto agrega 'https://flucsa.onrender.com' a la lista
+    allowedOrigins.push(productionOrigin); 
+}
+
+// Middlewares - CORS
 app.use(cors({
   origin: function(origin, callback) {
-    // Permite solicitudes sin origin (por ejemplo, Postman)
+    // Permite solicitudes sin origin (por ejemplo, Postman o curl)
     if (!origin) return callback(null, true);
+    
+    // Verifica si el origin está en la lista de permitidos
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.error("❌ Origen CORS no permitido:", origin);
       callback(new Error("Origen no permitido por CORS"));
     }
   },
-  credentials: true
+  credentials: true // ¡IMPORTANTE! Necesario para el manejo de cookies/tokens de autenticación
 }));
+
+// --- FIN: CAMBIOS EN LA LÓGICA DE CORS ---
 
 app.use(express.json());
 app.use(cookieParser());
