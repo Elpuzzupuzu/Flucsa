@@ -2,14 +2,39 @@ import { ProductsService } from "../services/productsService.js";
 
 export const ProductsController = {
   // Listar todos los productos
-  async getAllProducts(req, res, next) {
-    try {
-      const products = await ProductsService.getAllProducts();
-      res.json(products);
-    } catch (error) {
-      next(error);
+async getAllProducts(req, res, next) {
+  try {
+    const products = await ProductsService.getAllProducts();
+
+    if (!products || products.length === 0) {
+      // No se encontraron productos
+      return res.status(404).json({ message: "No se encontraron productos" });
     }
-  },
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("❌ Error al obtener productos:", error);
+
+    // Creamos un error más específico para el middleware
+    let customError = { 
+      message: "Ocurrió un error al obtener productos", 
+      status: 500 
+    };
+
+    // Diferenciamos tipos de error
+    if (error.name === "SequelizeConnectionError" || error.name === "MongoNetworkError") {
+      customError.message = "Error de conexión a la base de datos";
+      customError.status = 503;
+    } else if (error.name === "ValidationError") {
+      customError.message = "Error de validación";
+      customError.details = error.message;
+      customError.status = 400;
+    }
+
+    next(customError); // Pasamos el error personalizado al middleware
+  }
+},
+
 
   // Obtener un producto por ID
   async getProductById(req, res, next) {

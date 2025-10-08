@@ -13,12 +13,28 @@ export const uploadMiddleware = upload.single("imagen");
 export const getAllProducts = async (req, res) => {
   try {
     const products = await productsService.getAllProducts();
+    if (!products || products.length === 0) {
+      // Si no hay productos, devolvemos 404
+      return res.status(404).json({ message: "No se encontraron productos" });
+    }
     res.status(200).json(products);
   } catch (error) {
     console.error("❌ Error al obtener productos:", error);
-    res.status(500).json({ message: "Error al obtener productos" });
+
+    // Diferenciamos tipos de error
+    if (error.name === "SequelizeConnectionError" || error.name === "MongoNetworkError") {
+      return res.status(503).json({ message: "Error de conexión a la base de datos" });
+    }
+
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ message: "Error de validación", details: error.message });
+    }
+
+    // Error inesperado
+    res.status(500).json({ message: "Ocurrió un error inesperado al obtener productos" });
   }
 };
+
 
 // Obtener un producto por ID
 export const getProductById = async (req, res) => {
