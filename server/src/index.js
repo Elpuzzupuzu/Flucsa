@@ -16,10 +16,24 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 // Middlewares
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://flucsa.onrender.com"
+];
+
 app.use(cors({
-  origin: "http://localhost:5173", // Ajusta según tu frontend
+  origin: function(origin, callback) {
+    // Permite solicitudes sin origin (por ejemplo, Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Origen no permitido por CORS"));
+    }
+  },
   credentials: true
 }));
+
 app.use(express.json());
 app.use(cookieParser());
 

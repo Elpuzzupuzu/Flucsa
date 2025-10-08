@@ -14,14 +14,14 @@ const ProductsGrid = ({ products, viewMode, addToCart }) => {
       <div
         className={
           viewMode === "grid"
-            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12 relative z-10"
+            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-12 relative z-10" // gap reducido
             : "space-y-6 mb-12 relative z-10"
         }
       >
         {products.map((product, index) => (
           <div
             key={product.id}
-            className="transform transition-all duration-500 hover:scale-[1.02]"
+            className="transform transition-all duration-500 hover:scale-[1.02] scale-[0.85]" // Escala un poco mayor para no verse demasiado pequeñas
             style={{
               animation: 'fadeInUp 0.6s ease-out forwards',
               animationDelay: `${index * 75}ms`,

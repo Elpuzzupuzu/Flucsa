@@ -14,7 +14,7 @@ const AboutUsPage = () => {
         { icon: Calendar, number: '2015', key: 'years', label: 'Año de Fundación' },
         { icon: Users, number: '500+', key: 'clients', label: 'Clientes Satisfechos' },
         { icon: Award, number: '10', key: 'experience', label: 'Años de Experiencia' },
-        { icon: TrendingUp, number: '98%', key: 'satisfaction', label: 'Satisfacción del Cliente' },
+        { icon: TrendingUp, number: '100%', key: 'satisfaction', label: 'Atencion del Cliente' },
     ];
 
     const expertiseAreas = [
@@ -249,7 +249,7 @@ const AboutUsPage = () => {
                             <div className="flex flex-wrap gap-4 text-sm">
                                 <div className="flex items-center bg-white rounded-full px-4 py-2 shadow-md">
                                     <CheckCircle className="w-4 h-4 text-[#ED0000] mr-2" />
-                                    <span className="font-medium text-slate-700">+500 Proyectos</span>
+                                    <span className="font-medium text-slate-700">Proyectos personalizados</span>
                                 </div>
                                 <div className="flex items-center bg-white rounded-full px-4 py-2 shadow-md">
                                     <CheckCircle className="w-4 h-4 text-[#ED0000] mr-2" />
@@ -257,7 +257,7 @@ const AboutUsPage = () => {
                                 </div>
                                 <div className="flex items-center bg-white rounded-full px-4 py-2 shadow-md">
                                     <CheckCircle className="w-4 h-4 text-[#ED0000] mr-2" />
-                                    <span className="font-medium text-slate-700">98% Satisfacción</span>
+                                    <span className="font-medium text-slate-700">Satisfacción del client</span>
                                 </div>
                             </div>
                         </div>
