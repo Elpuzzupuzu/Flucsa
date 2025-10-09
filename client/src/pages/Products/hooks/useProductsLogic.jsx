@@ -5,7 +5,7 @@ import { fetchProducts } from "../../../features/products/productsSlice";
 
 export const useProductsLogic = () => {
   const dispatch = useDispatch();
-  const { items: products, loading, error } = useSelector((s) => s.products);
+  const { items: products, total, loading, error } = useSelector((s) => s.products);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(8);
@@ -15,7 +15,10 @@ export const useProductsLogic = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [filters, setFilters] = useState({ categories: [], priceRange: "" });
 
-  useEffect(() => { dispatch(fetchProducts()); }, [dispatch]);
+  // Fetch productos al cargar o al cambiar página/itemsPerPage
+  useEffect(() => {
+    dispatch(fetchProducts({ page: currentPage, limit: itemsPerPage }));
+  }, [dispatch, currentPage, itemsPerPage]);
 
   const availableCategories = useMemo(() => {
     const cats = products.map(p => p.categoria_principal_nombre || p.categoria || "");
@@ -54,9 +57,9 @@ export const useProductsLogic = () => {
     );
   }, [filteredProducts, sortBy]);
 
-  const indexOfLast = currentPage * itemsPerPage;
-  const currentProducts = sortedProducts.slice(indexOfLast - itemsPerPage, indexOfLast);
-  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
+  // totalPages usando el total real del slice
+  const totalPages = Math.ceil(total / itemsPerPage);
+  const currentProducts = sortedProducts; // ya son los productos de la página actual
 
   const getFilterCount = () => filters.categories.length + (filters.priceRange ? 1 : 0);
 

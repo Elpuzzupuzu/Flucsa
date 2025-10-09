@@ -1,38 +1,39 @@
 import { supabase } from "../config/supabaseClient.js";
 
 export const ProductsRepository = {
-  // Obtener todos los productos
-  // async getAllProducts() {
-  //   const { data, error } = await supabase
-  //     .from("productos")
-  //     .select("*");
-  //   if (error) throw error;
-  //   return data;
-  // },
+  // Obtener productos con paginación
+ async getProductsPaginated(page = 1, limit = 10) {
+  const start = (page - 1) * limit;
+  const end = start + limit - 1;
 
-  async getAllProducts() {
-    const { data, error } = await supabase
-      .from("productos")
-      .select("*")
-      .limit(50); // Limita la consulta a 50 registros
-    if (error) throw error;
-    return data;
-  },
+  const { data: products, count, error } = await supabase
+    .from("productos")
+    .select("*", { count: "exact" })
+    .order("nombre", { ascending: true })
+    .range(start, end);
+
+  if (error) throw new Error("Error al obtener productos: " + error.message);
+
+  return {
+    products: products || [],
+    total: count || 0,
+  };
+},
 
 
 
 
   // Obtener un producto por ID
-async getProductById(id) {
-  const { data, error } = await supabase
-    .from("productos")
-    .select("*")
-    .eq("id", id);
+  async getProductById(id) {
+    const { data, error } = await supabase
+      .from("productos")
+      .select("*")
+      .eq("id", id)
+      .single();
 
-  if (error) throw error;
-  return data[0] || null;
-}
-,
+    if (error) throw error;
+    return data || null;
+  },
 
   // Crear un nuevo producto
   async createProduct(product) {
@@ -45,24 +46,19 @@ async getProductById(id) {
     return data;
   },
 
-  // Actualizar un producto
-async updateProduct(id, updates) {
-  const { data, error } = await supabase
-    .from("productos")
-    .update(updates)
-    .eq("id", id)
-    .select(); // devuelve array de objetos
+  // Actualizar producto
+  async updateProduct(id, updates) {
+    const { data, error } = await supabase
+      .from("productos")
+      .update(updates)
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data || null;
+  },
 
-  if (error) throw error;
-
-  if (!data || data.length === 0) return null; // si no actualizó nada
-  return data[0]; // devolver el primer objeto actualizado
-}
-,
-
-
-
-  // Eliminar un producto
+  // Eliminar producto
   async deleteProduct(id) {
     const { data, error } = await supabase
       .from("productos")
@@ -71,6 +67,6 @@ async updateProduct(id, updates) {
       .select()
       .single();
     if (error) throw error;
-    return data;
-  }
+    return data || null;
+  },
 };

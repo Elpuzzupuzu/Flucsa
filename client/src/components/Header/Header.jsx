@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { X, ShoppingCart } from 'lucide-react';
+import { X, ShoppingCart, MapPin, Menu } from 'lucide-react';
 import Navigation from '../Navigation/Navigation';
 import Search from './Search/Search';
 import LogoCompleto from '../../assets/images/flucsa2.jpg';
@@ -15,7 +15,6 @@ const Header = ({ cartItems, onCartToggle }) => {
     ? cartItems.reduce((sum, item) => sum + item.quantity, 0)
     : 0;
 
-  // Detectar animación carrito
   useEffect(() => {
     if (totalCartItems > previousCartCount) {
       setIsCartAnimating(true);
@@ -27,7 +26,6 @@ const Header = ({ cartItems, onCartToggle }) => {
     setPreviousCartCount(totalCartItems);
   }, [totalCartItems, previousCartCount]);
 
-  // Prevenir scroll cuando el menú está abierto
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -42,113 +40,166 @@ const Header = ({ cartItems, onCartToggle }) => {
 
   return (
     <>
-      <header className="sticky top-0 bg-gradient-to-r from-[#1C2E82] via-[#2147b8] to-[#2d4bc7] shadow-2xl border-b-2 border-white/20 z-50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 relative z-10 flex items-center justify-between">
-          
-          {/* Logo */}
-          <Link to="/" className="flex items-center group cursor-pointer">
-            <div className="relative overflow-hidden rounded-xl bg-white/5 p-2 backdrop-blur-sm border border-white/10 hover:border-white/30 transition-all duration-300">
-              <img
-                src={LogoCompleto}
-                alt="FLUCSA"
-                className="h-14 w-auto object-contain transition-all duration-500 group-hover:brightness-110 group-hover:contrast-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-purple-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
-            </div>
-          </Link>
+      <header className="sticky top-0 bg-[#131921] shadow-lg z-50">
+        {/* Top Bar - Barra principal */}
+        <div className="bg-gradient-to-r from-[#1C2E82] via-[#2147b8] to-[#2d4bc7]">
+          <div className="max-w-[1500px] mx-auto px-4 py-2">
+            <div className="flex items-center gap-4">
+              
+              {/* Logo */}
+              <Link to="/" className="flex-shrink-0 group cursor-pointer">
+                <div className="relative overflow-hidden rounded-lg bg-white/5 p-2 backdrop-blur-md border border-white/15 transition-all duration-300 hover:border-white/25 hover:bg-white/10">
+                  <img
+                    src={LogoCompleto}
+                    alt="FLUCSA"
+                    className="h-12 w-auto object-contain transition-all duration-500 group-hover:brightness-125"
+                  />
+                </div>
+              </Link>
 
-          {/* Desktop nav + search + cart */}
-          <div className="hidden lg:flex items-center space-x-8">
-            <Navigation />
-            <div className="bg-white/5 rounded-full px-4 py-2 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300">
-              <Search />
-            </div>
-            <button
-              onClick={onCartToggle}
-              className={`relative group p-4 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-md rounded-2xl border-2 border-white/20 text-white hover:border-white/40 transition-all duration-300 hover:scale-105 hover:shadow-xl ${
-                isCartAnimating ? 'animate-bounce scale-110 border-green-400/50' : ''
-              }`}
-            >
-              {isCartAnimating && (
-                <>
-                  <div className="absolute inset-0 bg-green-400/20 rounded-2xl animate-ping"></div>
-                  <div className="absolute inset-0 bg-green-400/10 rounded-2xl animate-pulse"></div>
-                </>
-              )}
-              <ShoppingCart
-                className={`w-5 h-5 relative z-10 ${
-                  isCartAnimating ? 'text-green-300' : 'text-white'
-                }`}
-              />
-              {totalCartItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-lg border-2 border-white/20">
-                  {totalCartItems}
-                </span>
-              )}
-              {showAddedBadge && (
-                <span className="absolute -top-3 -right-3 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold animate-bounce shadow-lg border border-white/30">
-                  +
-                </span>
-              )}
-            </button>
-          </div>
+              {/* Ubicación (Desktop) */}
+              <div className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-md hover:bg-white/10 transition-all cursor-pointer border border-transparent hover:border-white/20">
+                <MapPin className="w-5 h-5 text-white" />
+                <div className="flex flex-col">
+                  <span className="text-xs text-white/70">Enviar a</span>
+                  <span className="text-sm font-semibold text-white">Mérida, Yucatán</span>
+                </div>
+              </div>
 
-          {/* Mobile icons */}
-          <div className="flex lg:hidden items-center space-x-2">
-            <div className="hidden sm:block">
-              <div className="bg-white/10 rounded-full backdrop-blur-sm border border-white/10">
-                <Search />
+              {/* Search Bar - Expandido */}
+              <div className="hidden md:flex flex-1 max-w-3xl">
+                <div className="w-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow flex">
+                  <div className="flex-1 px-4 py-2.5">
+                    <Search />
+                  </div>
+                  <button className="bg-[#febd69] hover:bg-[#f3a847] px-6 transition-colors flex items-center justify-center">
+                    <svg className="w-5 h-5 text-[#131921]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Section */}
+              <div className="hidden lg:flex items-center gap-2">
+                {/* Account - Placeholder */}
+                <div className="px-3 py-2 rounded-md hover:bg-white/10 transition-all cursor-pointer border border-transparent hover:border-white/20">
+                  <div className="flex flex-col">
+                    <span className="text-xs text-white/70">Hola, Usuario</span>
+                    <span className="text-sm font-semibold text-white">Mi Cuenta</span>
+                  </div>
+                </div>
+
+                {/* Orders - Placeholder */}
+                <div className="px-3 py-2 rounded-md hover:bg-white/10 transition-all cursor-pointer border border-transparent hover:border-white/20">
+                  <div className="flex flex-col">
+                    <span className="text-xs text-white/70">Mis</span>
+                    <span className="text-sm font-semibold text-white">Pedidos</span>
+                  </div>
+                </div>
+
+                {/* Cart */}
+                <button
+                  onClick={onCartToggle}
+                  className={`relative group px-3 py-2 rounded-md hover:bg-white/10 transition-all border border-transparent hover:border-white/20 flex items-center gap-2 ${
+                    isCartAnimating ? 'animate-bounce border-green-400/50 bg-green-500/10' : ''
+                  }`}
+                >
+                  {isCartAnimating && (
+                    <div className="absolute inset-0 bg-green-400/20 rounded-md animate-ping"></div>
+                  )}
+                  <div className="relative">
+                    <ShoppingCart
+                      className={`w-8 h-8 relative z-10 transition-all ${
+                        isCartAnimating ? 'text-green-300' : 'text-white'
+                      }`}
+                    />
+                    {totalCartItems > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-[#f08804] text-[#131921] text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-lg text-[11px]">
+                        {totalCartItems}
+                      </span>
+                    )}
+                    {showAddedBadge && (
+                      <span className="absolute -top-3 -right-3 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold animate-bounce shadow-lg border border-white/30">
+                        +
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-start">
+                    <span className="text-xs text-white/70">Carrito</span>
+                    <span className="text-sm font-semibold text-white">
+                      {totalCartItems > 0 ? `${totalCartItems} items` : '0'}
+                    </span>
+                  </div>
+                </button>
+              </div>
+
+              {/* Mobile Icons */}
+              <div className="flex lg:hidden items-center gap-2 ml-auto">
+                <button
+                  onClick={onCartToggle}
+                  className="relative p-2 rounded-md hover:bg-white/10 transition-all"
+                >
+                  <ShoppingCart className="w-6 h-6 text-white" />
+                  {totalCartItems > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-[#f08804] text-[#131921] text-[10px] rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-lg">
+                      {totalCartItems}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => setIsMenuOpen(true)}
+                  className="p-2 rounded-md hover:bg-white/10 transition-all"
+                >
+                  <Menu className="w-6 h-6 text-white" />
+                </button>
               </div>
             </div>
+          </div>
+        </div>
 
-            <button
-              onClick={onCartToggle}
-              className="relative p-3 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-md rounded-xl border border-white/20 text-white hover:border-white/40 transition-all duration-300"
-            >
-              <ShoppingCart className="w-5 h-5" />
-              {totalCartItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-lg border border-white/20">
-                  {totalCartItems}
-                </span>
-              )}
-            </button>
+        {/* Bottom Bar - Navigation */}
+        <div className="hidden lg:block bg-[#232F3E] border-t border-white/10">
+          <div className="max-w-[1500px] mx-auto px-4">
+            <Navigation />
+          </div>
+        </div>
 
-            {/* Botón abrir menú móvil */}
-            <button
-              onClick={() => setIsMenuOpen(true)}
-              className="p-3 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-md rounded-xl border border-white/20 text-white hover:border-white/40 transition-all duration-300"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        {/* Mobile Search Bar */}
+        <div className="md:hidden bg-gradient-to-r from-[#1C2E82] via-[#2147b8] to-[#2d4bc7] px-4 pb-2">
+          <div className="bg-white rounded-lg overflow-hidden shadow-md flex">
+            <div className="flex-1 px-3 py-2">
+              <Search />
+            </div>
+            <button className="bg-[#febd69] hover:bg-[#f3a847] px-4 transition-colors flex items-center justify-center">
+              <svg className="w-5 h-5 text-[#131921]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile overlay - PORTAL COMPLETAMENTE SEPARADO */}
+      {/* Mobile menu overlay */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-[100] lg:hidden">
-          {/* Overlay oscuro */}
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300"
             onClick={() => setIsMenuOpen(false)}
           ></div>
 
-          {/* Sidebar */}
-          <div className="absolute left-0 top-0 bottom-0 bg-gradient-to-b from-[#1a1a1a] to-[#2a2a2a] w-72 max-w-[85vw] shadow-2xl overflow-y-auto">
-            {/* Header del menú */}
-            <div className="sticky top-0 bg-gradient-to-r from-[#1C2E82] to-[#2147b8] p-4 flex items-center justify-between border-b border-white/10 z-10">
-              <span className="text-white font-semibold text-lg">Menú</span>
+          <div className="absolute left-0 top-0 bottom-0 bg-gradient-to-b from-[#1C2E82] to-[#2147b8] w-72 max-w-[85vw] shadow-2xl overflow-y-auto">
+            <div className="sticky top-0 bg-gradient-to-r from-[#1a2470] to-[#1C2E82] p-4 flex items-center justify-between border-b border-white/10 z-10">
+              <span className="text-white font-semibold text-base">Menú</span>
               <button
                 onClick={() => setIsMenuOpen(false)}
-                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all duration-200"
+                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all duration-200 active:scale-95"
               >
                 <X size={24} />
               </button>
             </div>
 
-            {/* Contenido del menú */}
             <div className="p-5">
               <Navigation isMobile={true} onLinkClick={() => setIsMenuOpen(false)} />
             </div>

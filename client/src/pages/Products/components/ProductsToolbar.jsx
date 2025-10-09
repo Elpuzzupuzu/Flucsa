@@ -71,10 +71,8 @@ const ProductsToolbar = ({
               paddingRight: '2.5rem'
             }}
           >
-            <option value="name">Por nombre</option>
             <option value="price-asc">Precio: Menor a Mayor</option>
             <option value="price-desc">Precio: Mayor a Menor</option>
-            <option value="newest">Más recientes</option>
           </select>
         </div>
 

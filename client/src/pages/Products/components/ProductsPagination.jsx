@@ -12,46 +12,55 @@ const ProductsPagination = ({ totalPages, currentPage, setCurrentPage }) => {
     const delta = 2;
     const range = [];
     const rangeWithDots = [];
-    for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++)
-      range.push(i);
-    if (currentPage - delta > 2) rangeWithDots.push(1, "...");
-    else rangeWithDots.push(1);
-    rangeWithDots.push(...range);
-    if (currentPage + delta < totalPages - 1) rangeWithDots.push("...", totalPages);
-    else if (totalPages > 1) rangeWithDots.push(totalPages);
+    let l;
+
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === 1 || i === totalPages || (i >= currentPage - delta && i <= currentPage + delta)) {
+        if (l) {
+          if (i - l === 2) rangeWithDots.push(l + 1);
+          else if (i - l > 2) rangeWithDots.push("...");
+        }
+        rangeWithDots.push(i);
+        l = i;
+      }
+    }
+
     return rangeWithDots;
   };
 
-  // Al cambiar de página, desplazarse suavemente hacia arriba
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentPage]);
 
   return (
-    <div className="flex items-center justify-center gap-2 flex-wrap bg-white p-4 rounded-2xl shadow-md border border-gray-100 animate-fadeInUp">
+    <div className="flex items-center justify-center gap-3 flex-wrap bg-white px-6 py-5 rounded-2xl border border-gray-100 shadow-sm animate-fadeInUp">
+      {/* Botón Anterior */}
       <button
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="flex items-center gap-2 px-5 py-2.5 text-gray-700 font-medium bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl hover:from-[#2172B0] hover:to-[#2B21B0] hover:border-[#2B21B0] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-sm transform hover:scale-105"
+        className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all duration-300 ${
+          currentPage === 1
+            ? "text-gray-300 cursor-not-allowed"
+            : "text-gray-600 hover:text-red-600 active:scale-95"
+        }`}
       >
-        <ChevronLeft className="w-4 h-4" /> Anterior
+        <ChevronLeft className="w-4 h-4" />
+        Anterior
       </button>
 
+      {/* Números de página */}
       <div className="flex gap-1 flex-wrap justify-center">
         {getPageNumbers().map((page, idx) => (
           <button
             key={idx}
             onClick={() => typeof page === "number" && handlePageChange(page)}
             disabled={page === "..."}
-            className={`min-w-[44px] px-4 py-2.5 rounded-xl font-semibold transition-all duration-300 shadow-sm transform ${
+            className={`min-w-[40px] h-10 px-3 text-sm font-medium transition-all duration-300 ${
               page === currentPage
-                ? "bg-gradient-to-br from-[#2B21B0] to-[#2172B0] text-white shadow-lg scale-105"
+                ? "text-red-600 border-b-2 border-red-600"
                 : page === "..."
-                ? "text-gray-400 cursor-not-allowed bg-transparent"
-                : "text-gray-700 bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 hover:from-[#2172B0] hover:to-[#2B21B0] hover:border-[#2B21B0] hover:text-white hover:scale-105"
+                ? "text-gray-300 cursor-not-allowed"
+                : "text-gray-600 hover:text-red-600 hover:border-b-2 hover:border-red-600"
             }`}
           >
             {page}
@@ -59,19 +68,30 @@ const ProductsPagination = ({ totalPages, currentPage, setCurrentPage }) => {
         ))}
       </div>
 
+      {/* Botón Siguiente */}
       <button
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="flex items-center gap-2 px-5 py-2.5 text-gray-700 font-medium bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl hover:from-[#2172B0] hover:to-[#2B21B0] hover:border-[#2B21B0] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-sm transform hover:scale-105"
+        className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all duration-300 ${
+          currentPage === totalPages
+            ? "text-gray-300 cursor-not-allowed"
+            : "text-gray-600 hover:text-red-600 active:scale-95"
+        }`}
       >
-        Siguiente <ChevronRight className="w-4 h-4" />
+        Siguiente
+        <ChevronRight className="w-4 h-4" />
       </button>
 
-      {/* Animaciones CSS */}
       <style jsx>{`
         @keyframes fadeInUp {
-          0% { opacity: 0; transform: translateY(20px); }
-          100% { opacity: 1; transform: translateY(0); }
+          0% { 
+            opacity: 0; 
+            transform: translateY(20px); 
+          }
+          100% { 
+            opacity: 1; 
+            transform: translateY(0); 
+          }
         }
         .animate-fadeInUp {
           animation: fadeInUp 0.5s ease-out;

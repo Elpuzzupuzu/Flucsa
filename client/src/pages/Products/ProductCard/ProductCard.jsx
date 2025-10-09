@@ -44,7 +44,8 @@ const ProductCard = ({ product, viewMode = 'grid', onAddToCart }) => {
 
   if (viewMode === 'grid') {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group relative flex flex-col h-full">
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden transition-all duration-300 group relative flex flex-col h-full
+        hover:shadow-lg hover:border-yellow-400">
         {/* Imagen */}
         <Link to={`/productos/${product.id}`} className="block relative">
           <div className="relative overflow-hidden bg-gray-50 p-4">
@@ -91,14 +92,12 @@ const ProductCard = ({ product, viewMode = 'grid', onAddToCart }) => {
 
         {/* Contenido */}
         <div className="p-4 flex flex-col flex-grow">
-          {/* Nombre */}
           <Link to={`/productos/${product.id}`}>
             <h3 className="text-sm font-semibold text-gray-900 mb-1 line-clamp-2 min-h-[2.5rem] hover:text-blue-600 transition-colors">
               {product.name}
             </h3>
           </Link>
 
-          {/* Descripción */}
           <p className="text-gray-500 text-xs line-clamp-2 mb-3">
             {product.description}
           </p>
@@ -161,7 +160,7 @@ const ProductCard = ({ product, viewMode = 'grid', onAddToCart }) => {
   // Vista tipo lista
   if (viewMode === 'list') {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-200 hover:shadow-lg hover:border-yellow-400 transition-all duration-300 overflow-hidden">
         <div className="p-5 flex flex-col sm:flex-row gap-5 items-start">
           {/* Imagen */}
           <Link to={`/productos/${product.id}`} className="relative flex-shrink-0">

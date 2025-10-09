@@ -1,16 +1,28 @@
 import { supabase } from "../../../src/config/supabaseClient.js";
+import { ProductsRepository } from "../../repositories/productsRepository.js";
 
 // Obtener todos los productos
-export const getAllProducts = async () => {
-  const { data, error } = await supabase
-    .from("productos")
-    .select("*")
-    .order("nombre", { ascending: true })
-    .limit(50); // Limita a 50 registros
+// export const getAllProducts = async () => {
+//   const { data, error } = await supabase
+//     .from("productos")
+//     .select("*")
+//     .order("nombre", { ascending: true })
+//     .limit(50); // Limita a 50 registros
 
-  if (error) throw new Error("Error al obtener productos: " + error.message);
-  return data;
+//   if (error) throw new Error("Error al obtener productos: " + error.message);
+//   return data;
+// };
+
+
+export const getAllProducts = async (page = 1, limit = 10) => {
+  try {
+    const { products, total } = await ProductsRepository.getProductsPaginated(page, limit);
+    return { products, total };
+  } catch (error) {
+    throw new Error("Error al obtener productos: " + error.message);
+  }
 };
+
 
 
 // Obtener producto por ID

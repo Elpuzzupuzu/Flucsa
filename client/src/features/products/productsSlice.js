@@ -4,13 +4,16 @@ import api from "../../api/axios";
 // Thunks
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
-  async (_, thunkAPI) => {
+  async ({ page = 1, limit = 10 } = {}, thunkAPI) => {
     try {
-      // Evitar caché agregando un timestamp
-      const response = await api.get(`/products?timestamp=${Date.now()}`);
-      return response.data;
+      const response = await api.get(
+        `/products?page=${page}&limit=${limit}&timestamp=${Date.now()}`
+      );
+      return { ...response.data, page, limit }; // incluimos page y limit
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || "Error al obtener productos");
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Error al obtener productos"
+      );
     }
   }
 );
@@ -22,7 +25,9 @@ export const addProduct = createAsyncThunk(
       const response = await api.post("/products", newProduct);
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || "Error al agregar producto");
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Error al agregar producto"
+      );
     }
   }
 );
@@ -44,7 +49,9 @@ export const updateProduct = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data || "Error al actualizar producto");
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Error al actualizar producto"
+      );
     }
   }
 );
@@ -54,6 +61,9 @@ const productsSlice = createSlice({
   name: "products",
   initialState: {
     items: [],
+    total: 0,    // total de productos
+    page: 1,     // página actual
+    limit: 10,   // cantidad por página
     loading: false,
     error: null,
   },
@@ -67,7 +77,10 @@ const productsSlice = createSlice({
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload;
+        state.items = action.payload.products; // productos
+        state.total = action.payload.total;    // total de productos
+        state.page = action.payload.page;      // página actual
+        state.limit = action.payload.limit || state.limit; // limit
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
@@ -76,6 +89,7 @@ const productsSlice = createSlice({
       // addProduct
       .addCase(addProduct.fulfilled, (state, action) => {
         state.items.push(action.payload);
+        state.total += 1; // actualizamos total
       })
       // updateProduct
       .addCase(updateProduct.fulfilled, (state, action) => {
