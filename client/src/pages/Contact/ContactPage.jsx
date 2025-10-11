@@ -229,7 +229,7 @@ const ContactPage = () => {
                                     <div>
                                         <h3 className="font-bold text-slate-800 text-lg mb-1">Email</h3>
                                         <a href="mailto:info@empresa.com" className="text-slate-600 text-base hover:text-[#ED0000] transition-colors duration-300">
-                                            info@flucsa.com
+                                            ventas@flucsa.com.mx
                                         </a>
                                     </div>
                                 </motion.div>
@@ -245,7 +245,7 @@ const ContactPage = () => {
                                     <div>
                                         <h3 className="font-bold text-slate-800 text-lg mb-1">Teléfono</h3>
                                         <a href="tel:+5255123456789" className="text-slate-600 text-base hover:text-[#1C2E82] transition-colors duration-300">
-                                            (+52) 55 1234 5678
+                                            (+52) 9993632630
                                         </a>
                                     </div>
                                 </motion.div>
@@ -260,7 +260,7 @@ const ContactPage = () => {
                                     </div>
                                     <div>
                                         <h3 className="font-bold text-slate-800 text-lg mb-1">Dirección</h3>
-                                        <p className="text-slate-600 text-base">Av. Siempre Viva 123, Springfield, México</p>
+                                        <p className="text-slate-600 text-base">Calle 26a entre 47 y 51.Colonia El Roble Ciudad Industrial,Mérida Yucatán, México C.P : 97256</p>
                                     </div>
                                 </motion.div>
                             </div>

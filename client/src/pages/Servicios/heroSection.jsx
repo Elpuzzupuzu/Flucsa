@@ -1,4 +1,5 @@
 import { Wrench, Droplet, Sun, Sprout } from "lucide-react";
+import heroImg from '../../assets/images/heroback.png'; // Imagen del negocio
 
 const HeroSection = ({ isVisible }) => {
   return (
@@ -42,9 +43,7 @@ const HeroSection = ({ isVisible }) => {
                   <div className="w-10 h-10 bg-gradient-to-br from-[#1C2E82] to-[#2d4bc7] rounded-xl flex items-center justify-center mb-3 mx-auto">
                     <category.icon className="w-5 h-5 text-white" />
                   </div>
-                  <h3 className="font-bold text-[#1C2E82] mb-1 text-sm">
-                    {category.title}
-                  </h3>
+                  <h3 className="font-bold text-[#1C2E82] mb-1 text-sm">{category.title}</h3>
                   <p className="text-xs text-slate-500">{category.count}</p>
                 </div>
               ))}
@@ -53,32 +52,17 @@ const HeroSection = ({ isVisible }) => {
 
           {/* Image side */}
           <div
-            className={`animate-scale-in ${
-              isVisible.heroImage ? "visible" : ""
-            }`}
+            className={`animate-scale-in ${isVisible.heroImage ? "visible" : ""}`}
             data-animate
             id="heroImage"
           >
-            <div className="relative bg-gradient-to-br from-[#1C2E82] to-[#2d4bc7] rounded-3xl p-1">
-              <div className="bg-white rounded-3xl overflow-hidden p-8 text-center">
-                <h3 className="text-2xl font-bold text-[#1C2E82] mb-2">
-                  Equipo Profesional
-                </h3>
-                <p className="text-slate-600 mb-6">
-                  Técnicos especializados en soluciones hidráulicas
-                </p>
-                <div className="grid grid-cols-3 gap-2 max-w-xs mx-auto">
-                  {[...Array(6)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="aspect-square bg-gradient-to-br from-slate-300 to-slate-400 rounded-xl flex items-center justify-center"
-                    >
-                      <span className="text-white text-xs font-bold">{i + 1}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="p-6 bg-gradient-to-r from-[#1C2E82] to-[#2d4bc7] text-white text-center">
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl">
+              <img
+                src={heroImg}
+                alt="Negocio"
+                className="w-full h-full object-cover rounded-3xl"
+              />
+              <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/60 to-transparent p-6 text-white text-center">
                 <p className="font-semibold">
                   "Comprometidos con la excelencia en cada proyecto"
                 </p>
