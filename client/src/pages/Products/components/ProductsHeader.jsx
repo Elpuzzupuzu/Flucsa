@@ -1,129 +1,113 @@
-import { Droplets, Wrench, Zap, Package } from "lucide-react";
+import { Droplets, Wrench, Zap, Package, ChevronRight } from "lucide-react";
 
 const FlucsaBanner = () => {
   return (
-    <div className="relative w-full overflow-hidden bg-gradient-to-br from-[#2172B0]/20 via-[#2B21B0]/10 to-[#2172B0]/20 rounded-2xl shadow-xl mb-8">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-0 left-1/4 w-80 h-80 bg-[#2B21B0] rounded-full blur-3xl opacity-40"></div>
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-[#2172B0] rounded-full blur-3xl opacity-40"></div>
-        {/* Pequeños toques de color */}
-        <div className="absolute top-10 right-1/3 w-20 h-20 bg-red-400 rounded-full blur-2xl opacity-60"></div>
-        <div className="absolute bottom-10 left-1/3 w-16 h-16 bg-yellow-400 rounded-full blur-2xl opacity-60"></div>
+    <div className="relative w-full overflow-hidden bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 rounded-lg shadow-md mb-6">
+      {/* Background Pattern - Más sutil */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-300 rounded-full blur-3xl"></div>
       </div>
 
-      {/* Floating Elements */}
-      <div className="absolute top-6 right-10 animate-bounce">
-        <div className="bg-white/80 backdrop-blur-sm p-4 rounded-full shadow-xl">
-          <Droplets className="w-8 h-8 text-[#2B21B0]" />
-        </div>
-      </div>
-
-      <div className="absolute bottom-6 left-16 animate-pulse">
-        <div className="bg-white/80 backdrop-blur-sm p-4 rounded-full shadow-lg">
-          <Wrench className="w-7 h-7 text-red-500" />
-        </div>
-      </div>
-
-      <div
-        className="absolute top-1/2 right-1/4 animate-bounce"
-        style={{ animationDelay: "0.5s" }}
-      >
-        <div className="bg-white/60 backdrop-blur-sm p-4 rounded-full shadow-md">
-          <Zap className="w-7 h-7 text-yellow-400" />
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="relative z-10 px-6 md:px-12 py-10 md:py-12">
+      {/* Main Content - Más compacto */}
+      <div className="relative z-10 px-6 md:px-10 py-8 md:py-10">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            {/* Left Content */}
+          <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
+            
+            {/* Left Content - Información principal */}
             <div className="flex-1 text-center md:text-left">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-md mb-4">
-                <div className="w-3 h-3 bg-[#2B21B0] rounded-full animate-pulse"></div>
-                <span className="text-sm font-semibold text-[#2172B0] uppercase tracking-wide">
-                  Soluciones Hidráulicas
+              {/* Badge pequeño */}
+              <div className="inline-flex items-center gap-2 bg-yellow-400 px-3 py-1 rounded-md shadow-sm mb-3">
+                <span className="text-xs font-bold text-gray-900 uppercase tracking-wide">
+                  Soluciones Profesionales
                 </span>
               </div>
 
-              {/* Main Title */}
-              <h1 className="text-4xl md:text-5xl font-black mb-2 leading-tight">
-                <span className="bg-gradient-to-r from-[#2B21B0] via-[#2172B0] to-[#2B21B0] bg-clip-text text-transparent drop-shadow-sm">
-                  FLUCSA
-                </span>
+              {/* Main Title - Más compacto */}
+              <h1 className="text-3xl md:text-4xl font-bold mb-2 text-white leading-tight">
+                FLUCSA - Hidráulicos y Tuberías
               </h1>
 
-              {/* Subtitle */}
-              <p className="text-lg md:text-xl text-gray-700 mb-4 max-w-2xl mx-auto md:mx-0 font-medium">
-                Especialistas en{" "}
-                <span className="text-[#2172B0] font-bold">
-                  Hidráulicos y Tuberías
-                </span>
-                <br />
-                <span className="text-base text-gray-600">
-                  Calidad y confiabilidad en cada producto
-                </span>
+              {/* Subtitle - Más breve */}
+              <p className="text-base md:text-lg text-blue-100 mb-4 max-w-2xl mx-auto md:mx-0">
+                Especialistas en sistemas hidráulicos con{" "}
+                <span className="font-semibold text-white">15+ años de experiencia</span>
               </p>
 
-              {/* CTA Button */}
-              <button className="group relative px-6 py-3 bg-gradient-to-r from-[#2B21B0] to-[#2172B0] text-white font-bold text-base rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 overflow-hidden">
-                <span className="relative z-10 flex items-center gap-2">
-                  <Package className="w-6 h-6" />
-                  Ver Productos
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-[#2172B0] to-[#2B21B0] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+              {/* Features compactas */}
+              <div className="flex flex-wrap gap-3 justify-center md:justify-start mb-4">
+                <div className="flex items-center gap-1.5 text-white text-sm">
+                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
+                  <span>Envío rápido</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-white text-sm">
+                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
+                  <span>Garantía incluida</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-white text-sm">
+                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
+                  <span>Asesoría experta</span>
+                </div>
+              </div>
+
+              {/* CTA Button - Estilo Amazon */}
+              <button className="group inline-flex items-center gap-2 px-5 py-2.5 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold text-sm rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                <Package className="w-4 h-4" />
+                Ver Catálogo Completo
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
 
-            {/* Right Content - Visual Element */}
-            <div className="relative flex-shrink-0">
-              <div className="relative w-48 h-48 md:w-56 md:h-56">
-                {/* Main Circle */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#2B21B0] to-[#2172B0] rounded-full animate-pulse shadow-2xl"></div>
-
-                {/* Inner Circle */}
-                <div className="absolute inset-3 bg-gradient-to-br from-[#2172B0] to-[#2B21B0] rounded-full flex items-center justify-center shadow-xl">
+            {/* Right Content - Imagen/Visual más pequeño */}
+            <div className="relative flex-shrink-0 hidden md:block">
+              <div className="relative w-40 h-40 lg:w-48 lg:h-48">
+                {/* Círculo principal más simple */}
+                <div className="absolute inset-0 bg-white/10 backdrop-blur-sm rounded-full border-4 border-white/20"></div>
+                
+                {/* Contenido central */}
+                <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center text-white">
-                    <Droplets className="w-20 h-20 mx-auto mb-3 animate-bounce" strokeWidth={1.5} />
-                    <p className="text-sm font-bold">Calidad</p>
-                    <p className="text-2xl font-black">Premium</p>
+                    <Droplets className="w-16 h-16 mx-auto mb-2" strokeWidth={1.5} />
+                    <p className="text-xs font-medium opacity-90">Calidad</p>
+                    <p className="text-lg font-bold">Premium</p>
                   </div>
                 </div>
 
-                {/* Orbiting Elements */}
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-white rounded-full p-4 shadow-lg animate-bounce">
-                  <Droplets className="w-7 h-7 text-red-500" />
+                {/* Iconos flotantes pequeños */}
+                <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-white rounded-full p-2 shadow-md">
+                  <Droplets className="w-4 h-4 text-blue-600" />
                 </div>
 
-                <div className="absolute top-1/2 -right-3 -translate-y-1/2 bg-white rounded-full p-4 shadow-lg animate-pulse">
-                  <Wrench className="w-7 h-7 text-yellow-400" />
+                <div className="absolute top-1/2 -right-2 -translate-y-1/2 bg-white rounded-full p-2 shadow-md">
+                  <Wrench className="w-4 h-4 text-yellow-500" />
+                </div>
+
+                <div className="absolute bottom-4 -left-2 bg-white rounded-full p-2 shadow-md">
+                  <Zap className="w-4 h-4 text-orange-500" />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Bottom Stats */}
-          <div className="mt-6 grid grid-cols-3 gap-3 max-w-xl mx-auto md:mx-0">
-            <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow">
-              <p className="text-xl font-black text-[#2B21B0]">500+</p>
-              <p className="text-xs text-gray-600 font-medium">Productos</p>
-            </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow">
-              <p className="text-xl font-black text-[#2B21B0]">15+</p>
-              <p className="text-xs text-gray-600 font-medium">Años</p>
-            </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 text-center shadow-md hover:shadow-lg transition-shadow">
-              <p className="text-xl font-black text-[#2B21B0]">100%</p>
-              <p className="text-xs text-gray-600 font-medium">Garantía</p>
+          {/* Bottom Stats - Más compacto y limpio */}
+          <div className="mt-6 pt-6 border-t border-white/20">
+            <div className="grid grid-cols-3 gap-4 max-w-xl mx-auto md:mx-0">
+              <div className="text-center md:text-left">
+                <p className="text-2xl font-bold text-white mb-0.5">500+</p>
+                <p className="text-xs text-blue-200">Productos disponibles</p>
+              </div>
+              <div className="text-center md:text-left">
+                <p className="text-2xl font-bold text-white mb-0.5">15+</p>
+                <p className="text-xs text-blue-200">Años de experiencia</p>
+              </div>
+              <div className="text-center md:text-left">
+                <p className="text-2xl font-bold text-white mb-0.5">100%</p>
+                <p className="text-xs text-blue-200">Garantía de calidad</p>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Bottom Decoration */}
-      <div className="absolute bottom-0 left-0 right-0 h-3 bg-gradient-to-r from-[#2B21B0] via-[#2172B0] to-[#2B21B0]"></div>
     </div>
   );
 };

@@ -2,17 +2,17 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
 
 // ===============================
-// FETCH todos los productos
+// FETCH productos paginados
 // ===============================
-export const fetchAdminProducts = createAsyncThunk(
-  "adminProducts/fetchAdminProducts",
-  async (_, thunkAPI) => {
+export const fetchProducts = createAsyncThunk(
+  "products/fetchProducts",
+  async ({ page = 1, limit = 14 } = {}, thunkAPI) => {
     try {
-      const response = await api.get("/products");
-      console.log("📦 Productos obtenidos:", response.data);
-      return response.data;
+      const response = await api.get(
+        `/products?page=${page}&limit=${limit}&timestamp=${Date.now()}`
+      );
+      return { ...response.data, page, limit };
     } catch (error) {
-      console.error("❌ Error al obtener productos:", error);
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Error al obtener productos"
       );
@@ -21,17 +21,15 @@ export const fetchAdminProducts = createAsyncThunk(
 );
 
 // ===============================
-// FETCH un solo producto
+// FETCH producto por ID
 // ===============================
 export const fetchAdminProductById = createAsyncThunk(
-  "adminProducts/fetchAdminProductById",
+  "products/fetchProductById",
   async (id, thunkAPI) => {
     try {
       const response = await api.get(`/products/${id}`);
-      console.log("📦 Producto obtenido:", response.data);
       return response.data;
     } catch (error) {
-      console.error("❌ Error al obtener producto:", error);
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Error al obtener producto"
       );
@@ -40,34 +38,28 @@ export const fetchAdminProductById = createAsyncThunk(
 );
 
 // ===============================
-// ACTUALIZAR producto con soporte de imagen
+// UPDATE producto (con soporte de imagen)
 // ===============================
-export const updateAdminProduct = createAsyncThunk(
-  "adminProducts/updateAdminProduct",
+export const updateProduct = createAsyncThunk(
+  "products/updateProduct",
   async ({ id, updates, file }, thunkAPI) => {
     try {
       let imageUrl = updates.imagen || null;
 
-      // Subir imagen si hay archivo nuevo
+      // Subir imagen si hay archivo
       if (file) {
         const formData = new FormData();
         formData.append("imagen", file);
-
-        console.log("📤 Subiendo imagen al backend:", file.name);
         const uploadResponse = await api.post("/products/upload-image", formData);
         imageUrl = uploadResponse.data.imageUrl;
-        console.log("✅ Imagen subida, URL:", imageUrl);
       }
 
+      // Enviar JSON plano al backend
       const payloadToSend = { ...updates, imagen: imageUrl };
-      console.log("📤 Enviando actualización de producto:", payloadToSend);
-
       const response = await api.put(`/products/${id}`, payloadToSend);
-      console.log("✅ Respuesta backend update:", response.data);
 
       return response.data;
     } catch (error) {
-      console.error("❌ Error al actualizar producto:", error);
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Error al actualizar producto"
       );
@@ -78,11 +70,14 @@ export const updateAdminProduct = createAsyncThunk(
 // ===============================
 // SLICE
 // ===============================
-const adminProductsSlice = createSlice({
-  name: "adminProducts",
+const productsSlice = createSlice({
+  name: "products",
   initialState: {
-    products: [],
-    selectedProduct: null, // para fetchAdminProductById
+    items: [],
+    selectedProduct: null,
+    total: 0,
+    page: 1,
+    limit: 14,
     loading: false,
     error: null,
   },
@@ -96,21 +91,24 @@ const adminProductsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // ===== Fetch all =====
-      .addCase(fetchAdminProducts.pending, (state) => {
+      // fetchProducts
+      .addCase(fetchProducts.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchAdminProducts.fulfilled, (state, action) => {
+      .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.products = action.payload;
+        state.items = action.payload.products || [];
+        state.total = action.payload.total || 0;
+        state.page = action.payload.page || 1;
+        state.limit = action.payload.limit || 14;
       })
-      .addCase(fetchAdminProducts.rejected, (state, action) => {
+      .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || action.error?.message || "Error desconocido al obtener productos";
+        state.error = action.payload || "Error desconocido";
       })
 
-      // ===== Fetch one =====
+      // fetchProductById
       .addCase(fetchAdminProductById.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -118,38 +116,37 @@ const adminProductsSlice = createSlice({
       .addCase(fetchAdminProductById.fulfilled, (state, action) => {
         state.loading = false;
         state.selectedProduct = action.payload;
-        const exists = state.products.find((p) => p.id === action.payload.id);
-        if (!exists) {
-          state.products.push(action.payload);
-        }
+        // Agregar a items si no existe
+        const exists = state.items.find((p) => p.id === action.payload.id);
+        if (!exists) state.items.push(action.payload);
       })
       .addCase(fetchAdminProductById.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || action.error?.message || "Error desconocido al obtener producto";
+        state.error = action.payload || "Error desconocido";
       })
 
-      // ===== Update =====
-      .addCase(updateAdminProduct.pending, (state) => {
+      // updateProduct
+      .addCase(updateProduct.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateAdminProduct.fulfilled, (state, action) => {
+      .addCase(updateProduct.fulfilled, (state, action) => {
         state.loading = false;
         if (!action.payload) return;
-        state.products = state.products.map((p) =>
+        state.items = state.items.map((p) =>
           p.id === action.payload.id ? action.payload : p
         );
         if (state.selectedProduct?.id === action.payload.id) {
           state.selectedProduct = action.payload;
         }
       })
-      .addCase(updateAdminProduct.rejected, (state, action) => {
+      .addCase(updateProduct.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || action.error?.message || "Error desconocido al actualizar producto";
+        state.error = action.payload || "Error desconocido";
       });
   },
 });
 
-export const { clearError, clearSelectedProduct } = adminProductsSlice.actions;
+export const { clearError, clearSelectedProduct } = productsSlice.actions;
 
-export default adminProductsSlice.reducer;
+export default productsSlice.reducer;

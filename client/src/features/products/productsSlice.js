@@ -1,18 +1,34 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
 
+// ===============================
 // Thunks
+// ===============================
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
-  async ({ page = 1, limit = 10 } = {}, thunkAPI) => {
+  async ({ page = 1, limit = 14 } = {}, thunkAPI) => {
     try {
       const response = await api.get(
         `/products?page=${page}&limit=${limit}&timestamp=${Date.now()}`
       );
-      return { ...response.data, page, limit }; // incluimos page y limit
+      return { ...response.data, page, limit };
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data || "Error al obtener productos"
+      );
+    }
+  }
+);
+
+export const fetchProductById = createAsyncThunk(
+  "products/fetchProductById",
+  async (id, thunkAPI) => {
+    try {
+      const response = await api.get(`/products/${id}?timestamp=${Date.now()}`);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Error al obtener el producto"
       );
     }
   }
@@ -37,7 +53,6 @@ export const updateProduct = createAsyncThunk(
   async ({ id, updates, file }, thunkAPI) => {
     try {
       const dataToSend = new FormData();
-
       if (updates.nombre) dataToSend.append("nombre", updates.nombre);
       if (updates.descripcion) dataToSend.append("descripcion", updates.descripcion);
       if (updates.precio) dataToSend.append("precio", updates.precio);
@@ -56,14 +71,16 @@ export const updateProduct = createAsyncThunk(
   }
 );
 
+// ===============================
 // Slice
+// ===============================
 const productsSlice = createSlice({
   name: "products",
   initialState: {
     items: [],
-    total: 0,    // total de productos
-    page: 1,     // página actual
-    limit: 10,   // cantidad por página
+    total: 0,
+    page: 1,
+    limit: 10,
     loading: false,
     error: null,
   },
@@ -77,19 +94,38 @@ const productsSlice = createSlice({
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload.products; // productos
-        state.total = action.payload.total;    // total de productos
-        state.page = action.payload.page;      // página actual
-        state.limit = action.payload.limit || state.limit; // limit
+        state.items = action.payload.products;
+        state.total = action.payload.total;
+        state.page = action.payload.page;
+        state.limit = action.payload.limit || state.limit;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // fetchProductById
+      .addCase(fetchProductById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchProductById.fulfilled, (state, action) => {
+        state.loading = false;
+        const index = state.items.findIndex((p) => p.id === action.payload.id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        } else {
+          state.items.push(action.payload);
+          state.total += 1;
+        }
+      })
+      .addCase(fetchProductById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
       // addProduct
       .addCase(addProduct.fulfilled, (state, action) => {
         state.items.push(action.payload);
-        state.total += 1; // actualizamos total
+        state.total += 1;
       })
       // updateProduct
       .addCase(updateProduct.fulfilled, (state, action) => {

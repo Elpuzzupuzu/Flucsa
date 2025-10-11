@@ -1,24 +1,13 @@
-import { Router } from 'express';
-import * as productsController from '../controllers/productsController.js';
-import multer from 'multer';
+import express from "express";
+import { ProductsController } from "../controllers/productsController.js";
 
-const router = Router();
-const upload = multer({ storage: multer.memoryStorage() });
+const router = express.Router();
 
-// ===============================
-// RUTAS DE PRODUCTOS
-// ===============================
-router.get('/products', productsController.getAllProducts);
-router.get('/products/:id', productsController.getProductById);
-
-// Ahora la creación y actualización ya no suben la imagen directamente
-router.post('/products', productsController.createProduct);
-router.put('/products/:id', productsController.updateProduct);
-router.delete('/products/:id', productsController.deleteProduct);
-
-// ===============================
-// RUTA DE SUBIDA DE IMAGEN
-// ===============================
-router.post('/upload-image', upload.single('imagen'), productsController.uploadProductImage);
+// Endpoints CRUD
+router.get("/", ProductsController.getAllProducts);
+router.get("/:id", ProductsController.getProductById);
+router.post("/", ProductsController.createProduct);
+router.put("/:id", ProductsController.updateProduct);
+router.delete("/:id", ProductsController.deleteProduct);
 
 export default router;

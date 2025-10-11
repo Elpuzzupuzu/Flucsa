@@ -3,30 +3,38 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { ShoppingCart, ChevronRight, Heart, Share2, Star } from "lucide-react";
-import { fetchAdminProductById } from "../../features/products/adminProductsSlice";
+import { fetchProductById } from "../../features/products/productsSlice";
 
 const ProductDetails = ({ onAddToCart }) => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const products = useSelector((state) => state.adminProducts.products);
+  const products = useSelector((state) => state.adminProducts.items) || [];
+  
   const [product, setProduct] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (!products) return;
+
     const foundProduct = products.find((p) => p.id === id);
     if (foundProduct) {
       setProduct(foundProduct);
     } else {
-      dispatch(fetchAdminProductById(id))
+      dispatch(fetchProductById(id))
         .unwrap()
         .then((fetchedProduct) => setProduct(fetchedProduct))
-        .catch((err) => console.error("Producto no encontrado:", err));
+        .catch((err) => {
+          console.error("Producto no encontrado:", err);
+          setError("Producto no encontrado.");
+        });
     }
   }, [id, products, dispatch]);
 
   const handleAddToCart = async () => {
+    if (!product) return;
     setAddingToCart(true);
     await new Promise((resolve) => setTimeout(resolve, 800));
     onAddToCart(product);
@@ -35,7 +43,7 @@ const ProductDetails = ({ onAddToCart }) => {
 
   const toggleFavorite = () => setIsFavorite(!isFavorite);
 
-  const renderStars = (rating) => {
+  const renderStars = (rating = 4.6) => {
     const stars = [];
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 !== 0;
@@ -60,20 +68,11 @@ const ProductDetails = ({ onAddToCart }) => {
     return stars;
   };
 
-  // --- Si no hay producto, mostramos animación de carga ---
-  if (!product) {
+  if (error) {
     return (
       <div className="bg-white min-h-screen flex items-center justify-center">
         <div className="text-center py-10 flex flex-col items-center gap-4">
-          {/* Indicador circular giratorio */}
-          <div className="w-16 h-16 border-4 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
-
-          {/* Texto de carga */}
-          <p className="text-gray-500 text-lg font-medium animate-pulse">
-            Cargando producto...
-          </p>
-
-          {/* Botón para volver */}
+          <p className="text-red-500 text-lg font-medium">{error}</p>
           <Link
             to="/productos"
             className="inline-block mt-4 px-5 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 shadow-md"
@@ -85,7 +84,25 @@ const ProductDetails = ({ onAddToCart }) => {
     );
   }
 
-  // --- Render del producto cuando está disponible ---
+  if (!product) {
+    return (
+      <div className="bg-white min-h-screen flex items-center justify-center">
+        <div className="text-center py-10 flex flex-col items-center gap-4">
+          <div className="w-16 h-16 border-4 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
+          <p className="text-gray-500 text-lg font-medium animate-pulse">
+            Cargando producto...
+          </p>
+          <Link
+            to="/productos"
+            className="inline-block mt-4 px-5 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105 shadow-md"
+          >
+            Volver a productos
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 min-h-screen py-6 px-3 md:px-6">
       <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-500 p-6">
@@ -95,10 +112,7 @@ const ProductDetails = ({ onAddToCart }) => {
             Inicio
           </Link>
           <ChevronRight className="w-3 h-3 text-gray-400" />
-          <Link
-            to="/productos"
-            className="hover:text-blue-600 hover:underline transition-all"
-          >
+          <Link to="/productos" className="hover:text-blue-600 hover:underline transition-all">
             Productos
           </Link>
           <ChevronRight className="w-3 h-3 text-gray-400" />
@@ -108,7 +122,6 @@ const ProductDetails = ({ onAddToCart }) => {
         <div className="lg:flex lg:gap-8 lg:items-start">
           {/* Imagen principal */}
           <div className="lg:w-1/2 mb-6 lg:mb-0 relative group">
-            {/* Badge */}
             {product.badge && (
               <div
                 className={`absolute top-3 left-3 bg-gradient-to-r ${
@@ -123,7 +136,6 @@ const ProductDetails = ({ onAddToCart }) => {
               </div>
             )}
 
-            {/* Botones flotantes */}
             <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-500">
               <button
                 onClick={toggleFavorite}
@@ -140,11 +152,8 @@ const ProductDetails = ({ onAddToCart }) => {
               </button>
             </div>
 
-            {/* Imagen del producto */}
             <div className="overflow-hidden rounded-xl bg-gray-50 border border-gray-100 shadow-inner">
-              {!imageLoaded && (
-                <div className="absolute inset-0 bg-gray-100 animate-pulse rounded-xl"></div>
-              )}
+              {!imageLoaded && <div className="absolute inset-0 bg-gray-100 animate-pulse rounded-xl"></div>}
               <img
                 src={product.imagen || product.image}
                 alt={product.nombre || product.name}
@@ -164,15 +173,13 @@ const ProductDetails = ({ onAddToCart }) => {
               </h1>
               <p className="text-sm text-gray-500 mb-3">{product.categoria || "Categoría general"}</p>
 
-              {/* Rating */}
               <div className="flex items-center gap-2 mb-2">
-                {renderStars(product.rating ?? 4.6)}
+                {renderStars(product.rating)}
                 <span className="text-xs text-gray-600">
                   {product.rating ?? 4.6} ({product.reviews ?? 24} reseñas)
                 </span>
               </div>
 
-              {/* Precio */}
               <div className="flex items-baseline gap-2">
                 <p className="text-3xl font-bold text-gray-900">
                   {product.precio
@@ -186,22 +193,14 @@ const ProductDetails = ({ onAddToCart }) => {
                 )}
               </div>
 
-              <p className="text-xs text-green-600 font-medium mt-1">
-                ✓ disponible
-              </p>
+              <p className="text-xs text-green-600 font-medium mt-1">✓ disponible</p>
             </div>
 
-            {/* Descripción */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-all">
-              <h2 className="text-sm font-semibold text-gray-800 mb-1">
-                Descripción del producto
-              </h2>
-              <p className="text-gray-600 text-sm leading-snug">
-                {product.descripcion || product.description}
-              </p>
+              <h2 className="text-sm font-semibold text-gray-800 mb-1">Descripción del producto</h2>
+              <p className="text-gray-600 text-sm leading-snug">{product.descripcion || product.description}</p>
             </div>
 
-            {/* Botones */}
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
                 onClick={handleAddToCart}

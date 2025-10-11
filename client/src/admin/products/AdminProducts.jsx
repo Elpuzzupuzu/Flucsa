@@ -1,52 +1,116 @@
-import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import AdminProductCard from "./AdminProductCard/AdminProductCard";
-import { fetchAdminProducts, updateAdminProduct } from "../../features/products/adminProductsSlice";
-import ProductEditorOverlay from "./AdminProductCard/AdminProductOverlay/ProductEditOverlay";
+import React, { useRef, useState } from "react";
+import { useProductsLogic } from "../../pages/Products/hooks/useProductsLogic";
+import ProductsHeader from "../../pages/Products/components/ProductsHeader";
+import ProductsToolbar from "../../pages/Products/components/ProductsToolbar";
+import ProductsGrid from "../adminProductsGrid/adminProductsGrid";
+import ProductsPagination from "../../pages/Products/components/ProductsPagination";
+import NoResults from "../../pages/Products/components/NoResult";
+import FilterSidebar from "../../pages/Products/ProductFilter/ProductFilter";
+import ProductEditorOverlay from "./AdminProductCard/AdminProductOverlay/ProductEditOverlay"; // 🔴 importa aquí
 
-const AdminProducts = () => {
-  const dispatch = useDispatch();
-  const { products, loading } = useSelector((state) => state.adminProducts);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+const ProductsPage = ({ addToCart }) => {
+  const logic = useProductsLogic();
+  const {
+    loading,
+    error,
+    currentProducts,
+    totalPages,
+    currentPage,
+    setCurrentPage,
+    viewMode,
+    setViewMode,
+    searchTerm,
+    setSearchTerm,
+    sortBy,
+    setSortBy,
+    itemsPerPage,
+    setItemsPerPage,
+    sidebarOpen,
+    setSidebarOpen,
+    filters,
+    setFilters,
+    availableCategories,
+    getFilterCount,
+  } = logic;
 
-  useEffect(() => {
-    dispatch(fetchAdminProducts());
-  }, [dispatch]);
+  const toolbarRef = useRef(null);
+  const [selectedProduct, setSelectedProduct] = useState(null); // 🔴 nuevo estado
 
-  const handleSave = async (id, updates) => {
-    await dispatch(updateAdminProduct({ id, updates })).unwrap();
-    dispatch(fetchAdminProducts());
+  const handleProductClick = (product) => {
+    setSelectedProduct(product);
   };
 
+  const handleCloseOverlay = () => {
+    setSelectedProduct(null);
+  };
+
+  // 🔹 Aquí va la función que actualizará los productos después de editar
+  const handleSaveProduct = async (id, updates) => {
+    console.log("Guardando producto:", id, updates);
+    // Aquí podrías hacer un dispatch a redux o volver a cargar los productos desde la API
+  };
+
+  if (loading) return <div className="flex justify-center p-20">Cargando...</div>;
+  if (error) return <div className="text-center text-red-600 p-20">Error: {error}</div>;
+
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6">Panel de Productos</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-100 overflow-x-hidden">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <ProductsToolbar
+          ref={toolbarRef} 
+          {...{
+            searchTerm,
+            setSearchTerm,
+            sortBy,
+            setSortBy,
+            itemsPerPage,
+            setItemsPerPage,
+            viewMode,
+            setViewMode,
+            sidebarOpen,
+            setSidebarOpen,
+            getFilterCount,
+          }}
+        />
 
-      {loading ? (
-        <p>Cargando productos...</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              onClick={() => setSelectedProduct(product)}
-              className="cursor-pointer"
-            >
-              <AdminProductCard product={product} />
-            </div>
-          ))}
-        </div>
-      )}
+        {currentProducts.length > 0 ? (
+          <>
+            <ProductsGrid
+              products={currentProducts}
+              viewMode={viewMode}
+              addToCart={addToCart}
+              onProductClick={handleProductClick} // 🔴 nuevo prop
+            />
+            <ProductsPagination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+              scrollToRef={toolbarRef}
+            />
+          </>
+        ) : (
+          <NoResults />
+        )}
+      </div>
 
+      <FilterSidebar
+        filters={filters}
+        onFilterChange={setFilters}
+        isOpen={sidebarOpen}
+        onToggle={() => setSidebarOpen(false)}
+        categories={availableCategories}
+      />
+
+      {/* 🔴 Overlay de edición */}
       {selectedProduct && (
         <ProductEditorOverlay
           product={selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-          onSave={handleSave}
+          onClose={handleCloseOverlay}
+          onSave={handleSaveProduct}
         />
       )}
     </div>
   );
 };
 
-export default AdminProducts;
+export default ProductsPage;

@@ -1,6 +1,6 @@
 import { Search, Grid3x3, List, SlidersHorizontal, Filter, TrendingUp } from "lucide-react";
 
-// Componente de botón de filtro simulado para el ejemplo
+// Componente de botón de filtro
 const FilterToggleButton = ({ isOpen, onToggle, filterCount }) => (
   <button
     onClick={onToggle}
@@ -81,7 +81,7 @@ const ProductsToolbar = ({
           <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
           <select
             value={itemsPerPage}
-            onChange={(e) => setItemsPerPage(Number(e.target.value))}
+            onChange={(e) => setItemsPerPage(Math.max(14, Number(e.target.value)))}
             className="pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl text-sm font-medium bg-gray-50 hover:bg-white hover:border-blue-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300 cursor-pointer outline-none appearance-none bg-no-repeat bg-right"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
@@ -90,10 +90,10 @@ const ProductsToolbar = ({
               paddingRight: '2.5rem'
             }}
           >
-            <option value={8}>8 productos</option>
-            <option value={16}>16 productos</option>
-            <option value={24}>24 productos</option>
-            <option value={32}>32 productos</option>
+            <option value={14}>14 productos</option>
+            <option value={16}>28 productos</option>
+            <option value={24}>32 productos</option>
+            <option value={32}>46 productos</option>
           </select>
         </div>
 

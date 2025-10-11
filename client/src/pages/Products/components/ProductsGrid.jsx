@@ -14,15 +14,14 @@ const ProductsGrid = ({ products, viewMode, addToCart }) => {
       <div
         className={
           viewMode === "grid"
-            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-12 relative z-10" // gap reducido
+            ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-5 mb-12 relative z-10 auto-rows-max"
             : "space-y-6 mb-12 relative z-10"
         }
       >
         {products.map((product, index) => (
           <div
             key={product.id}
-            // CLASE AJUSTADA: Eliminé 'scale-[0.85]' para que la tarjeta ocupe su espacio completo.
-            className="transform transition-all duration-500 hover:scale-[1.02]" 
+            className="transform transition-all duration-500 hover:scale-[1.02] w-full"
             style={{
               animation: 'fadeInUp 0.6s ease-out forwards',
               animationDelay: `${index * 75}ms`,
@@ -44,7 +43,7 @@ const ProductsGrid = ({ products, viewMode, addToCart }) => {
         ))}
       </div>
 
-      {/* CSS Animations (Sin cambios, ya que son correctas) */}
+      {/* CSS Animations */}
       <style jsx>{`
         @keyframes fadeInUp {
           from {
@@ -69,7 +68,19 @@ const ProductsGrid = ({ products, viewMode, addToCart }) => {
         /* Responsive adjustments */
         @media (max-width: 640px) {
           .grid {
-            gap: 1.5rem;
+            gap: 0.875rem;
+          }
+        }
+
+        @media (min-width: 641px) and (max-width: 1024px) {
+          .grid {
+            gap: 1.25rem;
+          }
+        }
+
+        @media (min-width: 1025px) {
+          .grid {
+            gap: 1.25rem;
           }
         }
       `}</style>
