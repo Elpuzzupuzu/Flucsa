@@ -1,6 +1,16 @@
 import { Calendar, Users, Award, TrendingUp, Handshake, Droplet, Wrench, Spade, Home, CheckCircle, Star } from 'lucide-react';
 
 import riego from '../../assets/images/imgs/riego.jpg'; 
+import riego2 from '../../assets/images/imgs/riego2.jpg'; 
+import epis from '../../assets/images/imgs/epis.jpg'; 
+import cocina from '../../assets/images/imgs/cocina.jpg'; 
+import indus from '../../assets/images/imgs/indus.jpg'; 
+import tinaco from '../../assets/images/imgs/tinaco.jpg'; 
+
+
+
+
+
 
 export const stats = [
     { icon: Calendar, number: '2015', key: 'years', label: 'Año de Fundación' },
@@ -15,21 +25,21 @@ export const expertiseAreas = [
         title: 'Sistemas de Riego', 
         description: 'Soluciones eficientes para optimizar el consumo de agua y el cuidado de tus jardines.',
         features: ['Riego automatizado', 'Sensores inteligentes', 'Ahorro de agua'],
-        image: riego // <<-- ¡APLICADO!
+        image: riego2 // <<-- ¡APLICADO!
     },
     { 
         icon: Handshake, 
         title: 'Equipos para Piscinas', 
         description: 'Diseño e instalación de sistemas de filtrado y bombas para piscinas residenciales.',
         features: ['Filtros de alta calidad', 'Bombas eficientes', 'Mantenimiento'],
-        image: riego // <<-- ¡APLICADO!
+        image: epis // <<-- ¡APLICADO!
     },
     { 
         icon: Wrench, 
         title: 'Instalaciones de Cocina', 
         description: 'Especialistas en lavabos, tuberías y grifería de alta calidad para tu cocina.',
         features: ['Grifería premium', 'Instalación experta', 'Garantía extendida'],
-        image: riego // <<-- ¡APLICADO!
+        image: cocina // <<-- ¡APLICADO!
     }, 
     { 
         icon: Spade, 
@@ -43,14 +53,14 @@ export const expertiseAreas = [
         title: 'Tinacos y Cisternas', 
         description: 'Soluciones de almacenamiento de agua potable con instalaciones seguras y duraderas.',
         features: ['Instalación segura', 'Materiales certificados', 'Mantenimiento preventivo'],
-        image: riego // <<-- ¡APLICADO!
+        image: tinaco // <<-- ¡APLICADO!
     },
  { 
         icon: Home, 
         title: 'Industriales', 
         description: 'Soluciones de almacenamiento de agua potable con instalaciones seguras y duraderas.',
         features: ['Instalación segura', 'Materiales certificados', 'Mantenimiento preventivo'],
-        image: riego // <<-- ¡APLICADO!
+        image: indus // <<-- ¡APLICADO!
     }
 
 ];
