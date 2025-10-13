@@ -13,10 +13,28 @@ export const UserController = {
 
   login: async (req, res) => {
     try {
-      const user = await UserService.loginUser(req.body.correo, req.body.contraseña);
+      const { correo, contraseña } = req.body;
+
+      if (!correo || !contraseña) {
+        return res.status(400).json({ error: "Correo y contraseña son obligatorios" });
+      }
+
+      const user = await UserService.loginUser(correo, contraseña);
+
+      // El servicio puede devolver un objeto con error específico
+      if (user.errorType === 'USER_NOT_FOUND') {
+        return res.status(404).json({ error: 'Usuario no encontrado' });
+      }
+      if (user.errorType === 'INVALID_PASSWORD') {
+        return res.status(401).json({ error: 'Contraseña incorrecta' });
+      }
+
+      // Login exitoso
       res.status(200).json(user);
+
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      console.error('Error en login:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
     }
   },
 

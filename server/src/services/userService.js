@@ -1,5 +1,6 @@
 // src/services/userService.js
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { UserRepository } from '../repositories/userRepository.js';
 
 export const UserService = {
@@ -15,12 +16,43 @@ export const UserService = {
 
   loginUser: async (correo, password) => {
     const user = await UserRepository.getUserByEmail(correo);
-    if (!user) throw new Error('Usuario no encontrado');
 
+    // Usuario no encontrado
+    if (!user) {
+      return { errorType: 'USER_NOT_FOUND' };
+    }
+
+    // Contraseña incorrecta
     const valid = await bcrypt.compare(password, user.contraseña);
-    if (!valid) throw new Error('Contraseña incorrecta');
+    if (!valid) {
+      return { errorType: 'INVALID_PASSWORD' };
+    }
 
-    return user;
+    // Generar tokens JWT
+    const accessToken = jwt.sign(
+      { id: user.id, rol: user.rol },
+      process.env.JWT_SECRET,
+      { expiresIn: '5m' }
+    );
+
+    const refreshToken = jwt.sign(
+      { id: user.id, rol: user.rol },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    // Login exitoso
+    return {
+      user: {
+        id: user.id,
+        correo: user.correo,
+        nombre: user.nombre,
+        apellido: user.apellido,
+        rol: user.rol
+      },
+      accessToken,
+      refreshToken
+    };
   },
 
   getUserProfile: async (userId) => {

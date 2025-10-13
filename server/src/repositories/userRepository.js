@@ -18,9 +18,9 @@ export const UserRepository = {
       .from('usuarios')
       .select('*')
       .eq('correo', correo)
-      .single();
+      .maybeSingle(); // <-- cambia single() por maybeSingle()
     if (error) throw error;
-    return data;
+    return data; // será null si no existe
   },
 
   // Obtener usuario por ID
@@ -29,9 +29,9 @@ export const UserRepository = {
       .from('usuarios')
       .select('*')
       .eq('id', id)
-      .single();
+      .maybeSingle(); // <-- cambia single() por maybeSingle()
     if (error) throw error;
-    return data;
+    return data; // será null si no existe
   },
 
   // Obtener lista de deseos de un usuario
