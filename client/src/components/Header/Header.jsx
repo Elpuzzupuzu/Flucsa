@@ -9,7 +9,7 @@ import { logoutUser } from '../../features/user/usersSlice'; // ⬅️ Usamos la
 import Navigation from '../Navigation/Navigation';
 import Search from './Search/Search';
 import LogoCompleto from '../../assets/images/flucsa2.jpg';
-import UserDropdown from './Search/UserDropdown'; 
+import UserDropdown from './Search/userDropdown'; 
 
 const Header = ({ cartItems, onCartToggle }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,7 +27,6 @@ const Header = ({ cartItems, onCartToggle }) => {
   const userName = user?.name || user?.correo || user?.email || "Usuario";
   
   const handleLogout = () => {
-    // 💥 CAMBIO CRUCIAL: Despachamos la thunk asíncrona que limpia las cookies del servidor.
     dispatch(logoutUser());
   }
   // -------------------------------------------
