@@ -32,16 +32,16 @@ export const UserService = {
     const accessToken = jwt.sign(
       { id: user.id, rol: user.rol },
       process.env.JWT_SECRET,
-      { expiresIn: '5m' }
+      { expiresIn: '5m' } // Token de corta duración
     );
 
     const refreshToken = jwt.sign(
       { id: user.id, rol: user.rol },
       process.env.JWT_REFRESH_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '7d' } // Token de larga duración para persistencia
     );
 
-    // Login exitoso
+    // Login exitoso: Devolver datos de usuario y ambos tokens para que el Controller los maneje.
     return {
       user: {
         id: user.id,
@@ -51,7 +51,7 @@ export const UserService = {
         rol: user.rol
       },
       accessToken,
-      refreshToken
+      refreshToken // El controller usará esto para la cookie.
     };
   },
 

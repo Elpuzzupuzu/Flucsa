@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { X, ShoppingCart, MapPin, Menu } from 'lucide-react';
+// IMPORTACIONES DE REDUX
+import { useSelector, useDispatch } from 'react-redux';
+// CORRECCIÓN IMPORTANTE: Reemplazamos la acción síncrona 'logout' por la thunk 'logoutUser'
+import { logoutUser } from '../../features/user/usersSlice'; // ⬅️ Usamos la thunk
+
 import Navigation from '../Navigation/Navigation';
 import Search from './Search/Search';
 import LogoCompleto from '../../assets/images/flucsa2.jpg';
+import UserDropdown from './Search/UserDropdown'; 
 
 const Header = ({ cartItems, onCartToggle }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -11,10 +17,26 @@ const Header = ({ cartItems, onCartToggle }) => {
   const [previousCartCount, setPreviousCartCount] = useState(0);
   const [showAddedBadge, setShowAddedBadge] = useState(false);
 
+  // --- Lógica de Redux para autenticación ---
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.user);
+  
+  const isLoggedIn = !!user;
+  
+  // Lógica para obtener el nombre del usuario (ya es correcta gracias a formatUserPayload en el slice)
+  const userName = user?.name || user?.correo || user?.email || "Usuario";
+  
+  const handleLogout = () => {
+    // 💥 CAMBIO CRUCIAL: Despachamos la thunk asíncrona que limpia las cookies del servidor.
+    dispatch(logoutUser());
+  }
+  // -------------------------------------------
+
   const totalCartItems = cartItems
     ? cartItems.reduce((sum, item) => sum + item.quantity, 0)
     : 0;
 
+  // Efecto para animación del carrito (se mantiene)
   useEffect(() => {
     if (totalCartItems > previousCartCount) {
       setIsCartAnimating(true);
@@ -26,6 +48,7 @@ const Header = ({ cartItems, onCartToggle }) => {
     setPreviousCartCount(totalCartItems);
   }, [totalCartItems, previousCartCount]);
 
+  // Efecto para bloquear el scroll del cuerpo con el menú abierto (se mantiene)
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -53,7 +76,7 @@ const Header = ({ cartItems, onCartToggle }) => {
                     src={LogoCompleto}
                     alt="FLUCSA"
                     className="h-12 w-auto object-contain transition-all duration-500 group-hover:brightness-125"
-                  />
+                    />
                 </div>
               </Link>
 
@@ -82,15 +105,15 @@ const Header = ({ cartItems, onCartToggle }) => {
 
               {/* Right Section */}
               <div className="hidden lg:flex items-center gap-2">
-                {/* Account - Placeholder */}
-                <div className="px-3 py-2 rounded-md hover:bg-white/10 transition-all cursor-pointer border border-transparent hover:border-white/20">
-                  <div className="flex flex-col">
-                    <span className="text-xs text-white/70">Hola, Usuario</span>
-                    <span className="text-sm font-semibold text-white">Mi Cuenta</span>
-                  </div>
-                </div>
+                
+                {/* User/Account Dropdown - CON PROPS DE REDUX */}
+                <UserDropdown 
+                  userName={userName} 
+                  isLoggedIn={isLoggedIn}
+                  onLogout={handleLogout} // ⬅️ Usa la nueva función con la thunk
+                /> 
 
-                {/* Orders - Placeholder */}
+                {/* Orders - Placeholder (Se mantiene) */}
                 <div className="px-3 py-2 rounded-md hover:bg-white/10 transition-all cursor-pointer border border-transparent hover:border-white/20">
                   <div className="flex flex-col">
                     <span className="text-xs text-white/70">Mis</span>
@@ -201,7 +224,12 @@ const Header = ({ cartItems, onCartToggle }) => {
             </div>
 
             <div className="p-5">
-              <Navigation isMobile={true} onLinkClick={() => setIsMenuOpen(false)} />
+              <Navigation 
+                isMobile={true} 
+                onLinkClick={() => setIsMenuOpen(false)} 
+                isLoggedIn={isLoggedIn} // Opcional: pasar estado de login a Navigation si lo necesita
+                onLogout={handleLogout} // Opcional: pasar logout a Navigation si lo necesita
+              />
             </div>
           </div>
         </div>
