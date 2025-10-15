@@ -11,11 +11,11 @@ router.post('/register', UserController.register);
 // Login de usuario
 router.post('/login', UserController.login);
 
-// 💥 1. NUEVA RUTA: Cerrar Sesión (Limpia las cookies HttpOnly) 💥
+//  1. NUEVA RUTA: Cerrar Sesión (Limpia las cookies HttpOnly) 💥
 // Tu frontend está llamando a POST /users/logout (o /auth/logout, dependiendo de tu prefijo)
 router.post('/logout', UserController.logout);
 
-// 💥 2. NUEVA RUTA: Verificar/Re-hidratar Sesión (Necesaria para persistencia) 💥
+//  2. NUEVA RUTA: Verificar/Re-hidratar Sesión (Necesaria para persistencia) 💥
 // El frontend llama a GET /users/profile (o /auth/profile) al cargar la app.
 // El authMiddleware valida la cookie, y UserController.getAuthProfile devuelve los datos.
 router.get('/profile', authMiddleware, UserController.getAuthProfile);

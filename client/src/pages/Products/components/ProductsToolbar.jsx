@@ -91,9 +91,8 @@ const ProductsToolbar = ({
             }}
           >
             <option value={14}>14 productos</option>
-            <option value={16}>28 productos</option>
-            <option value={24}>32 productos</option>
-            <option value={32}>46 productos</option>
+            <option value={21}>21 productos</option>
+            <option value={42}>42 productos</option>
           </select>
         </div>
 

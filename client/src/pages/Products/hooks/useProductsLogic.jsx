@@ -8,7 +8,7 @@ export const useProductsLogic = () => {
   const { items: products, total, loading, error } = useSelector((s) => s.products);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(8);
+  const [itemsPerPage, setItemsPerPage] = useState(14);  // ESTO SE ENCARGA DE LA CARGA INICIAL DEL GRID EN PRODUCTS 
   const [viewMode, setViewMode] = useState("grid");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("name");

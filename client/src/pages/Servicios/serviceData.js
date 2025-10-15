@@ -12,6 +12,29 @@ import alberca3 from '../../assets/serviceimages/alberca3.jpg';
 import pipe1 from '../../assets/serviceimages/pipe1.jpg';
 import pipe2 from '../../assets/serviceimages/pipe2.jpg';
 import pipe3 from '../../assets/serviceimages/pipe3.jpg';
+import vu from '../../assets/serviceimages/vu.jpg';
+import plan from '../../assets/serviceimages/plan.jpg';
+import rev from '../../assets/serviceimages/rev.jpg';
+import asp1 from '../../assets/serviceimages/asper1.jpg';
+import asp2 from '../../assets/serviceimages/asper2.jpg';
+import asp3 from '../../assets/serviceimages/asper3.jpg';
+import cis1 from '../../assets/serviceimages/cisterna.jpg';
+import cis2 from '../../assets/serviceimages/cis2.jpg';
+import cis3 from '../../assets/serviceimages/cisterna3.jpg';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const services = [
   { 
@@ -56,9 +79,9 @@ export const services = [
     title: 'Mantenimiento Preventivo', 
     description: 'Planes adaptados a tus necesidades para prolongar la vida útil de tus equipos y sistemas.',
     items: [
-      { name: 'Planes personalizados', details: 'Diseñados según el tipo y uso de tus instalaciones.', image: '/images/mantenimiento/planes.jpg' },
-      { name: 'Revisiones periódicas', details: 'Detección temprana de fallas antes de convertirse en problemas.', image: '/images/mantenimiento/revisiones.jpg' },
-      { name: 'Vida útil extendida', details: 'Mayor durabilidad y funcionamiento óptimo de tus sistemas.', image: '/images/mantenimiento/durabilidad.jpg' }
+      { name: 'Planes personalizados', details: 'Diseñados según el tipo y uso de tus instalaciones.', image: plan },
+      { name: 'Revisiones periódicas', details: 'Detección temprana de fallas antes de convertirse en problemas.', image: rev },
+      { name: 'Vida útil extendida', details: 'Mayor durabilidad y funcionamiento óptimo de tus sistemas.', image: vu }
     ],
     color: 'from-green-600 to-emerald-500'
   },
@@ -68,9 +91,9 @@ export const services = [
     title: 'Riego para jardines', 
     description: 'Transformamos tu espacio exterior en un entorno estético, funcional y sostenible.',
     items: [
-      { name: 'Diseño personalizado', details: 'Jardines únicos adaptados a tu estilo y espacio.', image: '/images/jardines/diseño.jpg' },
-      { name: 'Plantas nativas', details: 'Bajo mantenimiento y mayor adaptación al clima local.', image: '/images/jardines/plantas.jpg' },
-      { name: 'Sostenible', details: 'Prácticas ecológicas que promueven la conservación del medio ambiente.', image: '/images/jardines/sostenible.jpg' }
+      { name: 'Diseño personalizado', details: 'Jardines únicos adaptados a tu estilo y espacio.', image: asp1 },
+      { name: 'Riego', details: 'sistemas de riego.', image: asp2 },
+      { name: 'Sostenible', details: 'Prácticas ecológicas que promueven la conservación del medio ambiente.', image: asp3 }
     ],
     color: 'from-green-500 to-teal-400'
   },
@@ -80,9 +103,9 @@ export const services = [
     title: 'Cisternas y Tinacos', 
     description: 'Instalación y sanitización de tanques de agua asegurando calidad y seguridad en el suministro.',
     items: [
-      { name: 'Instalación segura', details: 'Montaje profesional para evitar fugas y problemas.', image: '/images/cisternas/instalacion.jpg' },
-      { name: 'Sanitización completa', details: 'Limpieza profunda certificada para agua potable.', image: '/images/cisternas/sanitizacion.jpg' },
-      { name: 'Agua limpia', details: 'Garantía de suministro confiable y saludable para tu familia.', image: '/images/cisternas/agua-limpia.jpg' }
+      { name: 'Instalación segura', details: 'Montaje profesional para evitar fugas y problemas.', image: cis3 },
+      { name: 'Sanitización completa', details: 'Limpieza profunda certificada para agua potable.', image: cis1 },
+      { name: 'Agua limpia', details: 'Garantía de suministro confiable y saludable para tu familia.', image: cis2 }
     ],
     color: 'from-teal-600 to-cyan-500'
   }
