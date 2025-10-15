@@ -1,19 +1,36 @@
 import { Search, Grid3x3, List, SlidersHorizontal, Filter, TrendingUp } from "lucide-react";
 
-// Componente de botón de filtro
+// Botón de filtro adaptativo
 const FilterToggleButton = ({ isOpen, onToggle, filterCount }) => (
-  <button
-    onClick={onToggle}
-    className="relative flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 font-medium group"
-  >
-    <SlidersHorizontal className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-    <span className="hidden sm:inline">Filtros</span>
-    {filterCount > 0 && (
-      <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-lg animate-pulse">
-        {filterCount}
-      </span>
-    )}
-  </button>
+  <>
+    {/* Versión escritorio */}
+    <button
+      onClick={onToggle}
+      className="hidden sm:flex relative flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 font-medium group"
+    >
+      <SlidersHorizontal className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+      <span>Filtros</span>
+      {filterCount > 0 && (
+        <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-lg animate-pulse">
+          {filterCount}
+        </span>
+      )}
+    </button>
+
+    {/* Versión móvil: solo icono */}
+    <button
+      onClick={onToggle}
+      className="sm:hidden relative p-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+      aria-label="Filtros"
+    >
+      <SlidersHorizontal className="w-5 h-5" />
+      {filterCount > 0 && (
+        <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+          {filterCount}
+        </span>
+      )}
+    </button>
+  </>
 );
 
 const ProductsToolbar = ({
@@ -30,11 +47,10 @@ const ProductsToolbar = ({
   getFilterCount
 }) => (
   <div className="mb-8 bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden backdrop-blur-sm">
-    {/* Accent Bar */}
     <div className="h-1 bg-gradient-to-r from-red-600 via-red-500 to-blue-600"></div>
-    
+
     <div className="p-6 space-y-5 lg:space-y-0 lg:flex lg:items-center lg:justify-between lg:gap-6">
-      {/* Search Section */}
+      {/* Sección de búsqueda */}
       <div className="flex items-center gap-3 flex-1 max-w-2xl">
         <FilterToggleButton
           isOpen={sidebarOpen}
@@ -55,10 +71,10 @@ const ProductsToolbar = ({
         </div>
       </div>
 
-      {/* Controls Section */}
+      {/* Sección de controles */}
       <div className="flex items-center gap-3 flex-wrap justify-end">
         {/* Sort Dropdown */}
-        <div className="relative group">
+        <div className="hidden sm:flex relative group">
           <TrendingUp className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
           <select
             value={sortBy}
@@ -76,8 +92,8 @@ const ProductsToolbar = ({
           </select>
         </div>
 
-        {/* Items Per Page Dropdown */}
-        <div className="relative group">
+        {/* Items per page Dropdown */}
+        <div className="hidden sm:flex relative group">
           <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
           <select
             value={itemsPerPage}
