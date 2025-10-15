@@ -27,60 +27,60 @@ const ProfileDetailsForm = ({ user, dispatch, loading, error, successMessage }) 
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            <h3 className="text-xl font-bold text-gray-800 border-b pb-2 mb-4">Editar Detalles</h3>
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-800 border-b pb-2 mb-3 sm:mb-4">Editar Detalles</h3>
             
             {/* Mensajes de feedback */}
-            {successMessage && <div className="p-3 bg-green-100 text-green-700 rounded-lg flex items-center gap-2"><CheckCircle className="w-5 h-5" />{successMessage}</div>}
-            {error && <div className="p-3 bg-red-100 text-red-700 rounded-lg flex items-center gap-2"><AlertCircle className="w-5 h-5" />{error}</div>}
+            {successMessage && <div className="p-3 bg-green-100 text-green-700 rounded-lg flex items-start sm:items-center gap-2 text-sm"><CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5 sm:mt-0" /><span>{successMessage}</span></div>}
+            {error && <div className="p-3 bg-red-100 text-red-700 rounded-lg flex items-start sm:items-center gap-2 text-sm"><AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 sm:mt-0" /><span>{error}</span></div>}
 
             {/* Input Nombre */}
             <div>
-                <label className="block text-sm font-medium text-gray-700" htmlFor="nombre">Nombre</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="nombre">Nombre</label>
                 <input
                     type="text"
                     id="nombre"
                     name="nombre"
                     value={formData.nombre}
                     onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="block w-full border border-gray-300 rounded-md shadow-sm p-2.5 sm:p-3 focus:ring-indigo-500 focus:border-indigo-500 text-base"
                     required
                 />
             </div>
             
             {/* Input Apellido */}
             <div>
-                <label className="block text-sm font-medium text-gray-700" htmlFor="apellido">Apellido</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="apellido">Apellido</label>
                 <input
                     type="text"
                     id="apellido"
                     name="apellido"
                     value={formData.apellido}
                     onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="block w-full border border-gray-300 rounded-md shadow-sm p-2.5 sm:p-3 focus:ring-indigo-500 focus:border-indigo-500 text-base"
                     required
                 />
             </div>
 
             {/* Input Correo (Deshabilitado por convención común) */}
             <div>
-                <label className="block text-sm font-medium text-gray-700" htmlFor="correo">Correo Electrónico</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="correo">Correo Electrónico</label>
                 <input
                     type="email"
                     id="correo"
                     name="correo"
                     value={formData.correo}
                     onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 bg-gray-100"
+                    className="block w-full border border-gray-300 rounded-md shadow-sm p-2.5 sm:p-3 bg-gray-100 text-base"
                     disabled
                 />
-                <p className="mt-1 text-xs text-gray-500">El correo electrónico no se puede cambiar desde esta sección.</p>
+                <p className="mt-1.5 text-xs text-gray-500">El correo electrónico no se puede cambiar desde esta sección.</p>
             </div>
 
             <button
                 type="submit"
-                className={`w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
-                    loading ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
+                className={`w-full flex justify-center items-center gap-2 py-2.5 sm:py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+                    loading ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800'
                 } transition-colors`}
                 disabled={loading}
             >
@@ -131,39 +131,39 @@ const PasswordChangeForm = ({ dispatch, loading, error, successMessage }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            <h3 className="text-xl font-bold text-gray-800 border-b pb-2 mb-4">Cambiar Contraseña</h3>
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-800 border-b pb-2 mb-3 sm:mb-4">Cambiar Contraseña</h3>
 
             {/* Mensajes de feedback */}
-            {successMessage && <div className="p-3 bg-green-100 text-green-700 rounded-lg flex items-center gap-2"><CheckCircle className="w-5 h-5" />{successMessage}</div>}
-            {error && <div className="p-3 bg-red-100 text-red-700 rounded-lg flex items-center gap-2"><AlertCircle className="w-5 h-5" />{error}</div>}
-            {localError && <div className="p-3 bg-red-100 text-red-700 rounded-lg flex items-center gap-2"><AlertCircle className="w-5 h-5" />{localError}</div>}
+            {successMessage && <div className="p-3 bg-green-100 text-green-700 rounded-lg flex items-start sm:items-center gap-2 text-sm"><CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5 sm:mt-0" /><span>{successMessage}</span></div>}
+            {error && <div className="p-3 bg-red-100 text-red-700 rounded-lg flex items-start sm:items-center gap-2 text-sm"><AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 sm:mt-0" /><span>{error}</span></div>}
+            {localError && <div className="p-3 bg-red-100 text-red-700 rounded-lg flex items-start sm:items-center gap-2 text-sm"><AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 sm:mt-0" /><span>{localError}</span></div>}
 
 
             {/* Input Contraseña Actual */}
             <div>
-                <label className="block text-sm font-medium text-gray-700" htmlFor="currentPassword">Contraseña Actual</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="currentPassword">Contraseña Actual</label>
                 <input
                     type="password"
                     id="currentPassword"
                     name="currentPassword"
                     value={formData.currentPassword}
                     onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="block w-full border border-gray-300 rounded-md shadow-sm p-2.5 sm:p-3 focus:ring-indigo-500 focus:border-indigo-500 text-base"
                     required
                 />
             </div>
             
             {/* Input Nueva Contraseña */}
             <div>
-                <label className="block text-sm font-medium text-gray-700" htmlFor="newPassword">Nueva Contraseña</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="newPassword">Nueva Contraseña</label>
                 <input
                     type="password"
                     id="newPassword"
                     name="newPassword"
                     value={formData.newPassword}
                     onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="block w-full border border-gray-300 rounded-md shadow-sm p-2.5 sm:p-3 focus:ring-indigo-500 focus:border-indigo-500 text-base"
                     required
                     minLength={8}
                 />
@@ -171,22 +171,22 @@ const PasswordChangeForm = ({ dispatch, loading, error, successMessage }) => {
 
             {/* Input Confirmar Contraseña */}
             <div>
-                <label className="block text-sm font-medium text-gray-700" htmlFor="confirmPassword">Confirmar Nueva Contraseña</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="confirmPassword">Confirmar Nueva Contraseña</label>
                 <input
                     type="password"
                     id="confirmPassword"
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="block w-full border border-gray-300 rounded-md shadow-sm p-2.5 sm:p-3 focus:ring-indigo-500 focus:border-indigo-500 text-base"
                     required
                 />
             </div>
 
             <button
                 type="submit"
-                className={`w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
-                    loading ? 'bg-red-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'
+                className={`w-full flex justify-center items-center gap-2 py-2.5 sm:py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+                    loading ? 'bg-red-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700 active:bg-red-800'
                 } transition-colors`}
                 disabled={loading}
             >
@@ -219,11 +219,11 @@ const ProfilePage = () => {
     // Redirección o mensaje si el usuario no está logueado
     if (!user) {
         return (
-            <div className="min-h-screen bg-gray-50 py-10 flex items-center justify-center">
-                <div className="text-center p-8 bg-white rounded-xl shadow-lg max-w-sm">
+            <div className="min-h-screen bg-gray-50 py-10 px-4 flex items-center justify-center">
+                <div className="text-center p-6 sm:p-8 bg-white rounded-xl shadow-lg max-w-sm w-full">
                     <AlertCircle className="w-10 h-10 mx-auto text-red-500 mb-4" />
-                    <h1 className="text-2xl font-bold text-gray-900">Acceso denegado</h1>
-                    <p className="mt-2 text-gray-600">Por favor, inicia sesión para ver tu perfil.</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Acceso denegado</h1>
+                    <p className="mt-2 text-sm sm:text-base text-gray-600">Por favor, inicia sesión para ver tu perfil.</p>
                 </div>
             </div>
         );
@@ -241,18 +241,18 @@ const ProfilePage = () => {
     // Componente de Enlace del Menú Lateral
     const SidebarLink = ({ Icon, title, sectionName }) => (
         <button 
-            className={`w-full text-left flex items-center gap-3 p-3 rounded-lg transition-colors duration-200 ${
+            className={`w-full text-left flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-lg transition-colors duration-200 text-sm sm:text-base ${
                 selectedSection === sectionName
-                ? 'bg-indigo-600 text-white font-semibold shadow-md' 
-                : 'text-gray-700 hover:bg-indigo-50 hover:text-indigo-700'
+                ? 'bg-red-600 text-white font-semibold shadow-md' 
+                : 'text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 active:bg-indigo-100'
             }`}
             onClick={() => {
                 setSelectedSection(sectionName);
                 dispatch(clearSuccessMessage()); // Limpia mensajes al cambiar de sección
             }}
         >
-            <Icon className="w-5 h-5" />
-            {title}
+            <Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+            <span className="truncate">{title}</span>
         </button>
     );
 
@@ -264,37 +264,37 @@ const ProfilePage = () => {
         switch (selectedSection) {
             case 'details':
                 return (
-                    <div className="space-y-8">
+                    <div className="space-y-6 sm:space-y-8">
                         {/* Detalles de Lectura */}
-                        <h2 className="text-2xl font-bold text-gray-800 border-b pb-2">Información de Usuario</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 border-b pb-2">Información de Usuario</h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-x-12 sm:gap-y-8">
                             {/* Nombre */}
                             <div>
-                                <p className="text-sm font-medium text-gray-500 flex items-center gap-2"><User className="w-4 h-4 text-indigo-500" /> Nombre Completo</p>
-                                <p className="mt-1 text-lg font-semibold text-gray-900">{userName}</p>
+                                <p className="text-xs sm:text-sm font-medium text-gray-500 flex items-center gap-2 mb-1.5"><User className="w-4 h-4 text-indigo-500 flex-shrink-0" /> Nombre Completo</p>
+                                <p className="text-base sm:text-lg font-semibold text-gray-900 break-words">{userName}</p>
                             </div>
                             
                             {/* Email */}
                             <div>
-                                <p className="text-sm font-medium text-gray-500 flex items-center gap-2"><Mail className="w-4 h-4 text-indigo-500" /> Correo Electrónico</p>
-                                <p className="mt-1 text-lg font-semibold text-gray-900">{userEmail}</p>
+                                <p className="text-xs sm:text-sm font-medium text-gray-500 flex items-center gap-2 mb-1.5"><Mail className="w-4 h-4 text-indigo-500 flex-shrink-0" /> Correo Electrónico</p>
+                                <p className="text-base sm:text-lg font-semibold text-gray-900 break-words">{userEmail}</p>
                             </div>
                             
                             {/* Rol */}
                             <div>
-                                <p className="text-sm font-medium text-gray-500 flex items-center gap-2"><Home className="w-4 h-4 text-indigo-500" /> Tipo de Usuario</p>
-                                <p className="mt-1 text-lg font-semibold text-gray-900">{userRole}</p>
+                                <p className="text-xs sm:text-sm font-medium text-gray-500 flex items-center gap-2 mb-1.5"><Home className="w-4 h-4 text-indigo-500 flex-shrink-0" /> Tipo de Usuario</p>
+                                <p className="text-base sm:text-lg font-semibold text-gray-900">{userRole}</p>
                             </div>
                             
                             {/* Miembro Desde */}
                             <div>
-                                <p className="text-sm font-medium text-gray-500 flex items-center gap-2"><Clock className="w-4 h-4 text-indigo-500" /> Miembro desde</p>
-                                <p className="mt-1 text-lg font-semibold text-gray-900">{memberSince}</p>
+                                <p className="text-xs sm:text-sm font-medium text-gray-500 flex items-center gap-2 mb-1.5"><Clock className="w-4 h-4 text-indigo-500 flex-shrink-0" /> Miembro desde</p>
+                                <p className="text-base sm:text-lg font-semibold text-gray-900">{memberSince}</p>
                             </div>
                         </div>
 
                         {/* Formulario de Edición */}
-                        <div className="mt-10 pt-6 border-t border-gray-200">
+                        <div className="mt-8 sm:mt-10 pt-6 border-t border-gray-200">
                             <ProfileDetailsForm 
                                 user={user} 
                                 dispatch={dispatch} 
@@ -315,26 +315,26 @@ const ProfilePage = () => {
                     />
                 );
             case 'orders':
-                return <div className="p-10 bg-gray-50 rounded-lg text-center"><ShoppingBag className="w-10 h-10 text-indigo-500 mx-auto mb-4" /><h2 className="text-2xl font-bold text-gray-800">Mis Pedidos</h2><p className="text-gray-600">Esta sección está en construcción. ¡Pronto podrás ver tu historial de compras aquí!</p></div>;
+                return <div className="p-6 sm:p-10 bg-gray-50 rounded-lg text-center"><ShoppingBag className="w-8 h-8 sm:w-10 sm:h-10 text-indigo-500 mx-auto mb-3 sm:mb-4" /><h2 className="text-xl sm:text-2xl font-bold text-gray-800">Mis Pedidos</h2><p className="text-sm sm:text-base text-gray-600 mt-2">Esta sección está en construcción. ¡Pronto podrás ver tu historial de compras aquí!</p></div>;
             case 'wishlist':
-                return <div className="p-10 bg-gray-50 rounded-lg text-center"><Heart className="w-10 h-10 text-pink-500 mx-auto mb-4" /><h2 className="text-2xl font-bold text-gray-800">Lista de Deseos</h2><p className="text-gray-600">Aquí guardaremos los productos que te enamoren.</p></div>;
+                return <div className="p-6 sm:p-10 bg-gray-50 rounded-lg text-center"><Heart className="w-8 h-8 sm:w-10 sm:h-10 text-pink-500 mx-auto mb-3 sm:mb-4" /><h2 className="text-xl sm:text-2xl font-bold text-gray-800">Lista de Deseos</h2><p className="text-sm sm:text-base text-gray-600 mt-2">Aquí guardaremos tus productos favoritos.</p></div>;
             default:
                 return null;
         }
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-10">
+        <div className="min-h-screen bg-gray-50 py-6 sm:py-10">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-4xl font-extrabold text-gray-900 mb-6 border-b pb-2">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 mb-4 sm:mb-6 border-b pb-2">
                     Mi Perfil
                 </h1>
 
-                <div className="flex flex-col lg:flex-row gap-8">
+                <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
                     {/* Panel de Navegación Lateral */}
-                    <aside className="w-full lg:w-64 bg-white p-6 rounded-xl shadow-xl flex-shrink-0">
-                        <h3 className="text-lg font-bold text-gray-800 mb-4">Menú de Cuenta</h3>
-                        <div className="space-y-2">
+                    <aside className="w-full lg:w-64 bg-white p-4 sm:p-6 rounded-xl shadow-lg lg:shadow-xl flex-shrink-0">
+                        <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4">Menú de Cuenta</h3>
+                        <div className="space-y-1.5 sm:space-y-2">
                             <SidebarLink Icon={User} title="Información Personal" sectionName="details" />
                             <SidebarLink Icon={Lock} title="Cambiar Contraseña" sectionName="password" />
                             <SidebarLink Icon={ShoppingBag} title="Mis Pedidos" sectionName="orders" />
@@ -343,7 +343,7 @@ const ProfilePage = () => {
                     </aside>
 
                     {/* Contenido Principal */}
-                    <main className="flex-1 bg-white p-8 rounded-xl shadow-xl border border-gray-100">
+                    <main className="flex-1 bg-white p-4 sm:p-6 lg:p-8 rounded-xl shadow-lg lg:shadow-xl border border-gray-100">
                         {renderContent()}
                     </main>
                 </div>

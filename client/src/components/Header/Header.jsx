@@ -20,11 +20,17 @@ const Header = ({ cartItems, onCartToggle }) => {
   // --- Lógica de Redux para autenticación ---
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
-  
   const isLoggedIn = !!user;
+  const rol = useSelector((state) => state.user.user?.role);
+
+
+  // ✅ Mostrar en consola todo lo que llega en user
+useEffect(() => {
+  console.log("🧩 Datos completos del usuario:", user);
+}, [user]);
   
   // Lógica para obtener el nombre del usuario (ya es correcta gracias a formatUserPayload en el slice)
-  const userName = user?.name || user?.correo || user?.email || "Usuario";
+  const userName = user?.name || user?.correo || user?.email || user?.role || "Usuario";
   
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -110,6 +116,7 @@ const Header = ({ cartItems, onCartToggle }) => {
                   userName={userName} 
                   isLoggedIn={isLoggedIn}
                   onLogout={handleLogout} // ⬅️ Usa la nueva función con la thunk
+                  rol ={user?.rol}
                 /> 
 
                 {/* Orders - Placeholder (Se mantiene) */}

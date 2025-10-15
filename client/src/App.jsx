@@ -1,127 +1,143 @@
-import React, { useState, useEffect } from 'react'; // ⬅️ Importamos useEffect
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+// Componentes base
 import Header from './components/Header/Header';
 import TopBar from './components/TopBar/TopBar';
+import Footer from './components/Footer/Footer';
+import ScrollToTop from './hooks/Scrolltop';
+
+// Páginas principales
 import Home from './pages/Home/Home';
 import ProductsPage from './pages/Products/Products';
 import ShoppingCart from './pages/Products/ShoppingCart/ShoppingCart';
 import ProductDetails from './pages/ProductDetails/ProductDetails';
 import AboutUsPage from './pages/AboutUs/AboutUsPage';
 import ServicesPage from './pages/Servicios/ServicesPage';
-import ServiceMenuPage from './pages/serviceMenu/serviceMenuPage';
+import ServiceMenuPage from './pages/ServiceMenu/ServiceMenuPage'; // Ruta corregida
 import ContactPage from './pages/Contact/ContactPage';
-import Footer from './components/Footer/Footer';
-import ScrollToTop from './hooks/Scrolltop';
 
 // Importaciones de Redux
-import { useDispatch } from 'react-redux'; // ⬅️ Importamos useDispatch
-import { checkAuthStatus } from './features/user/usersSlice'; // ⬅️ Importamos la Thunk
+import { useDispatch } from 'react-redux';
+import { checkAuthStatus } from './features/user/usersSlice'; // Thunk para verificar sesión
 
-// Importaciones de Autenticación
-import Login from './pages/Auth/login';
-import Register from './pages/Auth/Register'; 
-import ProfilePage from './pages/Auth/ProfilePage'; // ⬅️ NUEVA IMPORTACIÓN
-import ProtectedRoute from '../src/pages/Auth/ProtectedRoute'; // ⬅️ NUEVA IMPORTACIÓN
+// Autenticación y Protección de Rutas
+import Login from './pages/Auth/Login'; // Ruta corregida
+import Register from './pages/Auth/Register';
+import ProfilePage from './pages/Auth/ProfilePage';
+import ProtectedRoute from './pages/Auth/ProtectedRoute';
+import AdminRoute from './pages/Auth/AdminRoute'; // ⬅️ IMPORTACIÓN CLAVE para proteger rutas Admin
 
-// Import del admin (dummy por ahora)
+// Admin (dummy por ahora)
 import AdminProducts from './admin/products/AdminProducts';
 
 function App() {
-  // --- Lógica de persistencia de sesión ---
-  const dispatch = useDispatch();
-  
-  // Ejecuta la verificación de la cookie al montar el componente App
-  useEffect(() => {
-    // Esto hace la llamada al backend para ver si la cookie HttpOnly es válida.
-    dispatch(checkAuthStatus());
-  }, [dispatch]);
-  // ----------------------------------------
-  
-  const [cartItems, setCartItems] = useState([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  // --- Lógica de persistencia de sesión ---
+  const dispatch = useDispatch();
 
-  const onCartToggle = () => setIsCartOpen(prev => !prev);
+  useEffect(() => {
+    // Verifica la cookie HttpOnly con el backend
+    dispatch(checkAuthStatus());
+  }, [dispatch]);
+  // ----------------------------------------
 
-  const addToCart = (product) => {
-    setCartItems(prev => {
-      const existing = prev.find(item => item.id === product.id);
-      if (existing) {
-        return prev.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prev, { ...product, quantity: 1 }];
-    });
-    setIsCartOpen(true);
-  };
+  const [cartItems, setCartItems] = useState([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const updateCartQuantity = (id, quantity) => {
-    setCartItems(prev =>
-      prev.map(item =>
-        item.id === id ? { ...item, quantity } : item
-      )
-    );
-  };
+  const onCartToggle = () => setIsCartOpen((prev) => !prev);
 
-  const removeFromCart = (id) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
-  };
+  const addToCart = (product) => {
+    setCartItems((prev) => {
+      const existing = prev.find((item) => item.id === product.id);
+      if (existing) {
+        return prev.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prev, { ...product, quantity: 1 }];
+    });
+    setIsCartOpen(true);
+  };
 
-  const handleProceedToCheckout = () => {
-    console.log('Redirigiendo al checkout...');
-  };
+  const updateCartQuantity = (id, quantity) => {
+    setCartItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, quantity } : item))
+    );
+  };
 
-  return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <div className="font-sans min-h-screen bg-gray-100 flex flex-col">
-        <TopBar />
-        <Header cartItems={cartItems} onCartToggle={onCartToggle} />
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/productos" element={<ProductsPage addToCart={addToCart} />} />
-            <Route path="/productos/:id" element={<ProductDetails onAddToCart={addToCart} />} />
+  const removeFromCart = (id) => {
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  };
 
-            {/* RUTAS DE AUTENTICACIÓN */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} /> 
-            
-            {/* 💥 RUTA PROTEGIDA: Mi Perfil 💥 */}
-            <Route 
-                path="/mi-cuenta" 
-                element={
-                <ProtectedRoute>
-                    <ProfilePage />
-                </ProtectedRoute>
-                } 
+  const handleProceedToCheckout = () => {
+    console.log('Redirigiendo al checkout...');
+  };
+
+  return (
+    <BrowserRouter>
+      <ScrollToTop />
+      <div className="font-sans min-h-screen bg-gray-100 flex flex-col">
+        <TopBar />
+        <Header cartItems={cartItems} onCartToggle={onCartToggle} />
+
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route
+              path="/productos"
+              element={<ProductsPage addToCart={addToCart} />}
+            />
+            <Route
+              path="/productos/:id"
+              element={<ProductDetails onAddToCart={addToCart} />}
             />
 
-            <Route path="/acerca-de-nosotros" element={<AboutUsPage />} />
-            <Route path="/servicios" element={<ServicesPage />} />
-            <Route path="/servicios/:category" element={<ServiceMenuPage />} />
-            <Route path="/contacto" element={<ContactPage />} />
+            {/* RUTAS DE AUTENTICACIÓN */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-            {/* Ruta dummy para admin */}
-            <Route path="/admin/products" element={<AdminProducts />} />
-          </Routes>
-        </main>
+            {/* 💥 RUTA PROTEGIDA: Mi Perfil (Cualquier usuario logueado) 💥 */}
+            <Route
+              path="/mi-cuenta"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
 
-        <ShoppingCart
-          isOpen={isCartOpen}
-          onClose={onCartToggle}
-          cartItems={cartItems}
-          onUpdateQuantity={updateCartQuantity}
-          onRemoveItem={removeFromCart}
-          onProceedToCheckout={handleProceedToCheckout}
-        />
+            <Route path="/acerca-de-nosotros" element={<AboutUsPage />} />
+            <Route path="/servicios" element={<ServicesPage />} />
+            <Route path="/servicios/:category" element={<ServiceMenuPage />} />
+            <Route path="/contacto" element={<ContactPage />} />
 
-        <Footer />
-      </div>
-    </BrowserRouter>
-  );
+            {/* 💥 RUTA PROTEGIDA POR ROL: Admin/Products 💥 */}
+            <Route 
+              path="/admin/products" 
+              element={
+                <AdminRoute>
+                  <AdminProducts />
+                </AdminRoute>
+              } 
+            />
+          </Routes>
+        </main>
+
+        <ShoppingCart
+          isOpen={isCartOpen}
+          onClose={onCartToggle}
+          cartItems={cartItems}
+          onUpdateQuantity={updateCartQuantity}
+          onRemoveItem={removeFromCart}
+          onProceedToCheckout={handleProceedToCheckout}
+        />
+
+        <Footer />
+      </div>
+    </BrowserRouter>
+  );
 }
 
 export default App;

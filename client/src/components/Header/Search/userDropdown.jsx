@@ -20,14 +20,15 @@ const getInitials = (name) => {
   return initials.substring(0, 2);
 };
 
-const UserDropdown = ({ userName, isLoggedIn, onLogout }) => {
+const UserDropdown = ({ userName, isLoggedIn, onLogout ,rol}) => {
   // ===============================================
   // LOG PARA VERIFICAR LAS PROPS DE REDUX
   // ===============================================
   console.log("UserDropdown Props:", { 
     userName: userName, 
     isLoggedIn: isLoggedIn, 
-    initials: getInitials(userName) // Calcula aquí también para el log
+    initials: getInitials(userName), // Calcula aquí también para el log
+    userrole: rol
   });
   // ===============================================
 
