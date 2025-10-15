@@ -14,7 +14,7 @@ import ShoppingCart from './pages/Products/ShoppingCart/ShoppingCart';
 import ProductDetails from './pages/ProductDetails/ProductDetails';
 import AboutUsPage from './pages/AboutUs/AboutUsPage';
 import ServicesPage from './pages/Servicios/ServicesPage';
-import ServiceMenuPage from './pages/ServiceMenu/ServiceMenuPage'; // Ruta corregida
+import ServiceMenuPage from './pages/ServiceMenu/serviceMenuPage'; // Ruta corregida
 import ContactPage from './pages/Contact/ContactPage';
 
 // Importaciones de Redux
@@ -22,7 +22,7 @@ import { useDispatch } from 'react-redux';
 import { checkAuthStatus } from './features/user/usersSlice'; // Thunk para verificar sesión
 
 // Autenticación y Protección de Rutas
-import Login from './pages/Auth/Login'; // Ruta corregida
+import Login from './pages/Auth/login'; // Ruta corregida
 import Register from './pages/Auth/Register';
 import ProfilePage from './pages/Auth/ProfilePage';
 import ProtectedRoute from './pages/Auth/ProtectedRoute';
