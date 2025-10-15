@@ -14,7 +14,7 @@ import ShoppingCart from './pages/Products/ShoppingCart/ShoppingCart';
 import ProductDetails from './pages/ProductDetails/ProductDetails';
 import AboutUsPage from './pages/AboutUs/AboutUsPage';
 import ServicesPage from './pages/Servicios/ServicesPage';
-import ServiceMenuPage from './pages/Servicios/ServicesPage'; // Ruta corregida
+import ServiceMenuPage from './pages/serviceMenu/serviceMenuPage'; // Ruta corregida
 import ContactPage from './pages/Contact/ContactPage';
 
 // Importaciones de Redux

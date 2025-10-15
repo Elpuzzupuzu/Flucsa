@@ -24,18 +24,6 @@ import cis3 from '../../assets/serviceimages/cisterna3.jpg';
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 export const services = [
   { 
     id: "sistemas-riego",
