@@ -8,6 +8,7 @@ import ProductsGrid from "./components/ProductsGrid";
 import ProductsPagination from "./components/ProductsPagination";
 import NoResults from "./components/NoResult";
 import FilterSidebar from "./ProductFilter/ProductFilter";
+import HeroSlider from "../../components/BannerSlider/HeroSlider";
 
 const ProductsPage = ({ addToCart }) => {
   const logic = useProductsLogic();
@@ -46,8 +47,8 @@ const ProductsPage = ({ addToCart }) => {
     // que se desborde horizontalmente y evitar el scroll lateral.
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-100 overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <ProductsHeader />
-
+        {/* <ProductsHeader /> */}
+      
         <ProductsToolbar
           ref={toolbarRef} 
           {...{
@@ -91,6 +92,8 @@ const ProductsPage = ({ addToCart }) => {
         onToggle={() => setSidebarOpen(false)}
         categories={availableCategories}
       />
+          {/* <HeroSlider/> */}  
+
     </div>
   );
 };
