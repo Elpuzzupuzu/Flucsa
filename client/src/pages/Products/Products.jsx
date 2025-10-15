@@ -9,6 +9,9 @@ import ProductsPagination from "./components/ProductsPagination";
 import NoResults from "./components/NoResult";
 import FilterSidebar from "./ProductFilter/ProductFilter";
 import HeroSlider from "../../components/BannerSlider/HeroSlider";
+import heroImage from '../../../src/assets/images/pipes.jpg'
+import HeroSection from "../../components/HeroSection/HeroSection";
+
 
 const ProductsPage = ({ addToCart }) => {
   const logic = useProductsLogic();
@@ -93,6 +96,8 @@ const ProductsPage = ({ addToCart }) => {
         categories={availableCategories}
       />
           {/* <HeroSlider/> */}  
+      <HeroSection heroImage={heroImage} />
+          
 
     </div>
   );

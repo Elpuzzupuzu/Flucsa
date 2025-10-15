@@ -1,3 +1,5 @@
+// Asegúrate de que esta línea esté al principio de tu archivo
+import { Link } from 'react-router-dom'; 
 
 export default function HeroSection({ heroImage }) {
   return (
@@ -35,12 +37,16 @@ export default function HeroSection({ heroImage }) {
               </svg>
             </button>
             
-            <button className="bg-transparent border-2 border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300 flex items-center gap-2">
+            {/* CAMBIO REALIZADO AQUÍ */}
+            <Link 
+              to="/acerca-de-nosotros" // 'to' en React Router
+              className="bg-transparent border-2 border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300 flex items-center gap-2"
+            >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               Conócenos
-            </button>
+            </Link>
           </div>
 
           {/* Features */}
