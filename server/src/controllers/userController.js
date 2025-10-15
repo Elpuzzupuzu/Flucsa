@@ -9,8 +9,10 @@ import { UserService } from '../services/userService.js';
 // };
 const cookieConfig = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production', // HTTPS obligatorio en producción
-  sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // Lax en dev, None en prod
+  secure: true,             // obligatorio en HTTPS
+  sameSite: 'None',         // permite cookies entre dominios
+  domain: '.onrender.com',  // 🔥 permite que funcione en subdominios
+  path: '/',                // cookie disponible para toda la app
 };
 
 
