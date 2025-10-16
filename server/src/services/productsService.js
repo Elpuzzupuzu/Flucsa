@@ -13,6 +13,12 @@ export const ProductsService = {
     return product;
   },
 
+  async searchProducts(query) {
+  const { products } = await ProductsRepository.searchProducts(query);
+  return products;
+},
+
+
   async createProduct(productData) {
     if (!productData.nombre || !productData.categoria_principal_id || !productData.subcategoria_id || !productData.ubicacion_id) {
       throw new Error("Faltan campos obligatorios para crear el producto");

@@ -20,6 +20,21 @@ export const fetchProducts = createAsyncThunk(
   }
 );
 
+// Nuevo thunk para búsqueda
+export const searchProducts = createAsyncThunk(
+  "products/searchProducts",
+  async (query, thunkAPI) => {
+    try {
+      const response = await api.get(`/products/search?q=${query}`);
+      return response.data; // esperamos un array de productos
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Error al buscar productos"
+      );
+    }
+  }
+);
+
 export const fetchProductById = createAsyncThunk(
   "products/fetchProductById",
   async (id, thunkAPI) => {
@@ -83,8 +98,16 @@ const productsSlice = createSlice({
     limit: 10,
     loading: false,
     error: null,
+    searchResults: [], // <-- para resultados del dropdown
+    searchLoading: false,
+    searchError: null,
   },
-  reducers: {},
+  reducers: {
+    clearSearchResults(state) {
+      state.searchResults = [];
+      state.searchError = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // fetchProducts
@@ -102,6 +125,19 @@ const productsSlice = createSlice({
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      // searchProducts
+      .addCase(searchProducts.pending, (state) => {
+        state.searchLoading = true;
+        state.searchError = null;
+      })
+      .addCase(searchProducts.fulfilled, (state, action) => {
+        state.searchLoading = false;
+        state.searchResults = action.payload || [];
+      })
+      .addCase(searchProducts.rejected, (state, action) => {
+        state.searchLoading = false;
+        state.searchError = action.payload;
       })
       // fetchProductById
       .addCase(fetchProductById.pending, (state) => {
@@ -138,4 +174,5 @@ const productsSlice = createSlice({
   },
 });
 
+export const { clearSearchResults } = productsSlice.actions;
 export default productsSlice.reducer;

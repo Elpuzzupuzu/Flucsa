@@ -20,6 +20,18 @@ export const ProductsRepository = {
   };
 },
 
+async searchProducts(query) {
+  const { data, error } = await supabase
+    .from("productos")
+    .select("*")
+    .ilike("nombre", `%${query}%`)
+    .order("nombre", { ascending: true });
+
+  if (error) throw new Error(error.message);
+  return { products: data || [] };
+}
+,
+
 
 
 

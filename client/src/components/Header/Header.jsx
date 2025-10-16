@@ -3,13 +3,12 @@ import { Link } from 'react-router-dom';
 import { X, ShoppingCart, MapPin, Menu } from 'lucide-react';
 // IMPORTACIONES DE REDUX
 import { useSelector, useDispatch } from 'react-redux';
-// CORRECCIÓN IMPORTANTE: Reemplazamos la acción síncrona 'logout' por la thunk 'logoutUser'
-import { logoutUser } from '../../features/user/usersSlice'; // ⬅️ Usamos la thunk
+import { logoutUser } from '../../features/user/usersSlice';
 
 import Navigation from '../Navigation/Navigation';
-import Search from './Search/Search';
+import Search from './Search/Search'; // Asegúrate de que la ruta sea correcta
 import LogoCompleto from '../../assets/images/flucsa2.jpg';
-import UserDropdown from './Search/userDropdown'; 
+import UserDropdown from './Search/userDropdown';
 
 const Header = ({ cartItems, onCartToggle }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -23,15 +22,12 @@ const Header = ({ cartItems, onCartToggle }) => {
   const isLoggedIn = !!user;
   const rol = useSelector((state) => state.user.user?.role);
 
+  useEffect(() => {
+    console.log("🧩 Datos completos del usuario:", user);
+  }, [user]);
 
-  // ✅ Mostrar en consola todo lo que llega en user
-useEffect(() => {
-  console.log("🧩 Datos completos del usuario:", user);
-}, [user]);
-  
-  // Lógica para obtener el nombre del usuario (ya es correcta gracias a formatUserPayload en el slice)
   const userName = user?.name || user?.correo || user?.email || user?.role || "Usuario";
-  
+
   const handleLogout = () => {
     dispatch(logoutUser());
   }
@@ -41,7 +37,6 @@ useEffect(() => {
     ? cartItems.reduce((sum, item) => sum + item.quantity, 0)
     : 0;
 
-  // Efecto para animación del carrito (se mantiene)
   useEffect(() => {
     if (totalCartItems > previousCartCount) {
       setIsCartAnimating(true);
@@ -53,14 +48,13 @@ useEffect(() => {
     setPreviousCartCount(totalCartItems);
   }, [totalCartItems, previousCartCount]);
 
-  // Efecto para bloquear el scroll del cuerpo con el menú abierto (se mantiene)
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
-    
+
     return () => {
       document.body.style.overflow = 'unset';
     };
@@ -73,7 +67,7 @@ useEffect(() => {
         <div className="bg-gradient-to-r from-[#1C2E82] via-[#2147b8] to-[#2d4bc7]">
           <div className="max-w-[1500px] mx-auto px-4 py-2">
             <div className="flex items-center gap-4">
-              
+
               {/* Logo */}
               <Link to="/" className="flex-shrink-0 group cursor-pointer">
                 <div className="relative overflow-hidden rounded-lg bg-white/5 p-2 backdrop-blur-md border border-white/15 transition-all duration-300 hover:border-white/25 hover:bg-white/10">
@@ -81,7 +75,7 @@ useEffect(() => {
                     src={LogoCompleto}
                     alt="FLUCSA"
                     className="h-12 w-auto object-contain transition-all duration-500 group-hover:brightness-125"
-                    />
+                  />
                 </div>
               </Link>
 
@@ -94,30 +88,29 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Search Bar - Expandido */}
+              {/* SEARCH BAR - EXPANDIDO (MODIFICADO AQUÍ) */}
+              {/* Le quitamos el botón de búsqueda y lo pasamos al componente Search para simplificar. */}
+              {/* Lo más importante: ELIMINAMOS overflow-hidden del contenedor principal. */}
               <div className="hidden md:flex flex-1 max-w-3xl">
-                <div className="w-full bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow flex">
-                  <div className="flex-1 px-4 py-2.5">
-                    <Search />
-                  </div>
-                  <button className="bg-[#febd69] hover:bg-[#f3a847] px-6 transition-colors flex items-center justify-center">
-                    <svg className="w-5 h-5 text-[#131921]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </button>
+                {/* Contenedor relativo que permite que el dropdown (posición absolute) se muestre */}
+                <div className="w-full bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                    {/* El padding y Search ahora están en el mismo div */}
+                    <div className="flex-1"> 
+                        <Search /> {/* Search.jsx ahora incluye el input y el dropdown de resultados */}
+                    </div>
                 </div>
               </div>
 
               {/* Right Section */}
               <div className="hidden lg:flex items-center gap-2">
-                
+
                 {/* User/Account Dropdown - CON PROPS DE REDUX */}
-                <UserDropdown 
-                  userName={userName} 
+                <UserDropdown
+                  userName={userName}
                   isLoggedIn={isLoggedIn}
-                  onLogout={handleLogout} // ⬅️ Usa la nueva función con la thunk
-                  rol ={user?.rol}
-                /> 
+                  onLogout={handleLogout}
+                  rol={user?.rol}
+                />
 
                 {/* Orders - Placeholder (Se mantiene) */}
                 <div className="px-3 py-2 rounded-md hover:bg-white/10 transition-all cursor-pointer border border-transparent hover:border-white/20">
@@ -195,22 +188,16 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* Mobile Search Bar */}
+        {/* Mobile Search Bar (MODIFICADO AQUÍ) */}
         <div className="md:hidden bg-gradient-to-r from-[#1C2E82] via-[#2147b8] to-[#2d4bc7] px-4 pb-2">
-          <div className="bg-white rounded-lg overflow-hidden shadow-md flex">
-            <div className="flex-1 px-3 py-2">
-              <Search />
+            {/* ELIMINAMOS overflow-hidden y manejamos todo en Search.jsx */}
+            <div className="bg-white rounded-lg shadow-md">
+                <Search />
             </div>
-            <button className="bg-[#febd69] hover:bg-[#f3a847] px-4 transition-colors flex items-center justify-center">
-              <svg className="w-5 h-5 text-[#131921]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
-          </div>
         </div>
       </header>
 
-      {/* Mobile menu overlay */}
+      {/* Mobile menu overlay (Se mantiene sin cambios) */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-[100] lg:hidden">
           <div
@@ -230,11 +217,11 @@ useEffect(() => {
             </div>
 
             <div className="p-5">
-              <Navigation 
-                isMobile={true} 
-                onLinkClick={() => setIsMenuOpen(false)} 
-                isLoggedIn={isLoggedIn} // Opcional: pasar estado de login a Navigation si lo necesita
-                onLogout={handleLogout} // Opcional: pasar logout a Navigation si lo necesita
+              <Navigation
+                isMobile={true}
+                onLinkClick={() => setIsMenuOpen(false)}
+                isLoggedIn={isLoggedIn}
+                onLogout={handleLogout}
               />
             </div>
           </div>
