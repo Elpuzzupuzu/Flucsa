@@ -8,9 +8,7 @@ const HeroSection = ({ teamImage = "https://images.unsplash.com/photo-1552664730
                 
                 {/* Content Side - Menor ancho para dar protagonismo a imagen */}
                 <div className="lg:col-span-2">
-                    <div className="inline-flex items-center justify-center w-14 h-14 bg-slate-100 rounded-lg mb-6">
-                        <Users className="w-7 h-7 text-[#1C2E82]" />
-                    </div>
+                  
                     
                     <h1 className="text-4xl lg:text-5xl font-bold mb-4 text-slate-900 leading-tight">
                         Conoce Nuestra
