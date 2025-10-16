@@ -20,7 +20,9 @@ export const fetchProducts = createAsyncThunk(
   }
 );
 
-// Nuevo thunk para búsqueda
+// ===============================
+// Buscar productos
+// ===============================
 export const searchProducts = createAsyncThunk(
   "products/searchProducts",
   async (query, thunkAPI) => {
@@ -35,6 +37,26 @@ export const searchProducts = createAsyncThunk(
   }
 );
 
+// ===============================
+// Filtrar productos
+// ===============================
+export const filterProducts = createAsyncThunk(
+  "products/filterProducts",
+  async (filters, thunkAPI) => {
+    try {
+      const response = await api.post("/products/filter", filters);
+      return response.data; // { products: [...], total: n }
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Error al filtrar productos"
+      );
+    }
+  }
+);
+
+// ===============================
+// Obtener producto por ID
+// ===============================
 export const fetchProductById = createAsyncThunk(
   "products/fetchProductById",
   async (id, thunkAPI) => {
@@ -49,6 +71,9 @@ export const fetchProductById = createAsyncThunk(
   }
 );
 
+// ===============================
+// Agregar nuevo producto
+// ===============================
 export const addProduct = createAsyncThunk(
   "products/addProduct",
   async (newProduct, thunkAPI) => {
@@ -63,6 +88,9 @@ export const addProduct = createAsyncThunk(
   }
 );
 
+// ===============================
+// Actualizar producto
+// ===============================
 export const updateProduct = createAsyncThunk(
   "products/updateProduct",
   async ({ id, updates, file }, thunkAPI) => {
@@ -98,19 +126,28 @@ const productsSlice = createSlice({
     limit: 10,
     loading: false,
     error: null,
-    searchResults: [], // <-- para resultados del dropdown
+    searchResults: [],
     searchLoading: false,
     searchError: null,
+    filteredItems: [],
+    filterLoading: false,
+    filterError: null,
   },
   reducers: {
     clearSearchResults(state) {
       state.searchResults = [];
       state.searchError = null;
     },
+    clearFilteredItems(state) {
+      state.filteredItems = [];
+      state.filterError = null;
+    },
   },
   extraReducers: (builder) => {
     builder
+      // ===============================
       // fetchProducts
+      // ===============================
       .addCase(fetchProducts.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -126,7 +163,10 @@ const productsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      // ===============================
       // searchProducts
+      // ===============================
       .addCase(searchProducts.pending, (state) => {
         state.searchLoading = true;
         state.searchError = null;
@@ -139,7 +179,27 @@ const productsSlice = createSlice({
         state.searchLoading = false;
         state.searchError = action.payload;
       })
+
+      // ===============================
+      // filterProducts
+      // ===============================
+      .addCase(filterProducts.pending, (state) => {
+        state.filterLoading = true;
+        state.filterError = null;
+      })
+      .addCase(filterProducts.fulfilled, (state, action) => {
+        state.filterLoading = false;
+        state.filteredItems = action.payload.products || [];
+        state.total = action.payload.total || 0;
+      })
+      .addCase(filterProducts.rejected, (state, action) => {
+        state.filterLoading = false;
+        state.filterError = action.payload;
+      })
+
+      // ===============================
       // fetchProductById
+      // ===============================
       .addCase(fetchProductById.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -158,12 +218,18 @@ const productsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
+      // ===============================
       // addProduct
+      // ===============================
       .addCase(addProduct.fulfilled, (state, action) => {
         state.items.push(action.payload);
         state.total += 1;
       })
+
+      // ===============================
       // updateProduct
+      // ===============================
       .addCase(updateProduct.fulfilled, (state, action) => {
         const index = state.items.findIndex((p) => p.id === action.payload.id);
         if (index !== -1) state.items[index] = action.payload;
@@ -174,5 +240,5 @@ const productsSlice = createSlice({
   },
 });
 
-export const { clearSearchResults } = productsSlice.actions;
+export const { clearSearchResults, clearFilteredItems } = productsSlice.actions;
 export default productsSlice.reducer;

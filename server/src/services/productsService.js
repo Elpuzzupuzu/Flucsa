@@ -6,17 +6,24 @@ export const ProductsService = {
     const { products, total } = await ProductsRepository.getProductsPaginated(page, limit);
     return { products, total };
   },
-
+// find by id
   async getProductById(id) {
     const product = await ProductsRepository.getProductById(id);
     if (!product) throw new Error("Producto no encontrado");
     return product;
   },
-
+  //search by name
   async searchProducts(query) {
   const { products } = await ProductsRepository.searchProducts(query);
   return products;
 },
+
+/// search by filters 
+
+ 
+  async filterProducts(filters) {
+    return await ProductsRepository.filterProducts(filters);
+  },
 
 
   async createProduct(productData) {

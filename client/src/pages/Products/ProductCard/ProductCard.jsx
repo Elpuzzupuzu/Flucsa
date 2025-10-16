@@ -122,7 +122,7 @@ const ProductCard = ({ product, viewMode = 'grid', onAddToCart }) => {
 
           {/* Envío */}
           <div className="text-xs text-gray-600 mb-3">
-            Envío GRATIS disponible
+            Envío disponible
           </div>
 
           {/* Botón más compacto */}

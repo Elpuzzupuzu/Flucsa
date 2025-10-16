@@ -27,6 +27,9 @@ async getAllProducts(req, res, next) {
 },
 
 
+
+
+
 // Buscar productos por nombre
 async searchProducts(req, res, next) {
   try {
@@ -40,6 +43,29 @@ async searchProducts(req, res, next) {
   }
 },
 
+
+
+// search by filters
+
+
+async filterProducts(req, res, next) {
+  try {
+    const filters = req.body; // { categories: [], priceRange: '0-100' }
+    const results = await ProductsService.filterProducts(filters);
+
+    if (!results || results.products.length === 0) {
+      return res.status(404).json({ message: "No se encontraron productos con los filtros especificados" });
+    }
+
+    res.status(200).json(results);
+  } catch (error) {
+    next({
+      message: error.message || "Error al filtrar productos",
+      status: 500,
+      stack: error.stack,
+    });
+  }
+},
 
 
   // Obtener un producto por ID

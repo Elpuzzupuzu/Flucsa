@@ -20,6 +20,8 @@ export const ProductsRepository = {
   };
 },
 
+//// Search Products 
+
 async searchProducts(query) {
   const { data, error } = await supabase
     .from("productos")
@@ -32,7 +34,33 @@ async searchProducts(query) {
 }
 ,
 
+/// Search By Filter
 
+
+
+async filterProducts({ categories = [], priceRange = '' }) {
+  let query = supabase.from("productos").select("*");
+
+  // Filtrar por categorías
+  if (categories.length > 0) {
+    query = query.in("categoria_principal_id", categories);
+  }
+
+  // Filtrar por rango de precio
+  if (priceRange) {
+    const [min, max] = priceRange.split("-");
+    if (priceRange.endsWith("+")) {
+      query = query.gte("precio", parseFloat(priceRange.replace("+", "")));
+    } else if (min && max) {
+      query = query.gte("precio", parseFloat(min)).lte("precio", parseFloat(max));
+    }
+  }
+
+  const { data, error } = await query.order("nombre", { ascending: true });
+
+  if (error) throw new Error("Error al filtrar productos: " + error.message);
+  return { products: data || [] };
+},
 
 
   // Obtener un producto por ID
