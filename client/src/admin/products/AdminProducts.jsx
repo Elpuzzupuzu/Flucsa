@@ -1,12 +1,11 @@
 import React, { useRef, useState } from "react";
 import { useProductsLogic } from "../../pages/Products/hooks/useProductsLogic";
-import ProductsHeader from "../../pages/Products/components/ProductsHeader";
-import ProductsToolbar from "../../pages/Products/components/ProductsToolbar";
+import ProductsToolbar from "../adminToolbar/adminToolbar";
 import ProductsGrid from "../adminProductsGrid/adminProductsGrid";
 import ProductsPagination from "../../pages/Products/components/ProductsPagination";
 import NoResults from "../../pages/Products/components/NoResult";
 import FilterSidebar from "../../pages/Products/ProductFilter/ProductFilter";
-import ProductEditorOverlay from "./AdminProductCard/AdminProductOverlay/ProductEditOverlay"; // 🔴 importa aquí
+import ProductEditorOverlay from "./AdminProductCard/AdminProductOverlay/ProductEditOverlay";
 
 const ProductsPage = ({ addToCart }) => {
   const logic = useProductsLogic();
@@ -34,7 +33,7 @@ const ProductsPage = ({ addToCart }) => {
   } = logic;
 
   const toolbarRef = useRef(null);
-  const [selectedProduct, setSelectedProduct] = useState(null); // 🔴 nuevo estado
+  const [selectedProduct, setSelectedProduct] = useState(null); // Estado para el overlay
 
   const handleProductClick = (product) => {
     setSelectedProduct(product);
@@ -44,7 +43,7 @@ const ProductsPage = ({ addToCart }) => {
     setSelectedProduct(null);
   };
 
-  // 🔹 Aquí va la función que actualizará los productos después de editar
+  // Función que actualizará los productos después de editar
   const handleSaveProduct = async (id, updates) => {
     console.log("Guardando producto:", id, updates);
     // Aquí podrías hacer un dispatch a redux o volver a cargar los productos desde la API
@@ -58,6 +57,7 @@ const ProductsPage = ({ addToCart }) => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <ProductsToolbar
           ref={toolbarRef} 
+          onAdminProductSelect={handleProductClick} // <-- ¡Correcto! Pasa el callback
           {...{
             searchTerm,
             setSearchTerm,
@@ -79,7 +79,7 @@ const ProductsPage = ({ addToCart }) => {
               products={currentProducts}
               viewMode={viewMode}
               addToCart={addToCart}
-              onProductClick={handleProductClick} // 🔴 nuevo prop
+              onProductClick={handleProductClick} 
             />
             <ProductsPagination
               totalPages={totalPages}
@@ -101,7 +101,7 @@ const ProductsPage = ({ addToCart }) => {
         categories={availableCategories}
       />
 
-      {/* 🔴 Overlay de edición */}
+      {/* Overlay de edición */}
       {selectedProduct && (
         <ProductEditorOverlay
           product={selectedProduct}

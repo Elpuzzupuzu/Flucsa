@@ -6,7 +6,7 @@ import { UserService } from '../services/userService.js';
 const isProduction = process.env.NODE_ENV === 'production';
 
 // ===============================
-// CONFIGURACIÓN DE LA COOKIE (AJUSTADA CONDICIONALMENTE)
+// CONFIGURACIÓN DE LA COOKIE (CONDICIONALMENTE)
 // ===============================
 const cookieConfig = {
   httpOnly: true,

@@ -20,11 +20,13 @@ const Header = ({ cartItems, onCartToggle }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.user);
   const isLoggedIn = !!user;
-  const rol = useSelector((state) => state.user.user?.role);
+  const rol = useSelector((state) => state.user.user?.rol); // ⬅️ Extracción del rol
 
   useEffect(() => {
     console.log("🧩 Datos completos del usuario:", user);
-  }, [user]);
+    // ⬅️ LOG AÑADIDO PARA VERIFICAR EL ROL
+    console.log(`👤 Rol del usuario extraído: ${rol || 'No autenticado/Sin rol'}`); 
+  }, [user, rol]); // Añadido rol como dependencia para registrar cambios
 
   const userName = user?.name || user?.correo || user?.email || user?.role || "Usuario";
 
@@ -88,16 +90,12 @@ const Header = ({ cartItems, onCartToggle }) => {
                 </div>
               </div>
 
-              {/* SEARCH BAR - EXPANDIDO (MODIFICADO AQUÍ) */}
-              {/* Le quitamos el botón de búsqueda y lo pasamos al componente Search para simplificar. */}
-              {/* Lo más importante: ELIMINAMOS overflow-hidden del contenedor principal. */}
+              {/* SEARCH BAR - EXPANDIDO */}
               <div className="hidden md:flex flex-1 max-w-3xl">
-                {/* Contenedor relativo que permite que el dropdown (posición absolute) se muestre */}
                 <div className="w-full bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                    {/* El padding y Search ahora están en el mismo div */}
-                    <div className="flex-1"> 
-                        <Search /> {/* Search.jsx ahora incluye el input y el dropdown de resultados */}
-                    </div>
+                  <div className="flex-1"> 
+                    <Search />
+                  </div>
                 </div>
               </div>
 
@@ -109,7 +107,7 @@ const Header = ({ cartItems, onCartToggle }) => {
                   userName={userName}
                   isLoggedIn={isLoggedIn}
                   onLogout={handleLogout}
-                  rol={user?.rol}
+                  rol={rol}
                 />
 
                 {/* Orders - Placeholder (Se mantiene) */}
@@ -184,20 +182,20 @@ const Header = ({ cartItems, onCartToggle }) => {
         {/* Bottom Bar - Navigation */}
         <div className="hidden lg:block bg-[#232F3E] border-t border-white/10">
           <div className="max-w-[1500px] mx-auto px-4">
-            <Navigation />
+            {/* ⬅️ Pasar el rol al Navigation de escritorio */}
+            <Navigation rol={rol} /> 
           </div>
         </div>
 
         {/* Mobile Search Bar (MODIFICADO AQUÍ) */}
         <div className="md:hidden bg-gradient-to-r from-[#1C2E82] via-[#2147b8] to-[#2d4bc7] px-4 pb-2">
-            {/* ELIMINAMOS overflow-hidden y manejamos todo en Search.jsx */}
             <div className="bg-white rounded-lg shadow-md">
                 <Search />
             </div>
         </div>
       </header>
 
-      {/* Mobile menu overlay (Se mantiene sin cambios) */}
+      {/* Mobile menu overlay */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-[100] lg:hidden">
           <div
@@ -222,6 +220,7 @@ const Header = ({ cartItems, onCartToggle }) => {
                 onLinkClick={() => setIsMenuOpen(false)}
                 isLoggedIn={isLoggedIn}
                 onLogout={handleLogout}
+                rol={rol} // ⬅️ Pasar el rol al Navigation móvil
               />
             </div>
           </div>
