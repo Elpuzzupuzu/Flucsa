@@ -94,7 +94,7 @@ const Search = ({ onAdminProductSelect }) => {
         {/* Botón de búsqueda */}
         <button
           onClick={handleSearchClick}
-          className="absolute right-0 top-0 bottom-0 px-4 rounded-r-xl bg-red-600 hover:bg-red-700 text-white transition-colors flex items-center justify-center shadow-md"
+          className="absolute right-0 top-0 bottom-0 px-4 rounded-r-xl bg-blue-500 hover:bg-blue-800 text-white transition-colors flex items-center justify-center shadow-md"
         >
           <SearchIcon size={20} />
         </button>

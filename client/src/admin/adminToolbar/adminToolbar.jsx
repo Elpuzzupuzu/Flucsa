@@ -49,7 +49,7 @@ const ProductsToolbar = ({
   <div className="mb-8 bg-white rounded-2xl shadow-lg border border-gray-200 backdrop-blur-sm relative z-40">
 
     {/* AJUSTE VISUAL: Se añadió 'rounded-t-2xl' a la barra de color */}
-    <div className="h-1 bg-gradient-to-r from-red-600 via-red-500 to-blue-600 rounded-t-2xl"></div>
+    <div className="h-1 bg-gradient-to-r from-red-blue via-red-500 to-blue-600 rounded-t-2xl"></div>
 
     <div className="p-6 space-y-5 lg:space-y-0 lg:flex lg:items-center lg:justify-between lg:gap-6">
 

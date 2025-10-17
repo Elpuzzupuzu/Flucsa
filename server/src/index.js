@@ -22,7 +22,7 @@ const allowedOrigins = [
 ];
 
 // 2. Agregamos el origen de producción si está definido en las variables de entorno (Render)
-const productionOrigin = process.env.FRONTEND_ORIGIN;
+const productionOrigin = process.env.FRONTEND_ORIGIN || "https://flucsa.onrender.com";
 if (productionOrigin) {
     allowedOrigins.push(productionOrigin); 
 }
