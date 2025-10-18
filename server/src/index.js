@@ -16,16 +16,38 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// 1. Definimos los orígenes permitidos
+// // 1. Definimos los orígenes permitidos
+// const allowedOrigins = [
+//   "http://localhost:5173", // Origen local para desarrollo
+// ];
+
+// // 2. Agregamos el origen de producción si está definido en las variables de entorno (Render)
+// const productionOrigin = process.env.FRONTEND_ORIGIN || "https://flucsa.onrender.com";
+// if (productionOrigin) {
+//     allowedOrigins.push(productionOrigin); 
+// }
+
+
+
+// ...
+// 1. Definimos los orígenes permitidos (desarrollo)
 const allowedOrigins = [
-  "http://localhost:5173", // Origen local para desarrollo
+  "http://localhost:5173", // Origen local para desarrollo
 ];
 
-// 2. Agregamos el origen de producción si está definido en las variables de entorno (Render)
-const productionOrigin = process.env.FRONTEND_ORIGIN || "https://flucsa.onrender.com";
-if (productionOrigin) {
-    allowedOrigins.push(productionOrigin); 
+// 2. Procesamos los orígenes de producción, soportando múltiples URLs
+const productionOrigins = process.env.FRONTEND_ORIGINS; // ¡Cambiamos el nombre de la variable!
+
+if (productionOrigins) {
+    // Dividimos la cadena por comas y eliminamos espacios en blanco
+    const prodOriginsArray = productionOrigins.split(',').map(url => url.trim());
+    // Agregamos todos los orígenes de producción a la lista permitida
+    allowedOrigins.push(...prodOriginsArray); 
+} else {
+    // Si no se define FRONTEND_ORIGINS, mantenemos el subdominio de Render como fallback
+    allowedOrigins.push("https://flucsa.onrender.com");
 }
+// ...
 
 // Middlewares - CORS
 app.use(cors({
@@ -40,6 +62,14 @@ app.use(cors({
   },
   credentials: true
 }));
+
+
+
+
+
+
+
+
 
 app.use(express.json());
 app.use(cookieParser());
