@@ -142,7 +142,7 @@ const ProductEditorOverlay = ({ product, onClose }) => {
                 onDragLeave={handleDrag}
                 onDragOver={handleDrag}
                 onDrop={handleDrop}
-                className={`relative border-2 border-dashed rounded-xl p-6 transition-all duration-200 ${dragActive ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white hover:border-red-400'}`}
+                className={`relative border-2 border-dashed rounded-xl p-4 transition-all duration-200 ${dragActive ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white hover:border-red-400'}`}
               >
                 <input
                   type="file"
@@ -152,22 +152,22 @@ const ProductEditorOverlay = ({ product, onClose }) => {
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
                 {formData.image ? (
-                  <div className="space-y-3">
-                    <div className="relative bg-gray-50 rounded-lg p-4 border-2 border-gray-200">
-                      <img src={formData.image} alt="preview" className="w-full h-56 object-contain rounded-lg" />
+                  <div className="space-y-2">
+                    <div className="relative bg-gray-50 rounded-lg p-3 border-2 border-gray-200">
+                      <img src={formData.image} alt="preview" className="w-full h-32 object-contain rounded-lg" />
                     </div>
-                    <p className="text-center text-sm text-gray-600 font-medium">Haz clic o arrastra para cambiar la imagen</p>
+                    <p className="text-center text-xs text-gray-600 font-medium">Haz clic o arrastra para cambiar la imagen</p>
                   </div>
                 ) : (
-                  <div className="text-center space-y-3 py-4">
+                  <div className="text-center space-y-2 py-3">
                     <div className="flex justify-center">
-                      <div className="bg-red-50 p-4 rounded-full">
-                        <Upload className="w-8 h-8 text-red-600" />
+                      <div className="bg-red-50 p-3 rounded-full">
+                        <Upload className="w-6 h-6 text-red-600" />
                       </div>
                     </div>
                     <div>
-                      <p className="text-gray-700 font-semibold">Arrastra una imagen aquí</p>
-                      <p className="text-gray-500 text-sm mt-1">o haz clic para seleccionar</p>
+                      <p className="text-gray-700 font-semibold text-sm">Arrastra una imagen aquí</p>
+                      <p className="text-gray-500 text-xs mt-1">o haz clic para seleccionar</p>
                     </div>
                     <p className="text-xs text-gray-400">PNG, JPG o WEBP (máx. 5MB)</p>
                   </div>

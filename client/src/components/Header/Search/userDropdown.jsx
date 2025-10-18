@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { LogIn, User, Power, List, Truck, UserPlus } from "lucide-react";
 
-// Función auxiliar para obtener las iniciales del nombre
+// Función auxiliar para obtener las iniciales del nombre (sin cambios)
 const getInitials = (name) => {
   if (!name) return "??";
   const parts = name.trim().split(/\s+/);
@@ -20,16 +20,18 @@ const getInitials = (name) => {
   return initials.substring(0, 2);
 };
 
-const UserDropdown = ({ userName, isLoggedIn, onLogout ,rol}) => {
+// 🚀 CAMBIO 1: Añadir profilePicture a las props
+const UserDropdown = ({ userName, isLoggedIn, onLogout, rol, profilePicture }) => {
   // ===============================================
   // LOG PARA VERIFICAR LAS PROPS DE REDUX
   // ===============================================
-  // console.log("UserDropdown Props:", { 
-  //   userName: userName, 
-  //   isLoggedIn: isLoggedIn, 
-  //   initials: getInitials(userName), // Calcula aquí también para el log
-  //   userrole: rol
-  // });
+  console.log("UserDropdown Props:", { 
+    userName: userName, 
+    isLoggedIn: isLoggedIn, 
+    initials: getInitials(userName), 
+    userrole: rol,
+    profilePicture: profilePicture // ⬅️ Nuevo log
+  });
   // ===============================================
 
   const [isOpen, setIsOpen] = useState(false);
@@ -50,10 +52,26 @@ const UserDropdown = ({ userName, isLoggedIn, onLogout ,rol}) => {
   const TriggerContent = () => (
     <div className="flex items-center space-x-2">
       {isLoggedIn && (
-        // Avatar de Iniciales
-        <div className="w-8 h-8 flex items-center justify-center bg-white text-[#131921] font-bold text-sm rounded-full shadow-inner">
-          {userInitials}
-        </div>
+        // 🚀 CAMBIO 2: Lógica condicional para mostrar la imagen o las iniciales
+        <>
+          {profilePicture ? (
+            // Muestra la imagen si la URL existe
+            <img
+              src={profilePicture}
+              alt={`${userName}'s profile`}
+              className="w-8 h-8 rounded-full object-cover border-2 border-white shadow-md"
+              onError={(e) => {
+                console.error("Error cargando imagen de perfil:", profilePicture);
+                e.target.style.display = 'none';
+              }}
+            />
+          ) : (
+            // Avatar de Iniciales si no hay imagen
+            <div className="w-8 h-8 flex items-center justify-center bg-white text-[#131921] font-bold text-sm rounded-full shadow-inner">
+              {userInitials}
+            </div>
+          )}
+        </>
       )}
       <div className="flex flex-col leading-none">
         <span className="text-xs text-white/70">
@@ -90,7 +108,7 @@ const UserDropdown = ({ userName, isLoggedIn, onLogout ,rol}) => {
 
           {/* Contenido del Dropdown */}
           {!isLoggedIn ? (
-            // ESTADO NO LOGUEADO (ORIGINAL - INTACTO)
+            // ESTADO NO LOGUEADO
             <div className="flex flex-col items-center p-2">
               <p className="text-sm text-gray-700 mb-3">
                 Accede o regístrate para una mejor experiencia.
@@ -113,7 +131,7 @@ const UserDropdown = ({ userName, isLoggedIn, onLogout ,rol}) => {
               </Link>
             </div>
           ) : (
-            // ESTADO LOGUEADO (MEJORADO)
+            // ESTADO LOGUEADO
             <>
               <h3 className="text-lg font-extrabold text-[#131921] mb-4 border-b pb-2">
                 ¡Bienvenido, {userName.split(' ')[0]}!
