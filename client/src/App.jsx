@@ -24,12 +24,13 @@ import { checkAuthStatus } from './features/user/usersSlice'; // Thunk para veri
 // Autenticación y Protección de Rutas
 import Login from './pages/Auth/login'; // Ruta corregida
 import Register from './pages/Auth/Register';
-import ProfilePage from './pages/Auth/ProfilePage';
+// import ProfilePage from './pages/Auth/ProfilePage';
 import ProtectedRoute from './pages/Auth/ProtectedRoute';
 import AdminRoute from './pages/Auth/AdminRoute'; // ⬅️ IMPORTACIÓN CLAVE para proteger rutas Admin
 
 // Admin (dummy por ahora)
 import AdminProducts from './admin/products/AdminProducts';
+import ProfilePage from './pages/Auth/ProfilePage/ProfilePage';
 
 function App() {
   // --- Lógica de persistencia de sesión ---
@@ -103,7 +104,7 @@ function App() {
               path="/mi-cuenta"
               element={
                 <ProtectedRoute>
-                  <ProfilePage />
+                  <ProfilePage/>
                 </ProtectedRoute>
               }
             />
