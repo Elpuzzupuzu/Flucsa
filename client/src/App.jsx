@@ -15,7 +15,7 @@ import ProductDetails from './pages/ProductDetails/ProductDetails';
 import AboutUsPage from './pages/AboutUs/AboutUsPage';
 import ServicesPage from './pages/Servicios/ServicesPage';
 import ServiceMenuPage from './pages/serviceMenu/serviceMenuPage'; // Ruta corregida
-import ContactPage from './pages/Contact/ContactPage';
+// import ContactPage from './pages/Contact/ContactPage';
 
 // Importaciones de Redux
 import { useDispatch } from 'react-redux';
@@ -31,6 +31,7 @@ import AdminRoute from './pages/Auth/AdminRoute'; // ⬅️ IMPORTACIÓN CLAVE p
 // Admin (dummy por ahora)
 import AdminProducts from './admin/products/AdminProducts';
 import ProfilePage from './pages/Auth/ProfilePage/ProfilePage';
+import ContactPage from './pages/Contact/ContactPage';
 
 function App() {
   // --- Lógica de persistencia de sesión ---

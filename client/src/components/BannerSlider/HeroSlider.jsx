@@ -65,7 +65,7 @@ const HeroSlider = () => {
 
   return (
     <div
-      className="relative w-full h-[600px] overflow-hidden shadow-2xl bg-gradient-to-br from-blue-900 to-blue-700"
+      className="relative w-full h-[400px] overflow-hidden shadow-2xl bg-gradient-to-br from-blue-900 to-blue-700"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -94,35 +94,35 @@ const HeroSlider = () => {
       {/* Content */}
       <div className="absolute inset-0 z-20 flex items-center">
         <div className="container mx-auto px-6 lg:px-12">
-          <div className="grid lg:grid-cols-1 gap-12 items-center">
+          <div className="grid lg:grid-cols-1 gap-8 items-center">
             <div
               className={`text-white transform transition-all duration-1000 delay-300 ${
                 isLoaded ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"
               }`}
             >
               {/* Category Badge */}
-              <div className="inline-flex items-center px-4 py-2 bg-blue-600/90 backdrop-blur-sm rounded-full text-sm font-medium mb-4">
+              <div className="inline-flex items-center px-4 py-2 bg-blue-600/90 backdrop-blur-sm rounded-full text-sm font-medium mb-3">
                 {currentSlideData.category}
               </div>
 
               {/* Main Title */}
-              <h1 className="text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+              <h1 className="text-3xl lg:text-4xl font-bold mb-2 leading-tight">
                 {currentSlideData.title}
               </h1>
 
               {/* Subtitle */}
-              <p className="text-xl lg:text-2xl mb-8 text-gray-200 leading-relaxed max-w-lg">
+              <p className="text-sm lg:text-base mb-4 text-gray-200 leading-relaxed max-w-lg">
                 {currentSlideData.subtitle}
               </p>
 
               {/* Features */}
-              <div className="flex flex-wrap gap-4 mb-8">
+              <div className="flex flex-wrap gap-3 mb-6">
                 {currentSlideData.features.map((feature, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center text-sm bg-white/10 backdrop-blur-sm px-3 py-2 rounded-lg"
+                    className="flex items-center text-xs bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg"
                   >
-                    <Zap className="w-4 h-4 mr-2 text-yellow-400" />
+                    <Zap className="w-3 h-3 mr-1.5 text-yellow-400" />
                     {feature}
                   </div>
                 ))}
@@ -130,46 +130,29 @@ const HeroSlider = () => {
 
               {/* CTA Button */}
               <button
-                className="group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center"
+                className="group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-2.5 rounded-lg text-sm font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center"
                 onClick={() => navigate(currentSlideData.route)}
               >
                 {currentSlideData.cta}
-                <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Navigation Buttons */}
-      <button
-        onClick={() =>
-          setCurrentSlide((prev) => (prev - 1 + slidesData.length) % slidesData.length)
-        }
-        className="absolute top-1/2 left-6 z-30 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/20 hover:scale-110 transition-all duration-200 shadow-lg rounded-full h-14 w-14 flex items-center justify-center text-white hover:text-blue-600"
-      >
-        <ChevronLeft className="w-6 h-6" />
-      </button>
 
-      <button
-        onClick={() =>
-          setCurrentSlide((prev) => (prev + 1) % slidesData.length)
-        }
-        className="absolute top-1/2 right-6 z-30 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/20 hover:scale-110 transition-all duration-200 shadow-lg rounded-full h-14 w-14 flex items-center justify-center text-white hover:text-blue-600"
-      >
-        <ChevronRight className="w-6 h-6" />
-      </button>
 
       {/* Progress Indicators */}
-      <div className="absolute bottom-6 left-0 right-0 z-30 flex justify-center space-x-3">
+      <div className="absolute bottom-4 left-0 right-0 z-30 flex justify-center space-x-2">
         {slidesData.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
             className={`relative transition-all duration-300 ${
               index === currentSlide
-                ? "w-12 h-3 bg-white rounded-full"
-                : "w-3 h-3 bg-white/50 hover:bg-white/80 rounded-full"
+                ? "w-10 h-2.5 bg-white rounded-full"
+                : "w-2.5 h-2.5 bg-white/50 hover:bg-white/80 rounded-full"
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />
@@ -177,7 +160,7 @@ const HeroSlider = () => {
       </div>
 
       {/* Slide Counter */}
-      <div className="absolute top-6 right-6 z-30 bg-black/30 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm font-medium">
+      <div className="absolute top-4 right-6 z-30 bg-black/30 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg text-xs font-medium">
         {currentSlide + 1} / {slidesData.length}
       </div>
     </div>
