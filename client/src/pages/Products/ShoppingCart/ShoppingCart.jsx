@@ -214,7 +214,7 @@ const ShoppingCart = ({ isOpen, onClose, cartItems, onUpdateQuantity, onRemoveIt
                 onClick={onProceedToCheckout}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-95"
               >
-                Proceder al Pago
+                Solcitar Cotizacion
               </button>
             </div>
           )}

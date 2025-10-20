@@ -21,7 +21,7 @@ const ProductCard = ({ product }) => {
             
             {/* Badge de oferta */}
             <div className="absolute top-2 left-2 z-10 px-2 py-0.5 bg-gradient-to-r from-orange-400 to-red-500 text-white text-xs font-bold rounded-full shadow-md">
-                OFERTA
+                DESTACADO
             </div>
 
             {/* Botones de acción superior */}
@@ -74,7 +74,8 @@ const ProductCard = ({ product }) => {
                     {product.name}
                 </h3>
                 
-                {/* Precio */}
+                {/* Precio comentado temporalmente */}
+                {/*
                 <div className="mb-3">
                     <div className="flex items-baseline gap-2 mb-1">
                         <span className="text-xl font-black text-blue-600">
@@ -88,6 +89,7 @@ const ProductCard = ({ product }) => {
                         Ahorra ${savingAmount.toFixed(2)}
                     </div>
                 </div>
+                */}
 
                 {/* Estado de stock */}
                 <div className="mb-3">

@@ -100,7 +100,7 @@ const ProductCard = ({ product, viewMode = 'grid', onAddToCart }) => {
             <div className="flex items-baseline gap-1.5">
               <span className="text-xs text-gray-600">MXN</span>
               <span className="text-xl font-bold text-gray-900">
-                {formatPrice(product.price).replace('MXN', '').trim()}
+                {/* {formatPrice(product.price).replace('MXN', '').trim()} */}
               </span>
             </div>
             {product.originalPrice && (
