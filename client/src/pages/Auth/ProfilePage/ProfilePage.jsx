@@ -10,7 +10,7 @@ import ProfilePictureSection from './components/ProfilePictureSection';
 import ProfileDetailsForm from './components/ProfileDetailsForm';
 import PasswordChangeForm from './components/PasswordChangeForm';
 import ProfileInfoCards from './components/ProfileInfoCards';
-import ProfileSidebar from './components/ProfileSideBar';
+import ProfileSidebar from '../../Auth/ProfilePage/components/ProfileSidebar';
 
 const ProfilePage = () => {
     const dispatch = useDispatch();
