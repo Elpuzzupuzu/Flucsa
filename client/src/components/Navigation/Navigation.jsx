@@ -26,7 +26,7 @@ const COMMON_NAV_ITEMS = [
   { path: "/acerca-de-nosotros", label: "Nosotros", icon: Users },
   { path: "/contacto", label: "Contacto", icon: Phone },
   // 🎯 RUTA AÑADIDA: Catálogos PDF
-  { path: "/catalogo-pdfs", label: "Catálogos PDF", icon: FileText },
+  { path: "/catalogo-pdfs", label: "Catálogos", icon: FileText },
 ];
 
 // Rutas específicas para un usuario Administrador (Admin)
