@@ -1,7 +1,7 @@
 // client/src/components/PdfPage.jsx
 import React from "react";
-import PdfCard from "./components/PdfCard.jsx";
-import { catalogos } from "./data/catalogoData.js";
+import PdfCard from "../../pages/Pdfs/components/pdfCard.jsx";
+import { catalogos } from "../../pages/Pdfs/data/catalogoData.js";
 import ProductSliderPrototype from "../../components/ShopSlider/ShopSlider.jsx";
 
 const PdfPage = () => {
