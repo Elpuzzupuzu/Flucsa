@@ -14,31 +14,31 @@ import ShoppingCart from './pages/Products/ShoppingCart/ShoppingCart';
 import ProductDetails from './pages/ProductDetails/ProductDetails';
 import AboutUsPage from './pages/AboutUs/AboutUsPage';
 import ServicesPage from './pages/Servicios/ServicesPage';
-import ServiceMenuPage from './pages/serviceMenu/serviceMenuPage'; // Ruta corregida
-// import ContactPage from './pages/Contact/ContactPage';
+import ServiceMenuPage from './pages/serviceMenu/serviceMenuPage';
+import ContactPage from './pages/Contact/ContactPage';
+
+// PDFs
+import PdfPage from './pages/Pdfs/PdfPage';
+
+// Autenticación y protección de rutas
+import Login from './pages/Auth/login';
+import Register from './pages/Auth/Register';
+import ProfilePage from './pages/Auth/ProfilePage/ProfilePage';
+import ProtectedRoute from './pages/Auth/ProtectedRoute';
+import AdminRoute from './pages/Auth/AdminRoute';
+
+// Admin
+import AdminProducts from './admin/products/AdminProducts';
 
 // Importaciones de Redux
 import { useDispatch } from 'react-redux';
-import { checkAuthStatus } from './features/user/usersSlice'; // Thunk para verificar sesión
-
-// Autenticación y Protección de Rutas
-import Login from './pages/Auth/login'; // Ruta corregida
-import Register from './pages/Auth/Register';
-// import ProfilePage from './pages/Auth/ProfilePage';
-import ProtectedRoute from './pages/Auth/ProtectedRoute';
-import AdminRoute from './pages/Auth/AdminRoute'; // ⬅️ IMPORTACIÓN CLAVE para proteger rutas Admin
-
-// Admin (dummy por ahora)
-import AdminProducts from './admin/products/AdminProducts';
-import ProfilePage from './pages/Auth/ProfilePage/ProfilePage';
-import ContactPage from './pages/Contact/ContactPage';
+import { checkAuthStatus } from './features/user/usersSlice';
 
 function App() {
   // --- Lógica de persistencia de sesión ---
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Verifica la cookie HttpOnly con el backend
     dispatch(checkAuthStatus());
   }, [dispatch]);
   // ----------------------------------------
@@ -86,6 +86,7 @@ function App() {
 
         <main className="flex-1">
           <Routes>
+            {/* Páginas principales */}
             <Route path="/" element={<Home />} />
             <Route
               path="/productos"
@@ -96,33 +97,37 @@ function App() {
               element={<ProductDetails onAddToCart={addToCart} />}
             />
 
-            {/* RUTAS DE AUTENTICACIÓN */}
+            {/* Catálogo PDF */}
+            <Route path="/catalogo-pdfs" element={<PdfPage />} />
+
+            {/* Rutas de autenticación */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
-            {/* 💥 RUTA PROTEGIDA: Mi Perfil (Cualquier usuario logueado) 💥 */}
+            {/* Perfil protegido */}
             <Route
               path="/mi-cuenta"
               element={
                 <ProtectedRoute>
-                  <ProfilePage/>
+                  <ProfilePage />
                 </ProtectedRoute>
               }
             />
 
+            {/* Otras páginas */}
             <Route path="/acerca-de-nosotros" element={<AboutUsPage />} />
             <Route path="/servicios" element={<ServicesPage />} />
             <Route path="/servicios/:category" element={<ServiceMenuPage />} />
             <Route path="/contacto" element={<ContactPage />} />
 
-            {/* 💥 RUTA PROTEGIDA POR ROL: Admin/Products 💥 */}
-            <Route 
-              path="/admin/products" 
+            {/* Admin */}
+            <Route
+              path="/admin/products"
               element={
                 <AdminRoute>
                   <AdminProducts />
                 </AdminRoute>
-              } 
+              }
             />
           </Routes>
         </main>

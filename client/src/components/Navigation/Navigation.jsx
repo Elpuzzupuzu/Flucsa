@@ -9,8 +9,9 @@ import {
   LogIn,
   LogOut,
   User,
-  LayoutDashboard, // Nuevo ícono para Dashboard
-  ListChecks,      // Nuevo ícono para Administración
+  LayoutDashboard,
+  ListChecks,
+  FileText, // ⬅️ NUEVO: Ícono para la ruta de Catálogos (PDF)
 } from 'lucide-react';
 
 // =========================================================
@@ -23,7 +24,9 @@ const COMMON_NAV_ITEMS = [
   { path: "/productos", label: "Productos", icon: Package },
   { path: "/servicios", label: "Servicios", icon: Settings },
   { path: "/acerca-de-nosotros", label: "Nosotros", icon: Users },
-  { path: "/contacto", label: "Contacto", icon: Phone }
+  { path: "/contacto", label: "Contacto", icon: Phone },
+  // 🎯 RUTA AÑADIDA: Catálogos PDF
+  { path: "/catalogo-pdfs", label: "Catálogos PDF", icon: FileText },
 ];
 
 // Rutas específicas para un usuario Administrador (Admin)
@@ -32,28 +35,33 @@ const ADMIN_NAV_ITEMS = [
   { path: "/admin/manage", label: "Administración", icon: ListChecks },
 ];
 
+// =========================================================
+// 2. COMPONENTE NAVIGATION
+// =========================================================
+
 const Navigation = ({
   isMobile = false,
   onLinkClick,
   isLoggedIn = false,
   onLogout,
-  rol, // ⬅️ NUEVO PROP: Recibe el rol del usuario
+  rol,
 }) => {
   const commonClasses = "font-medium transition-all duration-300 relative group";
   const desktopClasses = "text-white hover:text-white/90 whitespace-nowrap";
 
-  // Determina la lista completa de enlaces para la vista móvil
+  // Determina la lista completa de enlaces (móvil y tablet)
   const allNavItems =
     rol === 'admin'
       ? [...COMMON_NAV_ITEMS, ...ADMIN_NAV_ITEMS]
       : COMMON_NAV_ITEMS;
 
-
+  // ---------------------------------------------------------
+  // VISTA MÓVIL
+  // ---------------------------------------------------------
   if (isMobile) {
-    // --- MOBILE NAV ---
     return (
       <nav className="flex flex-col space-y-4">
-        {/* Enlaces de navegación principales y de rol (si es admin) */}
+        {/* Enlaces de navegación principales y de rol */}
         {allNavItems.map(({ path, label, icon: Icon }) => (
           <NavLink
             key={path}
@@ -72,7 +80,7 @@ const Navigation = ({
           </NavLink>
         ))}
 
-        {/* Separador y Opciones de Sesión (Se mantiene igual) */}
+        {/* Separador y Opciones de Sesión */}
         <div className="border-t border-white/10 my-4" />
 
         {isLoggedIn ? (
@@ -111,7 +119,9 @@ const Navigation = ({
     );
   }
 
-  // --- DESKTOP NAV ---
+  // ---------------------------------------------------------
+  // VISTA ESCRITORIO
+  // ---------------------------------------------------------
   return (
     <nav className="hidden lg:flex items-center space-x-6">
       {/* 1. Enlaces Comunes */}

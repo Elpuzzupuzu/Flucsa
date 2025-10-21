@@ -9,6 +9,8 @@ import adminRouter from "../src/admin/routes/adminRoutes.js"; // Rutas de admin
 import imageRoutes from "../src/admin/routes/imageRoutes.js"; // Ruta para subida de imágenes
 import userRoutes from "./routes/userRoutes.js"; // NUEVO: Rutas de usuarios
 import whishListRoutes from "./routes/wishListRoutes.js"; // NUEVO: Rutas de lista de deseos
+import pdfRoutes from "./routes/pdfRoutes.js"; // Rutas para catálogo PDF
+
 
 // Inicializar variables de entorno
 dotenv.config();
@@ -91,6 +93,18 @@ app.use("/api", adminRouter); // Todas las rutas admin bajo /api/admin/*
 // NUEVAS RUTAS: usuarios y lista de deseos
 app.use("/api/users", userRoutes); // /api/users/*
 app.use("/api/wishlist", whishListRoutes); // /api/wishlist/*
+
+//rutas para los pdfs
+// Rutas del catálogo PDF
+app.use("/api/pdfs", pdfRoutes); // /api/pdfs/:fileName
+
+
+
+
+
+
+
+//-------------------------------------------------------------------////
 
 // Middleware de manejo de errores centralizado
 app.use((err, req, res, next) => {
