@@ -2,7 +2,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
 
-// ✅ 1. CORRECCIÓN: Se agrega 'export' a la thunk para solucionar el SyntaxError.
+// Thunk para obtener la URL del PDF
 export const fetchPdfUrl = createAsyncThunk(
   "pdfs/fetchPdfUrl",
   async (fileName, thunkAPI) => {
@@ -20,13 +20,19 @@ export const fetchPdfUrl = createAsyncThunk(
 const pdfSlice = createSlice({
   name: "pdfs",
   initialState: {
-    // ✅ 2. CORRECCIÓN: Se inicializa 'details' para evitar el TypeError.
     details: {},
+    selectedPdf: null, // Para el modal de visualización
   },
   reducers: {
     clearPdf: (state, action) => {
       const fileName = action.payload;
       delete state.details[fileName];
+    },
+    setSelectedPdf: (state, action) => {
+      state.selectedPdf = action.payload;
+    },
+    clearSelectedPdf: (state) => {
+      state.selectedPdf = null;
     },
   },
   extraReducers: (builder) => {
@@ -58,5 +64,5 @@ const pdfSlice = createSlice({
   },
 });
 
-export const { clearPdf } = pdfSlice.actions;
+export const { clearPdf, setSelectedPdf, clearSelectedPdf } = pdfSlice.actions;
 export default pdfSlice.reducer;
