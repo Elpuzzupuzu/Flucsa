@@ -31,46 +31,46 @@ import AdminRoute from './pages/Auth/AdminRoute';
 import AdminProducts from './admin/products/AdminProducts';
 
 // Importaciones de Redux
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { checkAuthStatus } from './features/user/usersSlice';
+import { addItemToCart, updateCartItemQuantity, removeCartItem } from './features/cart/cartSlice';
 
 function App() {
   // --- Lógica de persistencia de sesión ---
   const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.cart.items);
 
   useEffect(() => {
     dispatch(checkAuthStatus());
   }, [dispatch]);
   // ----------------------------------------
 
-  const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
-
   const onCartToggle = () => setIsCartOpen((prev) => !prev);
 
+  // --- Función para agregar productos al carrito usando Redux ---
   const addToCart = (product) => {
-    setCartItems((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prev, { ...product, quantity: 1 }];
-    });
-    setIsCartOpen(true);
+    console.log('Intentando agregar al carrito:', product);
+
+    dispatch(addItemToCart({ producto_id: product.id, cantidad: 1 }))
+      .unwrap()
+      .then((item) => {
+        console.log('Producto agregado con éxito:', item);
+        setIsCartOpen(true);
+      })
+      .catch((error) => {
+        console.error('Error al agregar producto al carrito:', error);
+      });
   };
 
   const updateCartQuantity = (id, quantity) => {
-    setCartItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity } : item))
-    );
+    console.log(`Actualizando cantidad del producto ID ${id} a ${quantity}`);
+    dispatch(updateCartItemQuantity({ itemId: id, cantidad: quantity }));
   };
 
   const removeFromCart = (id) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
+    console.log(`Eliminando producto del carrito ID ${id}`);
+    dispatch(removeCartItem(id));
   };
 
   const handleProceedToCheckout = () => {

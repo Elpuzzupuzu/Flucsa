@@ -1,5 +1,7 @@
+// components/ProductsPagination.jsx
 import React, { useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import "./ProductsPagination.css"; // Importamos CSS
 
 const ProductsPagination = ({ totalPages, currentPage, setCurrentPage }) => {
   if (totalPages <= 1) return null;
@@ -10,7 +12,6 @@ const ProductsPagination = ({ totalPages, currentPage, setCurrentPage }) => {
 
   const getPageNumbers = () => {
     const delta = 2;
-    const range = [];
     const rangeWithDots = [];
     let l;
 
@@ -24,7 +25,6 @@ const ProductsPagination = ({ totalPages, currentPage, setCurrentPage }) => {
         l = i;
       }
     }
-
     return rangeWithDots;
   };
 
@@ -33,34 +33,26 @@ const ProductsPagination = ({ totalPages, currentPage, setCurrentPage }) => {
   }, [currentPage]);
 
   return (
-    <div className="flex items-center justify-center gap-3 flex-wrap bg-white px-6 py-5 rounded-2xl border border-gray-100 shadow-sm animate-fadeInUp">
+    <div className="pagination-container">
       {/* Botón Anterior */}
       <button
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all duration-300 ${
-          currentPage === 1
-            ? "text-gray-300 cursor-not-allowed"
-            : "text-gray-600 hover:text-red-600 active:scale-95"
-        }`}
+        className={`pagination-btn ${currentPage === 1 ? "disabled" : ""}`}
       >
         <ChevronLeft className="w-4 h-4" />
         Anterior
       </button>
 
       {/* Números de página */}
-      <div className="flex gap-1 flex-wrap justify-center">
+      <div className="pagination-numbers">
         {getPageNumbers().map((page, idx) => (
           <button
             key={idx}
             onClick={() => typeof page === "number" && handlePageChange(page)}
             disabled={page === "..."}
-            className={`min-w-[40px] h-10 px-3 text-sm font-medium transition-all duration-300 ${
-              page === currentPage
-                ? "text-red-600 border-b-2 border-red-600"
-                : page === "..."
-                ? "text-gray-300 cursor-not-allowed"
-                : "text-gray-600 hover:text-red-600 hover:border-b-2 hover:border-red-600"
+            className={`pagination-page ${
+              page === currentPage ? "active" : page === "..." ? "dots" : ""
             }`}
           >
             {page}
@@ -72,31 +64,11 @@ const ProductsPagination = ({ totalPages, currentPage, setCurrentPage }) => {
       <button
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all duration-300 ${
-          currentPage === totalPages
-            ? "text-gray-300 cursor-not-allowed"
-            : "text-gray-600 hover:text-red-600 active:scale-95"
-        }`}
+        className={`pagination-btn ${currentPage === totalPages ? "disabled" : ""}`}
       >
         Siguiente
         <ChevronRight className="w-4 h-4" />
       </button>
-
-      <style jsx>{`
-        @keyframes fadeInUp {
-          0% { 
-            opacity: 0; 
-            transform: translateY(20px); 
-          }
-          100% { 
-            opacity: 1; 
-            transform: translateY(0); 
-          }
-        }
-        .animate-fadeInUp {
-          animation: fadeInUp 0.5s ease-out;
-        }
-      `}</style>
     </div>
   );
 };

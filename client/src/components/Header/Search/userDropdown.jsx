@@ -25,13 +25,13 @@ const UserDropdown = ({ userName, isLoggedIn, onLogout, rol, profilePicture }) =
   // ===============================================
   // LOG PARA VERIFICAR LAS PROPS DE REDUX
   // ===============================================
-  console.log("UserDropdown Props:", { 
-    userName: userName, 
-    isLoggedIn: isLoggedIn, 
-    initials: getInitials(userName), 
-    userrole: rol,
-    profilePicture: profilePicture // ⬅️ Nuevo log
-  });
+  // console.log("UserDropdown Props:", { 
+  //   userName: userName, 
+  //   isLoggedIn: isLoggedIn, 
+  //   initials: getInitials(userName), 
+  //   userrole: rol,
+  //   profilePicture: profilePicture // ⬅️ Nuevo log
+  // });
   // ===============================================
 
   const [isOpen, setIsOpen] = useState(false);
