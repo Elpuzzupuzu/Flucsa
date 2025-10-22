@@ -6,7 +6,7 @@ import { updateCartItemQuantity, removeCartItem } from '../../../../features/car
 const CartItem = ({ item, index, isNewItem, formatPrice }) => {
   const dispatch = useDispatch();
 
-  // Verificar estructura de datos
+  // Verificar estructura de datos (Puedes comentar o eliminar este console.log en producción)
   console.log(`🧩 CartItem Rendered - index: ${index}`, item);
 
   // Extraer información desde item.producto
@@ -14,7 +14,8 @@ const CartItem = ({ item, index, isNewItem, formatPrice }) => {
   const priceString = product.precio ? product.precio.toString() : '0';
   const priceValue = parseFloat(priceString.replace(/[^0-9.]/g, '')) || 0;
 
-  const quantity = item.cantidad || item.quantity || 1;
+  // **CORRECCIÓN DE LÓGICA:** Usar SOLO item.cantidad para consistencia
+  const quantity = item.cantidad || 1; 
   const itemTotal = priceValue * quantity;
 
   console.log(`💰 Item Total Calculated: ${itemTotal.toFixed(2)}`);

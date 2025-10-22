@@ -5,18 +5,28 @@ import CartHeader from '../../../pages/Products/ShoppingCart/components/cartHead
 import CartItem from '../../../pages/Products/ShoppingCart/components/cartItem';
 import CartFooter from '../../../pages/Products/ShoppingCart/components/cartFooter';
 import {
-  updateCartItemQuantity,
-  removeCartItem,
+  fetchCart,
+  // Ya no necesitas importar updateCartItemQuantity o removeCartItem aquí,
+  // ya que el hijo las usa directamente.
 } from '../../../features/cart/cartSlice';
 import '../../../pages/Products/ShoppingCart/cartAnimations.css';
 
 const ShoppingCart = ({ isOpen, onClose, onProceedToCheckout }) => {
   const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.user?.user);
   const cartItems = useSelector((state) => state.cart.items);
-  const products = useSelector((state) => state.products.items); // lista completa de productos
+  const products = useSelector((state) => state.products.items);
 
   const [newlyAddedItems, setNewlyAddedItems] = useState(new Set());
   const previousItemIds = useRef([]);
+
+  // Recuperar carrito al montar si el usuario existe
+  useEffect(() => {
+    if (user) {
+      dispatch(fetchCart());
+    }
+  }, [user, dispatch]);
 
   // Detectar nuevos productos añadidos
   useEffect(() => {
@@ -26,45 +36,30 @@ const ShoppingCart = ({ isOpen, onClose, onProceedToCheckout }) => {
     );
 
     if (newItems.length > 0) {
-      console.log('🟢 Nuevos productos añadidos al carrito:', newItems);
       setNewlyAddedItems(new Set(newItems));
-      setTimeout(() => setNewlyAddedItems(new Set()), 2000);
+      // Se reinicia el efecto 'nuevo' después de 2 segundos
+      setTimeout(() => setNewlyAddedItems(new Set()), 2000); 
     }
 
     previousItemIds.current = currentItemIds;
   }, [cartItems]);
 
-  // Calcular total basado en item.producto.precio
   const calculateTotal = () =>
     cartItems.reduce((sum, item) => {
-      const product = item.producto || products.find((p) => p.id === item.producto_id) || {};
+      const product =
+        item.producto || products.find((p) => p.id === item.producto_id) || {};
       const price = parseFloat(product.precio || 0) || 0;
       const quantity = item.cantidad || 0;
       return sum + price * quantity;
     }, 0);
 
-  const totalItems = cartItems.reduce((sum, item) => sum + (item.cantidad || 0), 0);
+  const totalItems = cartItems.reduce(
+    (sum, item) => sum + (item.cantidad || 0),
+    0
+  );
 
-  const handleQuantityChange = (itemId, newQuantity) => {
-    const item = cartItems.find((i) => i.id === itemId);
-    if (!item) return;
-
-    if (newQuantity < 1) {
-      console.log(`🟠 Eliminando producto del carrito: ${item.producto?.nombre || 'Producto'} (ID: ${itemId})`);
-      dispatch(removeCartItem(itemId));
-    } else {
-      console.log(`🔵 Actualizando cantidad de ${item.producto?.nombre || 'Producto'} a ${newQuantity}`);
-      dispatch(updateCartItemQuantity({ itemId, cantidad: newQuantity }));
-    }
-  };
-
-  const handleRemoveItem = (itemId) => {
-    const item = cartItems.find((i) => i.id === itemId);
-    if (item) {
-      console.log(`🟠 Eliminando producto del carrito: ${item.producto?.nombre || 'Producto'} (ID: ${itemId})`);
-      dispatch(removeCartItem(itemId));
-    }
-  };
+  // **LÓGICA ELIMINADA:** handleQuantityChange y handleRemoveItem
+  // (El componente hijo CartItem ya hace el dispatch directamente)
 
   const formatPrice = (price) => {
     const numeric = parseFloat(price) || 0;
@@ -75,7 +70,9 @@ const ShoppingCart = ({ isOpen, onClose, onProceedToCheckout }) => {
     <>
       {isOpen && (
         <div
-          className={`fixed inset-0 bg-black/50 z-40 transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
+          className={`fixed inset-0 bg-black/50 z-40 transition-all duration-300 ${
+            isOpen ? 'opacity-100' : 'opacity-0'
+          }`}
           onClick={onClose}
         />
       )}
@@ -102,23 +99,22 @@ const ShoppingCart = ({ isOpen, onClose, onProceedToCheckout }) => {
             ) : (
               <div className="space-y-4">
                 {cartItems.map((item, index) => {
-                  const product = item.producto || products.find((p) => p.id === item.producto_id) || {
-                    nombre: 'Producto sin nombre',
-                    precio: 0,
-                    imagen: '/placeholder.png',
-                  };
+                  const product =
+                    item.producto ||
+                    products.find((p) => p.id === item.producto_id) || {
+                      nombre: 'Producto sin nombre',
+                      precio: 0,
+                      imagen: '/placeholder.png',
+                    };
 
                   return (
                     <CartItem
                       key={item.id}
-                      item={{
-                        ...item,
-                        producto: product,
-                      }}
+                      item={{ ...item, producto: product }}
                       index={index}
                       isNewItem={newlyAddedItems.has(item.id)}
-                      onQuantityChange={handleQuantityChange}
-                      onRemoveItem={handleRemoveItem}
+                      // **PROPS ELIMINADAS:** onQuantityChange={handleQuantityChange}
+                      // **PROPS ELIMINADAS:** onRemoveItem={handleRemoveItem}
                       formatPrice={formatPrice}
                     />
                   );
