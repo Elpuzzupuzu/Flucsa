@@ -3,7 +3,7 @@ import { fetchPdfUrl, setSelectedPdf, clearSelectedPdf } from '../../../features
 import { Download, Eye, Loader2, FileText } from 'lucide-react';
 import PDFViewer from './pdfViewer';
 
-const PDFCard = ({ catalog }) => {
+const pdfCard = ({ catalog }) => {
   const dispatch = useDispatch();
   const pdfDetails = useSelector((state) => state.pdfs.details[catalog.fileName]);
   const selectedPdf = useSelector((state) => state.pdfs.selectedPdf);
@@ -73,5 +73,5 @@ const PDFCard = ({ catalog }) => {
 
 };
 
-export default PDFCard;
+export default pdfCard;
 ////

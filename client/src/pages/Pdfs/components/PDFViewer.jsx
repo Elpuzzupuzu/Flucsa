@@ -1,6 +1,6 @@
 import { Download, ExternalLink, X } from 'lucide-react';
 
-const PDFViewer = ({ catalog, url, onClose }) => (
+const pdfViewer = ({ catalog, url, onClose }) => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4">
     <div className="relative w-full max-w-6xl h-[90vh] bg-white rounded-lg shadow-2xl flex flex-col">
       {/* Header */}
@@ -38,4 +38,4 @@ const PDFViewer = ({ catalog, url, onClose }) => (
   </div>
 );
 
-export default PDFViewer;
+export default pdfViewer;
