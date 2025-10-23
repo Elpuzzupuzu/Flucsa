@@ -23,6 +23,9 @@ import ContactPage from './pages/Contact/ContactPage';
 import PdfPage from './pages/Pdfs/PdfPage';
 
 // Auth
+
+
+
 import Login from './pages/Auth/login';
 import Register from './pages/Auth/Register';
 import ProfilePage from './pages/Auth/ProfilePage/ProfilePage';
