@@ -20,7 +20,7 @@ import AboutUsPage from './pages/AboutUs/AboutUsPage';
 import ServicesPage from './pages/Servicios/ServicesPage';
 import ServiceMenuPage from './pages/serviceMenu/serviceMenuPage';
 import ContactPage from './pages/Contact/ContactPage';
-import PdfPage from './pages/Pdfs/PDFPage';
+import PdfPage from './pages/Pdfs/PdfPage';
 
 // Auth
 
