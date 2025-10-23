@@ -20,7 +20,7 @@ const Header = ({ onCartToggle }) => {
   const rol = useSelector((state) => state.user.user?.rol);
   const cartItems = useSelector((state) => state.cart.items);
 
-  const totalCartItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalCartItems = cartItems.reduce((sum, item) => sum + item.cantidad, 0);
 
   const userProfilePicture = user?.foto_perfil;
   const userName = user?.name || user?.correo || user?.email || user?.role || "Usuario";
