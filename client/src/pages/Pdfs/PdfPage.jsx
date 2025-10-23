@@ -1,6 +1,6 @@
 import ProductSlider from '../../components/ShopSlider/ShopSlider';
 import PDFCard from './components/pdfCard';
-import { catalogos } from '../Pdfs/data/catalogoData';
+import { catalogos } from './data/catalogoData';
 import { FileText } from 'lucide-react';
 
 const PDFCatalog = () => (
