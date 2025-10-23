@@ -22,8 +22,22 @@ const Header = ({ onCartToggle }) => {
 
   const totalCartItems = cartItems.reduce((sum, item) => sum + item.cantidad, 0);
 
-  const userProfilePicture = user?.foto_perfil;
-  const userName = user?.name || user?.correo || user?.email || user?.role || "Usuario";
+  // ⚡ Estado local sincronizado para evitar "Usuario" al F5
+  const [userNameState, setUserNameState] = useState('Usuario');
+  const [userProfileState, setUserProfileState] = useState(undefined);
+  const [isLoggedInState, setIsLoggedInState] = useState(!!user);
+
+  useEffect(() => {
+    setUserNameState(user?.name || user?.nombre || user?.correo || user?.email || 'Usuario');
+    setUserProfileState(user?.foto_perfil);
+    setIsLoggedInState(!!user);
+
+    console.log('[Header] Estado de usuario actualizado:', {
+      userName: user?.name,
+      profilePicture: user?.foto_perfil,
+      isLoggedIn: !!user
+    });
+  }, [user]);
 
   const handleLogout = () => dispatch(logoutUser());
 
@@ -83,11 +97,11 @@ const Header = ({ onCartToggle }) => {
             <div className="hidden lg:flex items-center gap-2">
 
               <UserDropdown
-                userName={userName}
-                isLoggedIn={!!user}
+                userName={userNameState}
+                isLoggedIn={isLoggedInState}
                 onLogout={handleLogout}
                 rol={rol}
-                profilePicture={userProfilePicture}
+                profilePicture={userProfileState}
               />
 
               <div className="px-3 py-2 rounded-md hover:bg-white/10 transition-all cursor-pointer border border-transparent hover:border-white/20">
@@ -100,7 +114,7 @@ const Header = ({ onCartToggle }) => {
               {/* Cart */}
               <button
                 onClick={onCartToggle}
-                className={`relative group px-3 py-2 rounded-md hover:bg-white/10 transition-all border border-transparent hover:border-white/20 flex items-center gap-2 ${
+                className={`relative group px-3 py-2 rounded-md hover:bg-white/10 transition-all border border-transparent flex items-center gap-2 ${
                   isCartAnimating ? 'animate-bounce border-green-400/50 bg-green-500/10' : ''
                 }`}
               >
@@ -190,7 +204,7 @@ const Header = ({ onCartToggle }) => {
               <Navigation
                 isMobile
                 onLinkClick={() => setIsMenuOpen(false)}
-                isLoggedIn={!!user}
+                isLoggedIn={isLoggedInState}
                 onLogout={handleLogout}
                 rol={rol}
               />

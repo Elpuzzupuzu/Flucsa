@@ -1,9 +1,7 @@
-// src/components/profile/ProfilePage.jsx
-
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AlertCircle, ShoppingBag, Heart } from 'lucide-react';
-import { clearSuccessMessage } from '../../../features/user/usersSlice'; // Asegúrate de la ruta
+import { clearSuccessMessage } from '../../../features/user/usersSlice';
 
 // Importar los nuevos componentes modulares
 import ProfilePictureSection from './components/ProfilePictureSection';
@@ -14,7 +12,7 @@ import ProfileSidebar from '../../Auth/ProfilePage/components/ProfileSidebar';
 
 const ProfilePage = () => {
     const dispatch = useDispatch();
-    const { user, loading, error, successMessage } = useSelector((state) => state.user);
+    const { user, loading, error, successMessage, authChecked } = useSelector((state) => state.user);
     const [selectedSection, setSelectedSection] = useState('details');
 
     // Efecto para limpiar mensajes de feedback después de un tiempo
@@ -26,6 +24,15 @@ const ProfilePage = () => {
             return () => clearTimeout(timer);
         }
     }, [successMessage, error, dispatch]);
+
+    // Mientras verificamos la sesión inicial
+    if (!authChecked) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <p className="text-gray-500 text-lg">Verificando sesión...</p>
+            </div>
+        );
+    }
 
     // Manejo de usuario no autenticado
     if (!user) {
@@ -39,7 +46,7 @@ const ProfilePage = () => {
             </div>
         );
     }
-    
+
     // El estado de carga solo aplica a las acciones de Redux (guardar/cambiar)
     const isActionLoading = loading && !error && !successMessage;
 
@@ -49,9 +56,7 @@ const ProfilePage = () => {
                 return (
                     <div className="space-y-4 sm:space-y-6">
                         <ProfilePictureSection user={user} />
-                        
                         <ProfileInfoCards user={user} />
-
                         <div className="pt-4 sm:pt-6 border-t border-gray-200">
                             <ProfileDetailsForm 
                                 user={user} 

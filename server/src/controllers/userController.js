@@ -1,157 +1,164 @@
-// src/controllers/userController.js
 import { UserService } from '../services/userService.js';
+import jwt from 'jsonwebtoken';
 
-// ===============================
-// CORRECCIÓN: Declaración de isProduction
-// ===============================
 const isProduction = process.env.NODE_ENV === 'production';
 
-// ===============================
-// CONFIGURACIÓN DE LA COOKIE (CONDICIONALMENTE)
-// ===============================
 const cookieConfig = {
-  httpOnly: true,
-  // En producción (HTTPS), 'secure' debe ser true. En desarrollo (HTTP), debe ser false.
-  secure: isProduction,
-  // Si 'secure' es true, 'sameSite' debe ser 'None' (requiere secure). En desarrollo, usamos 'Lax'.
-  sameSite: isProduction ? 'None' : 'Lax',
-  // En localhost, no establezcas el dominio (undefined). En producción, usa el dominio base.
-  path: '/',
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? 'None' : 'Lax',
+  path: '/',
 };
 
 export const UserController = {
-  // ===============================
-  // Registro de usuario
-  // ===============================
-  register: async (req, res) => {
-    try {
-      const newUser = await UserService.registerUser(req.body);
-      res.status(201).json(newUser);
-    } catch (error) {
-      // Manejo de errores específicos de Supabase/PostgreSQL (ej. llave duplicada)
-      if (error.code === '23505') {
-        return res.status(409).json({ error: 'El correo electrónico ya está registrado.' });
-      }
-      res.status(400).json({ error: error.message });
-    }
-  },
+  // ===============================
+  // Registro de usuario
+  // ===============================
+  register: async (req, res) => {
+    try {
+      const newUser = await UserService.registerUser(req.body);
+      res.status(201).json(newUser);
+    } catch (error) {
+      if (error.code === '23505') {
+        return res.status(409).json({ error: 'El correo electrónico ya está registrado.' });
+      }
+      res.status(400).json({ error: error.message });
+    }
+  },
 
-  // ===============================
-  // Inicio de sesión (LOGIN)
-  // ===============================
-  login: async (req, res) => {
-    try {
-      const { correo, contraseña } = req.body;
+  // ===============================
+  // Inicio de sesión (LOGIN)
+  // ===============================
+  login: async (req, res) => {
+    try {
+      const { correo, contraseña } = req.body;
+      if (!correo || !contraseña) {
+        return res.status(400).json({ error: 'Correo y contraseña son obligatorios' });
+      }
 
-      if (!correo || !contraseña) {
-        return res.status(400).json({ error: 'Correo y contraseña son obligatorios' });
-      }
+      const { user, accessToken, refreshToken, errorType } = await UserService.loginUser(correo, contraseña);
 
-      // El servicio devuelve { user, accessToken, refreshToken, errorType }
-      const { user, accessToken, refreshToken, errorType } =
-        await UserService.loginUser(correo, contraseña);
+      if (errorType === 'USER_NOT_FOUND') return res.status(404).json({ error: 'Usuario no encontrado' });
+      if (errorType === 'INVALID_PASSWORD') return res.status(401).json({ error: 'Contraseña incorrecta' });
 
-      if (errorType === 'USER_NOT_FOUND') {
-        return res.status(404).json({ error: 'Usuario no encontrado' });
-      }
+      res.cookie('accessToken', accessToken, { ...cookieConfig, maxAge: 5 * 60 * 1000 });
+      res.cookie('refreshToken', refreshToken, { ...cookieConfig, maxAge: 7 * 24 * 60 * 60 * 1000 });
 
-      if (errorType === 'INVALID_PASSWORD') {
-        return res.status(401).json({ error: 'Contraseña incorrecta' });
-      }
+      res.status(200).json(user);
+    } catch (error) {
+      console.error('Error interno en login:', error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  },
 
-      // 1. CONFIGURAR COOKIE PARA ACCESS TOKEN (5 minutos de persistencia)
-      res.cookie('accessToken', accessToken, {
-        ...cookieConfig,
-        maxAge: 5 * 60 * 1000, // 5 minutos (Persistencia corta)
-      });
+  // ===============================
+  // Verificación de sesión / refresh token
+  // ===============================
+  checkAuthStatus: async (req, res) => {
+    try {
+      const accessToken = req.cookies.accessToken;
+      const refreshToken = req.cookies.refreshToken;
 
-      // 2. CONFIGURAR COOKIE PARA REFRESH TOKEN (7 días de persistencia)
-      res.cookie('refreshToken', refreshToken, {
-        ...cookieConfig,
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días (Persistencia larga)
-      });
+      if (accessToken) {
+        try {
+          const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
+          const user = await UserService.getUserProfile(decoded.id);
+          return res.status(200).json(user);
+        } catch (err) {
+          if (err.name !== 'TokenExpiredError') throw err;
+        }
+      }
 
-      // 3. Login exitoso: Devolver SOLO los datos del usuario al frontend
-      res.status(200).json(user);
-    } catch (error) {
-      console.error('Error interno en login:', error);
-      res.status(500).json({ error: 'Error interno del servidor' });
-    }
-  },
+      if (refreshToken) {
+        try {
+          const decodedRefresh = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+          const user = await UserService.getUserProfile(decodedRefresh.id);
+          const newAccessToken = UserService.generateAccessToken({ id: decodedRefresh.id, rol: user.rol });
 
-  // ===============================
-  // Obtener perfil autenticado
-  // ===============================
-  getAuthProfile: (req, res) => {
-    // Si el authMiddleware pasó, req.user ya está poblado.
-    const { id, correo, nombre, apellido, rol } = req.user;
-    res.status(200).json({ id, correo, nombre, apellido, rol });
-  },
+          res.cookie('accessToken', newAccessToken, { ...cookieConfig, maxAge: 5 * 60 * 1000 });
 
-  // ===============================
-  // Cerrar sesión
-  // ===============================
-  logout: (req, res) => {
-    // Asegúrate de usar los mismos parámetros de configuración para clearCookie, 
-    // ya que el dominio y path son importantes para que el navegador la encuentre y la borre.
-    res.clearCookie('accessToken', { ...cookieConfig, maxAge: 0 });
-    res.clearCookie('refreshToken', { ...cookieConfig, maxAge: 0 });
-    res.status(200).json({ message: 'Sesión cerrada exitosamente' });
-  },
+          return res.status(200).json(user);
+        } catch {
+          res.clearCookie('accessToken', cookieConfig);
+          res.clearCookie('refreshToken', cookieConfig);
+          return res.status(401).json({ error: 'Sesión expirada, por favor logueate de nuevo' });
+        }
+      }
 
-  // ===============================
-  // Obtener perfil de usuario (COMPLETO)
-  // ===============================
-  getProfile: async (req, res) => {
-    try {
-      // ✅ Lógica Correcta: Usamos req.user.id (el ID del token) que es más seguro
-      const userId = req.user.id;
-      const profile = await UserService.getUserProfile(userId);
-      res.status(200).json(profile);
-    } catch (error) {
-      res.status(404).json({ error: 'Perfil no encontrado' });
-    }
-  },
+      return res.status(401).json({ error: 'No autorizado' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  },
 
-  // ===============================
-  // 🚀 Actualizar perfil de usuario
-  // ===============================
-  updateProfile: async (req, res) => {
-    try {
-      const userId = req.user.id;
-      const updatedUser = await UserService.updateUserProfile(userId, req.body);
-      res.status(200).json(updatedUser);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  },
+  // ===============================
+  // Perfil autenticado
+  // ===============================
+  getAuthProfile: (req, res) => {
+    const { id, correo, nombre, apellido, rol } = req.user;
+    res.status(200).json({ id, correo, nombre, apellido, rol });
+  },
 
-  // ===============================
-  // 🚀 Actualizar contraseña
-  // ===============================
-  updatePassword: async (req, res) => {
-    try {
-      const userId = req.user.id;
-      const { currentPassword, newPassword } = req.body;
+  // ===============================
+  // Logout
+  // ===============================
+  logout: (req, res) => {
+    res.clearCookie('accessToken', { ...cookieConfig, maxAge: 0 });
+    res.clearCookie('refreshToken', { ...cookieConfig, maxAge: 0 });
+    res.status(200).json({ message: 'Sesión cerrada exitosamente' });
+  },
 
-      if (!currentPassword || !newPassword) {
-        return res.status(400).json({ error: 'Contraseña actual y nueva son requeridas.' });
-      }
+  // ===============================
+  // Perfil completo
+  // ===============================
+  getProfile: async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const profile = await UserService.getUserProfile(userId);
+      res.status(200).json(profile);
+    } catch (error) {
+      res.status(404).json({ error: 'Perfil no encontrado' });
+    }
+  },
 
-      await UserService.updateUserPassword(userId, currentPassword, newPassword);
+  // ===============================
+  // Actualizar perfil
+  // ===============================
+  updateProfile: async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const updatedUser = await UserService.updateUserProfile(userId, req.body);
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
 
-      // Al cambiar la contraseña, eliminamos la sesión actual por seguridad
-      res.clearCookie('accessToken', { ...cookieConfig, maxAge: 0 });
-      res.clearCookie('refreshToken', { ...cookieConfig, maxAge: 0 });
+  // ===============================
+  // Actualizar contraseña
+  // ===============================
+  updatePassword: async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { currentPassword, newPassword } = req.body;
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ error: 'Contraseña actual y nueva son requeridas.' });
+      }
 
-      res.status(200).json({
-        message: 'Contraseña actualizada exitosamente. Por favor, vuelve a iniciar sesión.',
-      });
-    } catch (error) {
-      if (error.message === 'Contraseña actual incorrecta') {
-        return res.status(401).json({ error: error.message });
-      }
-      res.status(400).json({ error: error.message });
-    }
-  },
+      await UserService.updateUserPassword(userId, currentPassword, newPassword);
+
+      res.clearCookie('accessToken', { ...cookieConfig, maxAge: 0 });
+      res.clearCookie('refreshToken', { ...cookieConfig, maxAge: 0 });
+
+      res.status(200).json({
+        message: 'Contraseña actualizada exitosamente. Por favor, vuelve a iniciar sesión.',
+      });
+    } catch (error) {
+      if (error.message === 'Contraseña actual incorrecta') {
+        return res.status(401).json({ error: error.message });
+      }
+      res.status(400).json({ error: error.message });
+    }
+  },
 };

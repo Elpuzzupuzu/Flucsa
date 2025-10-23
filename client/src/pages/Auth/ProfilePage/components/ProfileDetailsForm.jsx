@@ -1,18 +1,30 @@
 // src/components/profile/ProfileDetailsForm.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
-import { updateUserProfile } from '../../../../features/user/usersSlice'
+import { updateUserProfile } from '../../../../features/user/usersSlice';
 
 const ProfileDetailsForm = ({ user, loading, error, successMessage }) => {
     const dispatch = useDispatch();
 
+    // Estado del formulario
     const [formData, setFormData] = useState({
-        nombre: user.nombre || '',
-        apellido: user.apellido || '',
-        correo: user.correo || user.email || '',
+        nombre: '',
+        apellido: '',
+        correo: '',
     });
+
+    // ⚡ Sincronizar formData cada vez que `user` cambie
+    useEffect(() => {
+        if (user) {
+            setFormData({
+                nombre: user.nombre || '',
+                apellido: user.apellido || '',
+                correo: user.correo || user.email || '',
+            });
+        }
+    }, [user]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -25,8 +37,10 @@ const ProfileDetailsForm = ({ user, loading, error, successMessage }) => {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
-            <h3 className="text-base sm:text-lg font-bold text-gray-800 pb-2 border-b border-gray-200">Editar Detalles</h3>
-            
+            <h3 className="text-base sm:text-lg font-bold text-gray-800 pb-2 border-b border-gray-200">
+                Editar Detalles
+            </h3>
+
             {/* Mensajes de feedback */}
             {successMessage && (
                 <div className="p-2.5 sm:p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg flex items-start gap-2 text-xs sm:text-sm">
@@ -42,9 +56,12 @@ const ProfileDetailsForm = ({ user, loading, error, successMessage }) => {
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                {/* Input Nombre y Apellido... (mismo código) */}
+                {/* Nombre */}
                 <div>
-                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-1.5" htmlFor="nombre">
+                    <label
+                        htmlFor="nombre"
+                        className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-1.5"
+                    >
                         Nombre
                     </label>
                     <input
@@ -57,9 +74,13 @@ const ProfileDetailsForm = ({ user, loading, error, successMessage }) => {
                         required
                     />
                 </div>
-                
+
+                {/* Apellido */}
                 <div>
-                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-1.5" htmlFor="apellido">
+                    <label
+                        htmlFor="apellido"
+                        className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-1.5"
+                    >
                         Apellido
                     </label>
                     <input
@@ -74,9 +95,12 @@ const ProfileDetailsForm = ({ user, loading, error, successMessage }) => {
                 </div>
             </div>
 
-            {/* Input Correo (Deshabilitado) */}
+            {/* Correo */}
             <div>
-                <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-1.5" htmlFor="correo">
+                <label
+                    htmlFor="correo"
+                    className="block text-xs sm:text-sm font-semibold text-gray-700 mb-1 sm:mb-1.5"
+                >
                     Correo Electrónico
                 </label>
                 <input
@@ -93,12 +117,15 @@ const ProfileDetailsForm = ({ user, loading, error, successMessage }) => {
                 </p>
             </div>
 
+            {/* Botón Guardar */}
             <button
                 type="submit"
-                className={`w-full flex justify-center items-center gap-2 py-2 sm:py-2.5 px-4 border border-transparent rounded-lg shadow-md text-xs sm:text-sm font-semibold text-white ${
-                    loading ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800'
-                } transition-all duration-200 transform hover:scale-[1.02]`}
                 disabled={loading}
+                className={`w-full flex justify-center items-center gap-2 py-2 sm:py-2.5 px-4 border border-transparent rounded-lg shadow-md text-xs sm:text-sm font-semibold text-white ${
+                    loading
+                        ? 'bg-indigo-400 cursor-not-allowed'
+                        : 'bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800'
+                } transition-all duration-200 transform hover:scale-[1.02]`}
             >
                 {loading ? (
                     <>

@@ -1,61 +1,49 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { LogIn, User, Power, List, Truck, UserPlus } from "lucide-react";
 
-// Función auxiliar para obtener las iniciales del nombre (sin cambios)
 const getInitials = (name) => {
   if (!name) return "??";
   const parts = name.trim().split(/\s+/);
   let initials = "";
 
-  if (parts.length > 0) {
-    initials += parts[0].charAt(0).toUpperCase();
-  }
-  if (parts.length > 1) {
-    initials += parts[1].charAt(0).toUpperCase();
-  } else if (initials.length === 1 && name.length > 1) {
-    initials += name.charAt(1).toUpperCase();
-  }
+  if (parts.length > 0) initials += parts[0].charAt(0).toUpperCase();
+  if (parts.length > 1) initials += parts[1].charAt(0).toUpperCase();
+  else if (initials.length === 1 && name.length > 1) initials += name.charAt(1).toUpperCase();
 
   return initials.substring(0, 2);
 };
 
-// 🚀 CAMBIO 1: Añadir profilePicture a las props
-const UserDropdown = ({ userName, isLoggedIn, onLogout, rol, profilePicture }) => {
-  // ===============================================
-  // LOG PARA VERIFICAR LAS PROPS DE REDUX
-  // ===============================================
-  // console.log("UserDropdown Props:", { 
-  //   userName: userName, 
-  //   isLoggedIn: isLoggedIn, 
-  //   initials: getInitials(userName), 
-  //   userrole: rol,
-  //   profilePicture: profilePicture // ⬅️ Nuevo log
-  // });
-  // ===============================================
-
+const UserDropdown = ({ userName: reduxUserName, isLoggedIn: reduxLoggedIn, onLogout, rol, profilePicture: reduxProfilePicture }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Calcula las iniciales solo cuando el nombre cambia
+  // ⚡ Estado sincronizado con Redux para evitar "Usuario" y foto undefined
+  const [userName, setUserName] = useState(reduxUserName || "Usuario");
+  const [profilePicture, setProfilePicture] = useState(reduxProfilePicture || undefined);
+  const [isLoggedIn, setIsLoggedIn] = useState(reduxLoggedIn);
+
+  useEffect(() => {
+    setUserName(reduxUserName || "Usuario");
+    setProfilePicture(reduxProfilePicture);
+    setIsLoggedIn(reduxLoggedIn);
+    console.log("[UserDropdown] Props cambiaron:", { userName: reduxUserName, profilePicture: reduxProfilePicture, isLoggedIn: reduxLoggedIn });
+  }, [reduxUserName, reduxProfilePicture, reduxLoggedIn]);
+
   const userInitials = useMemo(() => getInitials(userName), [userName]);
 
   const handleMouseEnter = () => setIsOpen(true);
   const handleMouseLeave = () => setIsOpen(false);
-  
   const handleLogout = () => {
     onLogout();
     setIsOpen(false);
   };
-
   const handleLinkClick = () => setIsOpen(false);
 
   const TriggerContent = () => (
     <div className="flex items-center space-x-2">
       {isLoggedIn && (
-        // 🚀 CAMBIO 2: Lógica condicional para mostrar la imagen o las iniciales
         <>
           {profilePicture ? (
-            // Muestra la imagen si la URL existe
             <img
               src={profilePicture}
               alt={`${userName}'s profile`}
@@ -66,7 +54,6 @@ const UserDropdown = ({ userName, isLoggedIn, onLogout, rol, profilePicture }) =
               }}
             />
           ) : (
-            // Avatar de Iniciales si no hay imagen
             <div className="w-8 h-8 flex items-center justify-center bg-white text-[#131921] font-bold text-sm rounded-full shadow-inner">
               {userInitials}
             </div>
@@ -90,7 +77,6 @@ const UserDropdown = ({ userName, isLoggedIn, onLogout, rol, profilePicture }) =
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Trigger visible */}
       <div
         className={`p-2 rounded-md transition-all cursor-pointer ${
           isOpen ? "bg-white/20 border-white/20" : "border border-transparent hover:border-white/20"
@@ -99,16 +85,11 @@ const UserDropdown = ({ userName, isLoggedIn, onLogout, rol, profilePicture }) =
         <TriggerContent />
       </div>
 
-      {/* Dropdown */}
       {isOpen && (
         <div className={`absolute top-[calc(100%+5px)] right-0 bg-white shadow-2xl border border-gray-100 p-4 z-40 transform origin-top-right ${isLoggedIn ? 'w-[450px] rounded-xl' : 'w-[400px] rounded-lg'}`}>
-          
-          {/* Flecha superior decorativa */}
           <div className={`absolute -top-2 right-6 w-4 h-4 bg-white transform rotate-45 border-t border-l ${isLoggedIn ? 'border-gray-100 right-8' : 'border-gray-200 right-4'}`}></div>
 
-          {/* Contenido del Dropdown */}
           {!isLoggedIn ? (
-            // ESTADO NO LOGUEADO
             <div className="flex flex-col items-center p-2">
               <p className="text-sm text-gray-700 mb-3">
                 Accede o regístrate para una mejor experiencia.
@@ -131,7 +112,6 @@ const UserDropdown = ({ userName, isLoggedIn, onLogout, rol, profilePicture }) =
               </Link>
             </div>
           ) : (
-            // ESTADO LOGUEADO
             <>
               <h3 className="text-lg font-extrabold text-[#131921] mb-4 border-b pb-2">
                 ¡Bienvenido, {userName.split(' ')[0]}!
