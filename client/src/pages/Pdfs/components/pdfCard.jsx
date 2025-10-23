@@ -1,9 +1,9 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPdfUrl, setSelectedPdf, clearSelectedPdf } from '../../../features/pdfs/pdfSlice';
 import { Download, Eye, Loader2, FileText } from 'lucide-react';
-import pdfViewer from './pdfViewer';
+import PDFViewer from './PDFViewer';
 
-const pdfCard = ({ catalog }) => {
+const PDFCard = ({ catalog }) => {
   const dispatch = useDispatch();
   const pdfDetails = useSelector((state) => state.pdfs.details[catalog.fileName]);
   const selectedPdf = useSelector((state) => state.pdfs.selectedPdf);
@@ -21,14 +21,20 @@ const pdfCard = ({ catalog }) => {
     if (!url) {
       const result = await dispatch(fetchPdfUrl(catalog.fileName));
       if (result.payload) window.open(result.payload, '_blank');
-    } else window.open(url, '_blank');
+    } else {
+      window.open(url, '_blank');
+    }
   };
 
   return (
     <>
       <div className="group relative bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
         <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
-          <img src={catalog.imageUrl} alt={catalog.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+          <img
+            src={catalog.imageUrl}
+            alt={catalog.name}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
           <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -59,20 +65,23 @@ const pdfCard = ({ catalog }) => {
               <p className="text-sm text-gray-500 mt-1">{catalog.fileName}</p>
             </div>
           </div>
-          {hasError && <div className="mt-3 p-2 bg-red-50 text-red-600 text-xs rounded">Error al cargar el PDF</div>}
+          {hasError && (
+            <div className="mt-3 p-2 bg-red-50 text-red-600 text-xs rounded">
+              Error al cargar el PDF
+            </div>
+          )}
         </div>
       </div>
 
       {selectedPdf?.fileName === catalog.fileName && url && (
-        <pdfViewer catalog={catalog} url={url} onClose={() => dispatch(clearSelectedPdf())} />
-        
+        <PDFViewer
+          catalog={catalog}
+          url={url}
+          onClose={() => dispatch(clearSelectedPdf())}
+        />
       )}
     </>
   );
-
-
-
 };
 
-export default pdfCard;
-////
+export default PDFCard;
