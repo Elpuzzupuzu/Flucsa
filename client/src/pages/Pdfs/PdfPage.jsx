@@ -1,5 +1,5 @@
 import ProductSlider from '../../components/ShopSlider/ShopSlider';
-import PDFCard from './components/pdfCard';
+import pdfCard from './components/pdfCard';
 import { catalogos } from './data/catalogoData';
 import { FileText } from 'lucide-react';
 
@@ -12,7 +12,7 @@ const PDFCatalog = () => (
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {catalogos.map((catalog) => <PDFCard key={catalog.fileName} catalog={catalog} />)}
+        {catalogos.map((catalog) => <pdfCard key={catalog.fileName} catalog={catalog} />)}
       </div>
 
       {catalogos.length === 0 && (
