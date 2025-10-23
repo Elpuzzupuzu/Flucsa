@@ -20,7 +20,6 @@ import AboutUsPage from './pages/AboutUs/AboutUsPage';
 import ServicesPage from './pages/Servicios/ServicesPage';
 import ServiceMenuPage from './pages/serviceMenu/serviceMenuPage';
 import ContactPage from './pages/Contact/ContactPage';
-import PdfPage from './pages/Pdfs/PdfPage';
 
 // Auth
 
@@ -110,7 +109,6 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/productos" element={<ProductsPage addToCart={addToCart} />} />
                         <Route path="/productos/:id" element={<ProductDetails onAddToCart={addToCart} />} />
-                        <Route path="/catalogo-pdfs" element={<PdfPage />} />
                         <Route path="/acerca-de-nosotros" element={<AboutUsPage />} />
                         <Route path="/servicios" element={<ServicesPage />} />
                         <Route path="/servicios/:category" element={<ServiceMenuPage />} />
