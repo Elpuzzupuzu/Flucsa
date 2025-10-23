@@ -1,5 +1,5 @@
 import ProductSlider from '../../components/ShopSlider/ShopSlider';
-import PDFCard from '../../pages/Pdfs/components/PDFCard';
+import PDFCard from './components/pdfCard';
 import { catalogos } from '../../pages/Pdfs/data/catalogoData';
 import { FileText } from 'lucide-react';
 

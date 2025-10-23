@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPdfUrl, setSelectedPdf, clearSelectedPdf } from '../../../features/pdfs/pdfSlice';
 import { Download, Eye, Loader2, FileText } from 'lucide-react';
-import PDFViewer from './PDFViewer';
+import PDFViewer from './pdfViewer';
 
 const PDFCard = ({ catalog }) => {
   const dispatch = useDispatch();
@@ -68,6 +68,10 @@ const PDFCard = ({ catalog }) => {
       )}
     </>
   );
+
+
+  
 };
 
 export default PDFCard;
+////
