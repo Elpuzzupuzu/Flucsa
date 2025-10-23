@@ -1,49 +1,86 @@
+// src/repositories/carritoRepository.js
 import { supabase } from '../config/supabaseClient.js';
 
 export const CarritoRepository = {
+    // ==========================================================
+    // 1. GESTIÓN DEL ENCABEZADO (La tabla carritos)
+    // ==========================================================
 
     /**
-     * Obtiene todos los artículos activos en el carrito de un usuario.
-     * Realiza un JOIN con la tabla de productos para obtener detalles.
+     * Busca el ID del carrito ACTIVO de un usuario. Si no existe, lo crea.
      * @param {string} usuarioId - El UUID del usuario.
-     * @returns {Promise<Array>} Lista de artículos del carrito con detalles de producto.
+     * @returns {Promise<string>} El ID del carrito activo.
      */
-    getCarritoByUserId: async (usuarioId) => {
-        // Seleccionamos los campos del carrito y todos los campos del producto
-        const { data, error } = await supabase
-            .from('carrito_compras')
+    getOrCreateActiveCartId: async (usuarioId) => {
+        // 1. Intenta encontrar el carrito activo existente
+        let { data: cart, error } = await supabase
+            .from('carritos')
+            .select('id')
+            .eq('usuario_id', usuarioId)
+            .eq('activo', true)
+            .maybeSingle();
+
+        if (error) throw error;
+
+        if (cart) {
+            return cart.id;
+        }
+
+        // 2. Si no existe, crea un nuevo carrito activo
+        const { data: newCart, error: insertError } = await supabase
+            .from('carritos')
+            .insert({ usuario_id: usuarioId, activo: true })
+            .select('id')
+            .single();
+
+        if (insertError) throw insertError;
+
+        return newCart.id;
+    },
+
+    // ==========================================================
+    // 2. GESTIÓN DE LOS ITEMS (La tabla carrito_items)
+    // ==========================================================
+
+    /**
+     * Obtiene todos los artículos activos en el carrito, haciendo el JOIN con productos.
+     * @param {string} carritoId - El ID del carrito (obtenido de getOrCreateActiveCartId).
+     * @returns {Promise<Array>} Lista de artículos del carrito con detalles de producto anidados.
+     */
+    getCartItemsByCartId: async (carritoId) => {
+        const { data: items, error } = await supabase
+            .from('carrito_items')
             .select(`
                 id,
                 cantidad,
                 agregado_en,
                 producto_id,
-                productos (
+                producto:productos ( 
                     id,
                     nombre,
                     precio,
-                    stock,
-                    url_imagen // Suponiendo que tienes un campo url_imagen
+                    existencias,
+                    url_imagen:imagen 
                 )
             `)
-            .eq('usuario_id', usuarioId)
-            .eq('activo', true) // Solo elementos activos en el carrito
+            .eq('carrito_id', carritoId)
             .order('agregado_en', { ascending: false });
 
         if (error) throw error;
-        return data;
+        return items;
     },
 
     /**
-     * Busca un artículo activo específico en el carrito del usuario.
-     * @param {string} usuarioId - El UUID del usuario.
+     * Busca un artículo específico en la tabla carrito_items.
+     * @param {string} carritoId - El ID del carrito.
      * @param {string} productoId - El UUID del producto.
-     * @returns {Promise<Object | null>} El artículo del carrito o null si no existe.
+     * @returns {Promise<Object | null>} El artículo del carrito o null.
      */
-    findActiveItem: async (usuarioId, productoId) => {
+    findItemInCart: async (carritoId, productoId) => {
         const { data, error } = await supabase
-            .from('carrito_compras')
+            .from('carrito_items')
             .select('*')
-            .match({ usuario_id: usuarioId, producto_id: productoId, activo: true })
+            .match({ carrito_id: carritoId, producto_id: productoId })
             .maybeSingle();
 
         if (error) throw error;
@@ -51,61 +88,73 @@ export const CarritoRepository = {
     },
 
     /**
-     * Agrega un nuevo producto al carrito o lo inserta si ya existe.
-     * NOTA: La lógica de la UNICIDAD del producto en el carrito se maneja en el servicio.
-     * @param {string} usuarioId - El UUID del usuario.
+     * Inserta un nuevo producto en la tabla carrito_items.
+     * @param {string} carritoId - El ID del carrito.
      * @param {string} productoId - El UUID del producto.
      * @param {number} cantidad - La cantidad inicial.
-     * @returns {Promise<Object>} El nuevo registro del carrito.
+     * @returns {Promise<Object>} El nuevo item insertado, incluyendo datos de producto.
      */
-    addItemToCarrito: async (usuarioId, productoId, cantidad = 1) => {
+    insertNewCartItem: async (carritoId, productoId, cantidad) => {
         const { data, error } = await supabase
-            .from('carrito_compras')
-            .insert([
-                { 
-                    usuario_id: usuarioId, 
-                    producto_id: productoId, 
-                    cantidad: cantidad 
-                }
-            ])
-            .select();
-        
+            .from('carrito_items')
+            .insert({
+                carrito_id: carritoId,
+                producto_id: productoId,
+                cantidad: cantidad
+            })
+            .select(`
+                id,
+                cantidad,
+                producto_id,
+                producto:productos (
+                    id, 
+                    nombre, 
+                    precio, 
+                    existencias,        
+                    url_imagen:imagen   
+                ) 
+            `)
+            .single();
+
         if (error) throw error;
-
-        // Por si se usa `ON CONFLICT` en la base de datos, aunque el servicio lo gestionará
-        if (data.length === 0) { 
-             throw new Error('El artículo no pudo ser insertado.');
-        }
-
-        return data[0];
+        return data;
     },
 
     /**
-     * Actualiza la cantidad de un artículo existente en el carrito.
+     * Actualiza la cantidad de un artículo existente y devuelve el ítem con detalles de producto.
      * @param {string} itemId - El ID (UUID) del artículo del carrito.
      * @param {number} nuevaCantidad - La nueva cantidad.
-     * @returns {Promise<Object>} El registro actualizado del carrito.
+     * @returns {Promise<Object>} El registro actualizado del carrito con datos de producto.
      */
     updateItemQuantity: async (itemId, nuevaCantidad) => {
         const { data, error } = await supabase
-            .from('carrito_compras')
+            .from('carrito_items')
             .update({ cantidad: nuevaCantidad })
             .eq('id', itemId)
-            .select();
+            .select(`
+                id,
+                cantidad,
+                producto_id,
+                producto:productos (
+                    id, 
+                    nombre, 
+                    precio, 
+                    existencias,        
+                    url_imagen:imagen   
+                )
+            `)
+            .single();
 
         if (error) throw error;
-        return data[0];
+        return data;
     },
 
     /**
-     * Elimina un artículo (o establece 'activo' a false) del carrito por su ID.
-     * Usaremos DELETE para simplicidad y consistencia con un carrito que aún no es un 'pedido'.
-     * @param {string} itemId - El ID (UUID) del artículo del carrito a eliminar.
+     * Elimina un artículo de la tabla carrito_items.
      */
     removeItemFromCarrito: async (itemId) => {
-        // Alternativa: .update({ activo: false })...
         const { error } = await supabase
-            .from('carrito_compras')
+            .from('carrito_items')
             .delete()
             .eq('id', itemId);
 
@@ -114,15 +163,13 @@ export const CarritoRepository = {
     },
 
     /**
-     * Vacía todo el carrito de un usuario.
-     * @param {string} usuarioId - El UUID del usuario.
+     * Elimina todos los ítems del carrito principal.
      */
-    clearCarrito: async (usuarioId) => {
+    clearCarritoItems: async (carritoId) => {
         const { error } = await supabase
-            .from('carrito_compras')
+            .from('carrito_items')
             .delete()
-            .eq('usuario_id', usuarioId)
-            .eq('activo', true);
+            .eq('carrito_id', carritoId);
 
         if (error) throw error;
         return true;

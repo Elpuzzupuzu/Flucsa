@@ -1,138 +1,129 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ShoppingCart as ShoppingCartIcon } from 'lucide-react';
+import { ShoppingCart as ShoppingCartIcon, Loader2 } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import CartHeader from '../../../pages/Products/ShoppingCart/components/cartHeader';
 import CartItem from '../../../pages/Products/ShoppingCart/components/cartItem';
 import CartFooter from '../../../pages/Products/ShoppingCart/components/cartFooter';
-import {
-  fetchCart,
-  // Ya no necesitas importar updateCartItemQuantity o removeCartItem aquí,
-  // ya que el hijo las usa directamente.
-} from '../../../features/cart/cartSlice';
+import { fetchCart } from '../../../features/cart/cartSlice';
 import '../../../pages/Products/ShoppingCart/cartAnimations.css';
 
 const ShoppingCart = ({ isOpen, onClose, onProceedToCheckout }) => {
-  const dispatch = useDispatch();
+    const dispatch = useDispatch();
 
-  const user = useSelector((state) => state.user?.user);
-  const cartItems = useSelector((state) => state.cart.items);
-  const products = useSelector((state) => state.products.items);
+    const user = useSelector((state) => state.user?.user);
+    const cartItems = useSelector((state) => state.cart.items);
+    const cartLoading = useSelector((state) => state.cart.loading);
 
-  const [newlyAddedItems, setNewlyAddedItems] = useState(new Set());
-  const previousItemIds = useRef([]);
+    const [newlyAddedItems, setNewlyAddedItems] = useState(new Set());
+    const previousItemIds = useRef([]);
 
-  // Recuperar carrito al montar si el usuario existe
-  useEffect(() => {
-    if (user) {
-      dispatch(fetchCart());
-    }
-  }, [user, dispatch]);
+    // ✅ CORRECCIÓN: Recuperar carrito al montar o cuando se abre
+    useEffect(() => {
+        // Solo intentamos recuperar si el carrito se abre Y el usuario está logueado.
+        if (isOpen && user) {
+            dispatch(fetchCart());
+        }
+    }, [isOpen, user, dispatch]); // Agregamos 'isOpen' como dependencia
 
-  // Detectar nuevos productos añadidos
-  useEffect(() => {
-    const currentItemIds = cartItems.map((item) => item.id);
-    const newItems = currentItemIds.filter(
-      (id) => !previousItemIds.current.includes(id)
+    // Detectar nuevos productos añadidos (Lógica de animación)
+    useEffect(() => {
+        const currentItemIds = cartItems.map((item) => item.id);
+        const newItems = currentItemIds.filter(
+            (id) => !previousItemIds.current.includes(id)
+        );
+
+        if (newItems.length > 0) {
+            setNewlyAddedItems(new Set(newItems));
+            setTimeout(() => setNewlyAddedItems(new Set()), 2000);
+        }
+
+        previousItemIds.current = currentItemIds;
+    }, [cartItems]);
+
+    // ✅ LÓGICA ROBUSTA: Cálculo del total usando la data anidada
+    const calculateTotal = () =>
+        cartItems.reduce((sum, item) => {
+            const { precio = 0 } = item.producto || {}; // Desestructuramos el precio del producto
+            const price = parseFloat(precio) || 0;
+            const quantity = item.cantidad || 0;
+            return sum + price * quantity;
+        }, 0);
+
+    const totalItems = cartItems.reduce(
+        (sum, item) => sum + (item.cantidad || 0),
+        0
     );
 
-    if (newItems.length > 0) {
-      setNewlyAddedItems(new Set(newItems));
-      // Se reinicia el efecto 'nuevo' después de 2 segundos
-      setTimeout(() => setNewlyAddedItems(new Set()), 2000); 
-    }
+    const formatPrice = (price) => {
+        const numeric = parseFloat(price) || 0;
+        return `$${numeric.toFixed(2)}`;
+    };
 
-    previousItemIds.current = currentItemIds;
-  }, [cartItems]);
+    const isLoadingInitialData = cartLoading && cartItems.length === 0;
 
-  const calculateTotal = () =>
-    cartItems.reduce((sum, item) => {
-      const product =
-        item.producto || products.find((p) => p.id === item.producto_id) || {};
-      const price = parseFloat(product.precio || 0) || 0;
-      const quantity = item.cantidad || 0;
-      return sum + price * quantity;
-    }, 0);
-
-  const totalItems = cartItems.reduce(
-    (sum, item) => sum + (item.cantidad || 0),
-    0
-  );
-
-  // **LÓGICA ELIMINADA:** handleQuantityChange y handleRemoveItem
-  // (El componente hijo CartItem ya hace el dispatch directamente)
-
-  const formatPrice = (price) => {
-    const numeric = parseFloat(price) || 0;
-    return `$${numeric.toFixed(2)}`;
-  };
-
-  return (
-    <>
-      {isOpen && (
-        <div
-          className={`fixed inset-0 bg-black/50 z-40 transition-all duration-300 ${
-            isOpen ? 'opacity-100' : 'opacity-0'
-          }`}
-          onClick={onClose}
-        />
-      )}
-
-      <div
-        className={`fixed top-0 right-0 h-full w-96 bg-white shadow-2xl transform transition-all duration-300 ease-out z-50 ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-      >
-        <div className="p-6 h-full flex flex-col">
-          <CartHeader totalItems={totalItems} onClose={onClose} />
-
-          <div className="flex-1 overflow-y-auto">
-            {cartItems.length === 0 ? (
-              <div className="text-center py-12 animate-fade-in">
-                <div className="animate-bounce">
-                  <ShoppingCartIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                </div>
-                <p className="text-gray-600 mb-2">Tu carrito está vacío</p>
-                <p className="text-gray-500 text-sm">
-                  Agrega productos para comenzar tu compra
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {cartItems.map((item, index) => {
-                  const product =
-                    item.producto ||
-                    products.find((p) => p.id === item.producto_id) || {
-                      nombre: 'Producto sin nombre',
-                      precio: 0,
-                      imagen: '/placeholder.png',
-                    };
-
-                  return (
-                    <CartItem
-                      key={item.id}
-                      item={{ ...item, producto: product }}
-                      index={index}
-                      isNewItem={newlyAddedItems.has(item.id)}
-                      // **PROPS ELIMINADAS:** onQuantityChange={handleQuantityChange}
-                      // **PROPS ELIMINADAS:** onRemoveItem={handleRemoveItem}
-                      formatPrice={formatPrice}
-                    />
-                  );
-                })}
-              </div>
+    return (
+        <>
+            {isOpen && (
+                <div
+                    className={`fixed inset-0 bg-black/50 z-40 transition-all duration-300 ${
+                        isOpen ? 'opacity-100' : 'opacity-0'
+                    }`}
+                    onClick={onClose}
+                />
             )}
-          </div>
 
-          {cartItems.length > 0 && (
-            <CartFooter
-              total={calculateTotal()}
-              onProceedToCheckout={onProceedToCheckout}
-            />
-          )}
-        </div>
-      </div>
-    </>
-  );
+            <div
+                className={`fixed top-0 right-0 h-full w-96 bg-white shadow-2xl transform transition-all duration-300 ease-out z-50 ${
+                    isOpen ? 'translate-x-0' : 'translate-x-full'
+                }`}
+            >
+                <div className="p-6 h-full flex flex-col">
+                    <CartHeader totalItems={totalItems} onClose={onClose} />
+
+                    <div className="flex-1 overflow-y-auto">
+                        {isLoadingInitialData ? (
+                            <div className="text-center py-12">
+                                <Loader2 className="w-8 h-8 text-gray-400 mx-auto animate-spin" />
+                                <p className="text-gray-500 mt-2">Cargando carrito...</p>
+                            </div>
+                        ) : cartItems.length === 0 ? (
+                            <div className="text-center py-12 animate-fade-in">
+                                <div className="animate-bounce">
+                                    <ShoppingCartIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                </div>
+                                <p className="text-gray-600 mb-2">Tu carrito está vacío</p>
+                                <p className="text-gray-500 text-sm">
+                                    Agrega productos para comenzar tu compra
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {cartItems.map((item, index) => {
+                                    return (
+                                        <CartItem
+                                            key={item.id}
+                                            // Se pasa el item completo (con producto anidado)
+                                            item={item} 
+                                            index={index}
+                                            isNewItem={newlyAddedItems.has(item.id)}
+                                            formatPrice={formatPrice}
+                                        />
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+
+                    {cartItems.length > 0 && (
+                        <CartFooter
+                            total={calculateTotal()}
+                            onProceedToCheckout={onProceedToCheckout}
+                        />
+                    )}
+                </div>
+            </div>
+        </>
+    );
 };
 
 export default ShoppingCart;

@@ -6,33 +6,26 @@ import { updateCartItemQuantity, removeCartItem } from '../../../../features/car
 const CartItem = ({ item, index, isNewItem, formatPrice }) => {
   const dispatch = useDispatch();
 
-  // Verificar estructura de datos (Puedes comentar o eliminar este console.log en producción)
-  console.log(`🧩 CartItem Rendered - index: ${index}`, item);
-
-  // Extraer información desde item.producto
+  // Extraer información desde item.producto.
+  // Esto es seguro porque el backend garantiza que item.producto existe.
   const product = item.producto || {};
+
+  // Se usa la propiedad precio del producto anidado.
+  // Se mantiene la lógica de limpieza de string si el precio viene como string con símbolos.
   const priceString = product.precio ? product.precio.toString() : '0';
   const priceValue = parseFloat(priceString.replace(/[^0-9.]/g, '')) || 0;
 
-  // **CORRECCIÓN DE LÓGICA:** Usar SOLO item.cantidad para consistencia
-  const quantity = item.cantidad || 1; 
+  // item.cantidad viene directamente de la tabla carrito_items
+  const quantity = item.cantidad || 1;
   const itemTotal = priceValue * quantity;
 
-  console.log(`💰 Item Total Calculated: ${itemTotal.toFixed(2)}`);
-
   const handleQuantityChange = (newQuantity) => {
-    console.log(`↔ Quantity Change Requested for item ${item.id}: ${newQuantity}`);
-    if (newQuantity < 1) {
-      console.log(`🗑️ Dispatching removeCartItem for item ${item.id}`);
-      dispatch(removeCartItem(item.id));
-    } else {
-      console.log(`🔄 Dispatching updateCartItemQuantity for item ${item.id} with cantidad ${newQuantity}`);
-      dispatch(updateCartItemQuantity({ itemId: item.id, cantidad: newQuantity }));
-    }
+    // Si la nueva cantidad es 0 o menor, se delega la lógica de eliminación al servicio/controlador
+    // La API se encarga de determinar si es eliminación (cant <= 0) o actualización (cant > 0).
+    dispatch(updateCartItemQuantity({ itemId: item.id, cantidad: newQuantity }));
   };
 
   const handleRemove = () => {
-    console.log(`❌ Remove Item Clicked: ${item.id}`);
     dispatch(removeCartItem(item.id));
   };
 
@@ -54,7 +47,7 @@ const CartItem = ({ item, index, isNewItem, formatPrice }) => {
       <div className="flex gap-3">
         <div className="relative">
           <img
-            src={product.imagen || '/placeholder.png'}
+            src={product.url_imagen || '/placeholder.png'}
             alt={product.nombre || 'Producto sin nombre'}
             className={`w-16 h-16 object-cover rounded-lg transition-all duration-300 ${
               isNewItem ? 'ring-2 ring-green-400 ring-offset-1' : ''
@@ -99,6 +92,7 @@ const CartItem = ({ item, index, isNewItem, formatPrice }) => {
               >
                 <Minus className="w-3 h-3" />
               </button>
+
               <span
                 className={`text-sm font-medium w-8 text-center ${
                   isNewItem ? 'text-green-700 font-bold scale-110' : ''
@@ -106,6 +100,7 @@ const CartItem = ({ item, index, isNewItem, formatPrice }) => {
               >
                 {quantity}
               </span>
+
               <button
                 onClick={() => handleQuantityChange(quantity + 1)}
                 className="p-1 rounded bg-white border hover:bg-gray-50 transition-all duration-200 hover:scale-110 active:scale-95"
@@ -113,6 +108,7 @@ const CartItem = ({ item, index, isNewItem, formatPrice }) => {
                 <Plus className="w-3 h-3" />
               </button>
             </div>
+
             <button
               onClick={handleRemove}
               className="p-1 text-red-500 hover:bg-red-50 rounded transition-all duration-200 hover:scale-110 active:scale-95"

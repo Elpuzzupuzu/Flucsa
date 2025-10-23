@@ -1,3 +1,4 @@
+// server.js
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -74,15 +75,16 @@ app.use("/api/products", productsRoutes);
 // Rutas de subida de imágenes
 app.use("/api/products", imageRoutes); // /upload-image
 
-// Rutas de admin
-app.use("/api", adminRouter); // Todas las rutas admin bajo /api/admin/*
+// 🔴 CAMBIO CRÍTICO: Montamos el adminRouter bajo /api/admin para evitar conflictos
+// ANTES: app.use("/api", adminRouter); 
+app.use("/api/admin", adminRouter); // Todas las rutas admin bajo /api/admin/*
 
 // NUEVAS RUTAS: usuarios y lista de deseos
 app.use("/api/users", userRoutes); // /api/users/*
 app.use("/api/wishlist", whishListRoutes); // /api/wishlist/*
 
 // 🛒 NUEVA RUTA: Carrito de Compras
-app.use("/api/cart", cartRoutes); // /api/cart/*
+app.use("/api/carrito", cartRoutes); // /api/carrito/*
 
 //rutas para los pdfs
 // Rutas del catálogo PDF

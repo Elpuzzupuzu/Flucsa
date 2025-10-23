@@ -11,18 +11,25 @@ router.post('/login', UserController.login);
 router.post('/logout', UserController.logout);
 
 // Rutas de Perfil (Requieren authMiddleware)
-// 2. NUEVA RUTA: Verificar/Re-hidratar Sesión
+// 1. Verificar/Re-hidratar Sesión (devuelve datos básicos)
 router.get('/profile', authMiddleware, UserController.getAuthProfile);
 
-// 🚀 NUEVA RUTA: Actualizar información de perfil
+// 2. 🚀 Actualizar información de perfil
 router.put('/profile', authMiddleware, UserController.updateProfile);
 
-// 🚀 NUEVA RUTA: Actualizar contraseña
+// 3. 🚀 Actualizar contraseña
 router.put('/password', authMiddleware, UserController.updatePassword);
 
-// Obtener perfil completo de usuario
-// NOTA: Cambié el uso del ID de req.params a req.user.id en el controller para más seguridad.
-router.get('/:id', authMiddleware, UserController.getProfile); 
+// 4. Obtener perfil completo de usuario (detalles, historial, etc.)
+// ❌ ¡ERROR CORREGIDO AQUÍ!
+// Antes: router.get('/:id', authMiddleware, UserController.getProfile); 
+// La ruta /:id causaba el conflicto al interpretar 'carrito' como un ID.
+// SOLUCIÓN: Usamos una ruta estática para obtener el perfil del usuario AUTENTICADO.
+
+router.get('/full-profile', authMiddleware, UserController.getProfile); 
+
+// Puedes considerar eliminar la línea anterior y usar /profile si getAuthProfile y getProfile 
+// se fusionan o tienen el mismo objetivo. Pero la clave es eliminar el /:id.
 
 // Ejemplo de ruta solo para admin (opcional)
 // router.get('/admin-data', authMiddleware, authRole(['admin']), AdminController.getData);

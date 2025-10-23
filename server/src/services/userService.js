@@ -97,7 +97,7 @@ loginUser: async (correo, password) => {
         nombre: user.nombre,
         apellido: user.apellido,
         rol: user.rol,
-        // 🔑 CAMBIO CLAVE: Añadir la foto_perfil al objeto de retorno
+        // CAMBIO CLAVE: Añadir la foto_perfil al objeto de retorno
         foto_perfil: user.foto_perfil 
       },
       accessToken,

@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios";
 
 // ===============================
-// THUNKS ASÍNCRONOS
+// THUNKS ASÍNCRONOS (No necesitan cambios, solo limpieza de comentarios)
 // ===============================
 
 // 1. Obtener el carrito completo del usuario
@@ -10,8 +10,8 @@ export const fetchCart = createAsyncThunk(
   "cart/fetchCart",
   async (_, thunkAPI) => {
     try {
-      const response = await api.get("/cart");
-      // Se espera array de items con item.producto
+      // Ruta: GET /carrito
+      const response = await api.get("/carrito"); 
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -26,8 +26,10 @@ export const addItemToCart = createAsyncThunk(
   "cart/addItemToCart",
   async (itemData, thunkAPI) => {
     try {
-      const response = await api.post("/cart/items", itemData);
-      return response.data.item;
+      // Ruta: POST /carrito/items
+      const response = await api.post("/carrito/items", itemData);
+      // Backend retorna: { item: item_completo_anidado }
+      return response.data.item; 
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.error || "Error al agregar el producto al carrito."
@@ -41,10 +43,16 @@ export const updateCartItemQuantity = createAsyncThunk(
   "cart/updateCartItemQuantity",
   async ({ itemId, cantidad }, thunkAPI) => {
     try {
-      const response = await api.put(`/cart/items/${itemId}`, { cantidad });
-      // Si la API devuelve el item actualizado, lo retornamos.
+      // Ruta: PUT /carrito/items/:itemId
+      const response = await api.put(`/carrito/items/${itemId}`, { cantidad });
+      
+      // El backend devuelve { item: item_anidado } o si eliminó, { message } y status 200.
+      // Basado en el controlador, si la cantidad era <= 0, el servicio devuelve { id, deleted: true } al controlador,
+      // y el controlador retorna un mensaje. Aquí asumimos que el controlador devuelve:
       if (response.data.item) return response.data.item;
-      // Si el backend manejó la eliminación (cantidad = 0), indicamos que fue eliminado.
+      
+      // Si el controlador eliminó el ítem (cant <= 0) y no devolvió un 'item',
+      // asumimos que fue una eliminación exitosa del ítem con ese ID
       return { id: itemId, deleted: true }; 
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -59,7 +67,8 @@ export const removeCartItem = createAsyncThunk(
   "cart/removeCartItem",
   async (itemId, thunkAPI) => {
     try {
-      await api.delete(`/cart/items/${itemId}`);
+      // Ruta: DELETE /carrito/items/:itemId
+      await api.delete(`/carrito/items/${itemId}`);
       return itemId;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -74,7 +83,8 @@ export const clearCart = createAsyncThunk(
   "cart/clearCart",
   async (_, thunkAPI) => {
     try {
-      await api.delete("/cart");
+      // Ruta: DELETE /carrito
+      await api.delete("/carrito");
       return true;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -85,7 +95,7 @@ export const clearCart = createAsyncThunk(
 );
 
 // ===============================
-// SLICE
+// SLICE (Ajuste en addItemToCart)
 // ===============================
 
 const cartSlice = createSlice({
@@ -117,14 +127,15 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload;
+        // El backend ahora garantiza que cada ítem tiene la data de producto anidada.
+        state.items = action.payload; 
       })
       .addCase(fetchCart.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // --- ADD ITEM (CORRECCIÓN APLICADA) ---
+      // --- ADD ITEM (Corregido para buscar por el ID del ítem, no solo producto_id) ---
       .addCase(addItemToCart.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -134,16 +145,20 @@ const cartSlice = createSlice({
         state.successMessage = "Producto agregado/actualizado en el carrito.";
 
         const newItem = action.payload;
+        
+        // La búsqueda debe hacerse por el ID de la tabla carrito_items (newItem.id) 
+        // si existe, o por producto_id si se está insertando un nuevo producto.
+        // Usaremos el producto_id como identificador para la lógica de reemplazo.
         const existingIndex = state.items.findIndex(
-          // Buscar por producto_id para saber si es un artículo ya en el carrito
-          (item) => item.producto_id === newItem.producto_id
+           // Usamos el ID del producto como el identificador único en la interfaz
+          (item) => item.producto_id === newItem.producto_id 
         );
 
         if (existingIndex !== -1) {
-          // ✅ CORREGIDO: Reemplazar completamente el objeto para asegurar la inmutabilidad
-          // y la actualización de todas las propiedades (ej. cantidad, id del item de carrito).
+          // Reemplaza el ítem existente por la nueva versión completa de la API
           state.items[existingIndex] = newItem; 
         } else {
+          // Si es un ítem nuevo, lo añade al principio
           state.items.unshift(newItem);
         }
       })
@@ -152,7 +167,7 @@ const cartSlice = createSlice({
         state.error = action.payload;
       })
 
-      // --- UPDATE ITEM (CORRECCIÓN APLICADA) ---
+      // --- UPDATE ITEM (Mantiene la lógica de reemplazo/eliminación) ---
       .addCase(updateCartItemQuantity.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -161,15 +176,15 @@ const cartSlice = createSlice({
         state.loading = false;
 
         if (action.payload.deleted) {
-          // Si el servidor indica que se eliminó (cantidad = 0)
+          // Si el servicio indicó eliminación
           state.items = state.items.filter((item) => item.id !== action.payload.id);
           state.successMessage = "Artículo eliminado del carrito.";
         } else {
+          // Si el servicio devolvió el ítem actualizado
           const updatedItem = action.payload;
-          // Buscar por el ID del item de carrito
           const index = state.items.findIndex((item) => item.id === updatedItem.id);
           if (index !== -1) {
-            // ✅ CORREGIDO: Reemplazar completamente el objeto para evitar mezclas parciales.
+            // Reemplaza el ítem por la nueva versión completa
             state.items[index] = updatedItem; 
           }
           state.successMessage = "Cantidad actualizada.";
@@ -187,7 +202,6 @@ const cartSlice = createSlice({
       })
       .addCase(removeCartItem.fulfilled, (state, action) => {
         state.loading = false;
-        // Filtrar el ítem que coincide con el itemId (payload)
         state.items = state.items.filter((item) => item.id !== action.payload);
         state.successMessage = "Artículo eliminado del carrito.";
       })

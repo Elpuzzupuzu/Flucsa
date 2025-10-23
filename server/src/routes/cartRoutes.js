@@ -1,6 +1,6 @@
 import express from 'express';
 import { CarritoController } from '../controllers/cartController.js';
-import { authMiddleware } from '../middleware/authMiddleware.js'; // Asumo que tienes esta importación
+import { authMiddleware } from '../middleware/authMiddleware.js'; 
 
 const router = express.Router();
 
