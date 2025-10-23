@@ -30,7 +30,8 @@ const __dirname = path.dirname(__filename);
 // 🌐 CORS
 // =======================================================
 const allowedOrigins = [
-  "http://localhost:5173", // Desarrollo local
+  "http://localhost:5173",
+  "http://localhost:4000", // producción local // Desarrollo local
 ];
 
 const productionOrigins = process.env.FRONTEND_ORIGINS;
@@ -63,9 +64,9 @@ app.use(cookieParser());
 // =======================================================
 // 🚀 RUTAS DE LA API
 // =======================================================
-app.get("/", (req, res) => {
-  res.send("🚀 Servidor Flucsa corriendo...");
-});
+// app.get("/", (req, res) => {
+//   res.send(" Servidor Flucsa corriendo...");
+// });
 
 app.use("/api/products", productsRoutes);
 app.use("/api/products", imageRoutes);
@@ -78,7 +79,8 @@ app.use("/api/pdfs", pdfRoutes);
 // =======================================================
 // 🧱 SERVIR FRONTEND DE REACT (VITE) EN PRODUCCIÓN
 // =======================================================
-const clientDistPath = path.join(__dirname, "../client/dist");
+const clientDistPath = path.join(__dirname, "../../client/dist");
+
 
 if (process.env.NODE_ENV === "production") {
   // Servir los archivos estáticos
