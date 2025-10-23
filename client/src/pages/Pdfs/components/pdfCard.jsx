@@ -65,6 +65,7 @@ const pdfCard = ({ catalog }) => {
 
       {selectedPdf?.fileName === catalog.fileName && url && (
         <PDFViewer catalog={catalog} url={url} onClose={() => dispatch(clearSelectedPdf())} />
+        
       )}
     </>
   );
