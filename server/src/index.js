@@ -142,9 +142,9 @@ if (process.env.NODE_ENV === 'production') {
 // --- Rutas de API (Deben ir ANTES del fallback del frontend) ---
 
 // --- Ruta raíz de prueba (puede ser eliminada o modificada) ---
-app.get("/", (req, res) => {
-    res.send("🚀 Servidor Flucsa corriendo...");
-});
+// app.get("/", (req, res) => {
+//     res.send("🚀 Servidor Flucsa corriendo...");
+// });
 
 app.use("/api/products", productsRoutes);
 app.use("/api/products", imageRoutes);
