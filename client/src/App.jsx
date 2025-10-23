@@ -20,11 +20,9 @@ import AboutUsPage from './pages/AboutUs/AboutUsPage';
 import ServicesPage from './pages/Servicios/ServicesPage';
 import ServiceMenuPage from './pages/serviceMenu/serviceMenuPage';
 import ContactPage from './pages/Contact/ContactPage';
+import PDFCatalog from './pages/Pdfs/PDFPage'; // RESTAURADO Y CORREGIDO: Usando PascalCase (PDFPage)
 
 // Auth
-
-
-
 import Login from './pages/Auth/login';
 import Register from './pages/Auth/Register';
 import ProfilePage from './pages/Auth/ProfilePage/ProfilePage';
@@ -37,17 +35,17 @@ import AdminProducts from './admin/products/AdminProducts';
 function App() {
     const dispatch = useDispatch();
     const cartItems = useSelector((state) => state.cart.items);
-    
+
     // Obtenemos 'user' y 'authChecked' del store
     const { user, authChecked: reduxAuthChecked } = useSelector((state) => state.user);
 
-    // Usaremos el estado local para controlar la visualización del loader inicial
+    // Estado local para controlar la visualización del loader inicial
     const [isInitialAuthChecked, setIsInitialAuthChecked] = useState(false);
 
     // --- 1. Ejecutar checkAuthStatus y marcar la verificación inicial ---
     useEffect(() => {
         const initAuth = async () => {
-            // Se llama a checkAuthStatus y se usa .catch() para manejar el error de cookie no válida, si existe.
+            // Se llama a checkAuthStatus y se usa .catch() para manejar el error de cookie no válida, si existe
             await dispatch(checkAuthStatus()).unwrap().catch(() => {});
             setIsInitialAuthChecked(true); // Marca que la verificación de Redux terminó
         };
@@ -55,20 +53,19 @@ function App() {
         initAuth();
     }, [dispatch]);
 
-    // 🚩 --- 2. Lógica de DOBLE FETCH para obtener datos completos ---
+    // --- 2. Lógica de DOBLE FETCH para obtener datos completos ---
     useEffect(() => {
-        // La condición es: Autenticado && Usuario existe (payload ligero) && Falta el nombre completo
-        if (reduxAuthChecked && user && !user.nombre) { 
+        // Condición: Autenticado && Usuario existe (payload ligero) && Falta el nombre completo
+        if (reduxAuthChecked && user && !user.nombre) {
             console.log("App.jsx: Session verificada, disparando fetchUserProfile para datos completos.");
             dispatch(fetchUserProfile());
         }
-    // Dependencias: reduxAuthChecked y user son cruciales para reaccionar al payload ligero.
-    }, [reduxAuthChecked, user, dispatch]); 
+    }, [reduxAuthChecked, user, dispatch]);
 
     const [isCartOpen, setIsCartOpen] = useState(false);
     const onCartToggle = () => setIsCartOpen((prev) => !prev);
 
-    // 🚩 CÓDIGO CLAVE: Render loader mientras la verificación inicial se ejecuta
+    // 🚩 Render loader mientras la verificación inicial se ejecuta
     if (!isInitialAuthChecked) {
         return (
             <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 text-gray-600">
@@ -77,7 +74,7 @@ function App() {
         );
     }
 
-    // --- Funciones para el carrito (mantener) ---
+    // --- Funciones para el carrito ---
     const addToCart = (product) => {
         dispatch(addItemToCart({ producto_id: product.id, cantidad: 1 }))
             .unwrap()
@@ -109,6 +106,7 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/productos" element={<ProductsPage addToCart={addToCart} />} />
                         <Route path="/productos/:id" element={<ProductDetails onAddToCart={addToCart} />} />
+                        <Route path="/catalogo-pdfs" element={<PDFCatalog />} />
                         <Route path="/acerca-de-nosotros" element={<AboutUsPage />} />
                         <Route path="/servicios" element={<ServicesPage />} />
                         <Route path="/servicios/:category" element={<ServiceMenuPage />} />
@@ -119,10 +117,24 @@ function App() {
                         <Route path="/register" element={<Register />} />
 
                         {/* Rutas protegidas */}
-                        <Route path="/mi-cuenta" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+                        <Route
+                            path="/mi-cuenta"
+                            element={
+                                <ProtectedRoute>
+                                    <ProfilePage />
+                                </ProtectedRoute>
+                            }
+                        />
 
                         {/* Admin */}
-                        <Route path="/admin/products" element={<AdminRoute><AdminProducts /></AdminRoute>} />
+                        <Route
+                            path="/admin/products"
+                            element={
+                                <AdminRoute>
+                                    <AdminProducts />
+                                </AdminRoute>
+                            }
+                        />
                     </Routes>
                 </main>
 
