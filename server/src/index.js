@@ -95,8 +95,6 @@
 //////////////////////////////////////
 
 
-
-
 import express from "express";
 // import cors from "cors"; // ❌ YA NO ES NECESARIO: Se eliminan los problemas de Cross-Origin
 import dotenv from "dotenv";
@@ -119,32 +117,32 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 // 🟢 AJUSTE CRÍTICO 1: Permitir que Express reconozca HTTPS detrás de un proxy (Render/Heroku)
-// Es VITAL para que las cookies con secure: true funcionen en producción.
 app.set('trust proxy', 1);
 
-// --- Rutas estáticas del Frontend (Asume que el frontend está en '../client/dist') ---
+// --- Rutas estáticas del Frontend ---
 const __dirname = path.resolve();
-const BUILD_PATH = path.join(__dirname, '..', 'client', 'dist'); 
+
+// 🟢 RUTA AJUSTADA: Subir dos niveles (../../) para ir de /server/ a /client/dist
+const BUILD_PATH = path.join(__dirname, '..', '..', 'client', 'dist'); 
 // -----------------------------------------------------------------------------------
 
 // --- Middlewares Base ---
 app.use(express.json());
 app.use(cookieParser());
 
-// ❌ Se eliminó el middleware CORS (ya no es necesario)
-
 // --- 🟢 AJUSTE CRÍTICO 2: Servir Archivos Estáticos del Frontend ---
-// Esta configuración solo se aplica en producción para no interferir con el servidor de desarrollo de Vite/React.
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(BUILD_PATH));
 }
 
 // --- Rutas de API (Deben ir ANTES del fallback del frontend) ---
 
-// --- Ruta raíz de prueba (puede ser eliminada o modificada) ---
-// app.get("/", (req, res) => {
-//     res.send("🚀 Servidor Flucsa corriendo...");
-// });
+// --- Ruta raíz de prueba (COMENTADA para no interferir con el fallback) ---
+/*
+app.get("/", (req, res) => {
+    res.send("🚀 Servidor Flucsa corriendo...");
+});
+*/
 
 app.use("/api/products", productsRoutes);
 app.use("/api/products", imageRoutes);
@@ -157,8 +155,6 @@ app.use("/api/pdfs", pdfRoutes);
 //-------------------------------------------------------------------//
 
 // --- 🟢 AJUSTE CRÍTICO 3: Fallback para el Routing de React/Frontend ---
-// Para cualquier ruta que NO sea una de las rutas API definidas arriba,
-// enviamos el index.html del frontend para que el router de React maneje la URL.
 if (process.env.NODE_ENV === 'production') {
     app.get('*', (req, res) => {
         // La ruta 'index.html' está dentro de BUILD_PATH
