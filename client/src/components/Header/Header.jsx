@@ -16,32 +16,23 @@ const Header = ({ onCartToggle }) => {
   const [showAddedBadge, setShowAddedBadge] = useState(false);
 
   const dispatch = useDispatch();
+  // Obtener el objeto de usuario directamente de Redux
   const user = useSelector((state) => state.user.user);
   const rol = useSelector((state) => state.user.user?.rol);
   const cartItems = useSelector((state) => state.cart.items);
 
   const totalCartItems = cartItems.reduce((sum, item) => sum + item.cantidad, 0);
 
-  // ⚡ Estado local sincronizado para evitar "Usuario" al F5
-  const [userNameState, setUserNameState] = useState('Usuario');
-  const [userProfileState, setUserProfileState] = useState(undefined);
-  const [isLoggedInState, setIsLoggedInState] = useState(!!user);
-
-  useEffect(() => {
-    setUserNameState(user?.name || user?.nombre || user?.correo || user?.email || 'Usuario');
-    setUserProfileState(user?.foto_perfil);
-    setIsLoggedInState(!!user);
-
-    console.log('[Header] Estado de usuario actualizado:', {
-      userName: user?.name,
-      profilePicture: user?.foto_perfil,
-      isLoggedIn: !!user
-    });
-  }, [user]);
-
+  // Definir las variables reactivas directamente desde el estado de Redux (Cambio Clave)
+  const isLoggedIn = !!user;
+  const userName = user?.name || user?.nombre || user?.correo || user?.email || 'Usuario';
+  const userProfile = user?.foto_perfil;
+  
+  // ELIMINACIÓN: Eliminamos el useEffect de sincronización y los estados locales duplicados
+  
   const handleLogout = () => dispatch(logoutUser());
 
-  // Animación al agregar productos
+  // Animación al agregar productos (Mantener)
   useEffect(() => {
     if (totalCartItems > previousCartCount) {
       setIsCartAnimating(true);
@@ -53,7 +44,7 @@ const Header = ({ onCartToggle }) => {
     setPreviousCartCount(totalCartItems);
   }, [totalCartItems, previousCartCount]);
 
-  // Bloqueo scroll al abrir menú móvil
+  // Bloqueo scroll al abrir menú móvil (Mantener)
   useEffect(() => {
     if (isMenuOpen) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = 'unset';
@@ -97,11 +88,12 @@ const Header = ({ onCartToggle }) => {
             <div className="hidden lg:flex items-center gap-2">
 
               <UserDropdown
-                userName={userNameState}
-                isLoggedIn={isLoggedInState}
+                // Pasamos las variables reactivas (directas de Redux)
+                userName={userName}
+                isLoggedIn={isLoggedIn}
                 onLogout={handleLogout}
                 rol={rol}
-                profilePicture={userProfileState}
+                profilePicture={userProfile}
               />
 
               <div className="px-3 py-2 rounded-md hover:bg-white/10 transition-all cursor-pointer border border-transparent hover:border-white/20">
@@ -171,7 +163,7 @@ const Header = ({ onCartToggle }) => {
         {/* Navigation */}
         <div className="hidden lg:block bg-[#232F3E] border-t border-white/10">
           <div className="max-w-[1500px] mx-auto px-4">
-            <Navigation rol={rol} />
+            <Navigation rol={rol} isLoggedIn={isLoggedIn} />
           </div>
         </div>
 
@@ -204,7 +196,7 @@ const Header = ({ onCartToggle }) => {
               <Navigation
                 isMobile
                 onLinkClick={() => setIsMenuOpen(false)}
-                isLoggedIn={isLoggedInState}
+                isLoggedIn={isLoggedIn}
                 onLogout={handleLogout}
                 rol={rol}
               />

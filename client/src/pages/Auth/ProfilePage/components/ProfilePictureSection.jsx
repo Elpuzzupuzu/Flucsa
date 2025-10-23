@@ -1,9 +1,41 @@
 // src/components/profile/ProfilePictureSection.jsx
 
 import { Camera } from 'lucide-react';
-import { getInitials } from '../utils/profileUtils';
+// Asumo que getInitials es una función separada que maneja la lógica de iniciales
+import { getInitials } from '../utils/profileUtils'; 
 
-const ProfilePictureSection = ({ user }) => {
+const ProfilePictureSection = ({ user, isLoading }) => {
+    
+    // Log para depuración
+    if (process.env.NODE_ENV === 'development') {
+        console.log(
+            '[ProfilePictureSection] Estado de render:', 
+            {
+                isLoading: isLoading,
+                userExists: !!user,
+                userNameAvailable: !!user?.nombre,
+                renderMode: (isLoading || !user || !user.nombre) ? 'SKELETON/LOADING' : 'DATA_READY'
+            }
+        );
+    }
+
+    // -----------------------------------------------------
+    // 🚩 CAMBIO CLAVE: Manejar el estado de Carga/Vacío
+    // -----------------------------------------------------
+    if (isLoading || !user || !user.nombre) {
+        // Muestra un skeleton loader mientras los datos se cargan
+        return (
+            <div className="flex flex-col items-center text-center mb-4 pb-4 border-b border-gray-200 animate-pulse">
+                <div className="w-28 h-28 rounded-full bg-gray-200 border-2 border-indigo-100 shadow-lg mb-2"></div>
+                <div className="h-6 w-3/5 bg-gray-200 rounded-md mb-1.5"></div>
+                <div className="h-4 w-1/3 bg-gray-200 rounded-md mb-2"></div>
+                <div className="h-6 w-1/4 bg-indigo-100 rounded-full"></div>
+            </div>
+        );
+    }
+    // -----------------------------------------------------
+    
+    // Si llegamos aquí, user tiene los datos completos.
     const userName = user.name || (user.nombre && user.apellido ? `${user.nombre} ${user.apellido}` : 'Usuario');
     const userInitials = getInitials(userName);
     const profilePicture = user?.foto_perfil;

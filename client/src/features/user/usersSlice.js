@@ -31,12 +31,12 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// Verifica la sesión persistente (F5)
+// Verifica la sesión persistente (F5) - Ruta Ligera
 export const checkAuthStatus = createAsyncThunk(
   "user/checkAuthStatus",
   async (_, thunkAPI) => {
     try {
-      const response = await api.get("/users/auth"); // ⚡ ruta ligera de verificación
+      const response = await api.get("/users/auth"); 
       return response.data;
     } catch (error) {
       const status = error.response?.status;
@@ -62,7 +62,7 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
-// Obtener perfil completo
+// Obtener perfil completo - Ruta Pesada (Nombre, Foto, Email, etc.)
 export const fetchUserProfile = createAsyncThunk(
   "user/fetchUserProfile",
   async (_, thunkAPI) => {
@@ -105,14 +105,16 @@ export const updateUserPassword = createAsyncThunk(
 // SLICE
 // ===============================
 
-// Formatea el payload del usuario incluyendo rol y foto_perfil
+// Formatea el payload del usuario para datos COMPLETOS
 const formatUserPayload = (userData) => {
   if (!userData) return null;
   return {
     ...userData,
+    // Crea la propiedad 'name' solo si 'nombre' y 'apellido' existen.
     name: userData.nombre && userData.apellido ? `${userData.nombre} ${userData.apellido}` : undefined,
     rol: userData.rol,
     foto_perfil: userData.foto_perfil,
+    email: userData.correo,
   };
 };
 
@@ -120,8 +122,8 @@ const userSlice = createSlice({
   name: "user",
   initialState: {
     user: null,
-    loading: false,       // Para acciones (update, password, etc.)
-    authChecked: false,   // Para indicar que la sesión ya se verificó en F5
+    loading: false,
+    authChecked: false,
     error: null,
     successMessage: null,
   },
@@ -136,6 +138,9 @@ const userSlice = createSlice({
     clearSuccessMessage: (state) => {
       state.successMessage = null;
     },
+    setAuthChecked: (state, action) => {
+        state.authChecked = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -176,14 +181,17 @@ const userSlice = createSlice({
         state.error = action.payload.error || action.payload;
       })
 
-      // checkAuthStatus
+      // checkAuthStatus (Carga Ligera)
       .addCase(checkAuthStatus.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(checkAuthStatus.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = formatUserPayload(action.payload);
+        // 🚩 CAMBIO CRÍTICO: Guarda el payload LIGERO, sin formatear.
+        // Esto crea el objeto 'user' con 'id' y 'rol', pero sin 'nombre', 
+        // lo que obliga a App.jsx a disparar la segunda carga.
+        state.user = action.payload; 
         state.authChecked = true;
         state.error = null;
       })
@@ -209,13 +217,14 @@ const userSlice = createSlice({
         state.error = "Error al cerrar sesión, se limpió el estado local.";
       })
 
-      // fetchUserProfile
+      // fetchUserProfile (Carga Completa)
       .addCase(fetchUserProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.loading = false;
+        // Sobreescribe el objeto 'user' parcial con los datos COMPLETOS y formateados.
         state.user = formatUserPayload(action.payload);
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
@@ -249,7 +258,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.successMessage =
           "Contraseña cambiada exitosamente. Por seguridad, vuelve a iniciar sesión.";
-        state.user = null;
+        state.user = null; 
       })
       .addCase(updateUserPassword.rejected, (state, action) => {
         state.loading = false;
@@ -258,5 +267,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { logoutSuccess, clearSuccessMessage } = userSlice.actions;
+export const { logoutSuccess, clearSuccessMessage, setAuthChecked } = userSlice.actions;
 export default userSlice.reducer;

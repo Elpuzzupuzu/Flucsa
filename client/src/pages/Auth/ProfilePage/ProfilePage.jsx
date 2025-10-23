@@ -15,6 +15,19 @@ const ProfilePage = () => {
     const { user, loading, error, successMessage, authChecked } = useSelector((state) => state.user);
     const [selectedSection, setSelectedSection] = useState('details');
 
+    // ----------------------------------------------------
+    // LOG: Estado de Redux al inicio del render
+    // ----------------------------------------------------
+    if (process.env.NODE_ENV === 'development') {
+        console.log('[ProfilePage] Redux State on Render:', {
+            authChecked: authChecked,
+            userExists: !!user,
+            userNameAvailable: !!user?.nombre,
+            loading: loading
+        });
+    }
+    // ----------------------------------------------------
+
     // Efecto para limpiar mensajes de feedback después de un tiempo
     useEffect(() => {
         if (successMessage || error) {
@@ -25,8 +38,13 @@ const ProfilePage = () => {
         }
     }, [successMessage, error, dispatch]);
 
-    // Mientras verificamos la sesión inicial
+    // ----------------------------------------------------
+    // Bloqueo 1: Espera de Verificación de Sesión (authChecked)
+    // ----------------------------------------------------
     if (!authChecked) {
+        if (process.env.NODE_ENV === 'development') {
+            console.log('[ProfilePage] RENDER BLOQUEADO: Esperando authChecked.');
+        }
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <p className="text-gray-500 text-lg">Verificando sesión...</p>
@@ -34,8 +52,11 @@ const ProfilePage = () => {
         );
     }
 
-    // Manejo de usuario no autenticado
+    // Bloqueo 2: Usuario No Autenticado
     if (!user) {
+        if (process.env.NODE_ENV === 'development') {
+            console.log('[ProfilePage] RENDER BLOQUEADO: Usuario no autenticado.');
+        }
         return (
             <div className="min-h-screen bg-gray-50 py-10 px-4 flex items-center justify-center">
                 <div className="text-center p-8 bg-white rounded-xl shadow-lg max-w-sm w-full">
@@ -47,20 +68,44 @@ const ProfilePage = () => {
         );
     }
 
-    // El estado de carga solo aplica a las acciones de Redux (guardar/cambiar)
+    // ----------------------------------------------------
+    // 🚩 Bloqueo 3: Espera de Datos Críticos del Perfil (SOLUCIÓN al Flicker)
+    // ----------------------------------------------------
+    // Si 'user' existe pero la propiedad clave (nombre/apellido) aún no está en el store.
+    const isProfileDataReady = !!user.nombre;
+    
+    if (!isProfileDataReady) {
+        if (process.env.NODE_ENV === 'development') {
+            console.log(`[ProfilePage] RENDER BLOQUEADO: Esperando datos finales (user.nombre es falso)`);
+        }
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <p className="text-gray-500 text-lg">Cargando datos del perfil...</p>
+            </div>
+        );
+    }
+    // ----------------------------------------------------
+    
+    // Bandera para formularios de acción (guardar/cambiar)
     const isActionLoading = loading && !error && !successMessage;
+    
+    if (process.env.NODE_ENV === 'development') {
+        console.log(`[ProfilePage] RENDER COMPLETO: Datos listos. (Nombre: ${user.nombre})`);
+    }
 
     const renderContent = () => {
         switch (selectedSection) {
             case 'details':
                 return (
                     <div className="space-y-4 sm:space-y-6">
-                        <ProfilePictureSection user={user} />
+                        {/* Pasamos isLoading=false porque los datos están listos aquí */}
+                        <ProfilePictureSection user={user} isLoading={!isProfileDataReady} /> 
+                        
                         <ProfileInfoCards user={user} />
                         <div className="pt-4 sm:pt-6 border-t border-gray-200">
                             <ProfileDetailsForm 
                                 user={user} 
-                                loading={isActionLoading} 
+                                loading={isActionLoading} // Esta es la carga de formularios (guardar)
                                 error={error}
                                 successMessage={successMessage}
                             />

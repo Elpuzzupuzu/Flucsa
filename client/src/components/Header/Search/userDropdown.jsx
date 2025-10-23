@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { LogIn, User, Power, List, Truck, UserPlus } from "lucide-react";
 
@@ -14,21 +14,23 @@ const getInitials = (name) => {
   return initials.substring(0, 2);
 };
 
+// Se consumen las props con sus nombres originales de Redux
 const UserDropdown = ({ userName: reduxUserName, isLoggedIn: reduxLoggedIn, onLogout, rol, profilePicture: reduxProfilePicture }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // ⚡ Estado sincronizado con Redux para evitar "Usuario" y foto undefined
-  const [userName, setUserName] = useState(reduxUserName || "Usuario");
-  const [profilePicture, setProfilePicture] = useState(reduxProfilePicture || undefined);
-  const [isLoggedIn, setIsLoggedIn] = useState(reduxLoggedIn);
+  // 1. ELIMINACIÓN: Quitamos los estados locales de sincronización.
+  // const [userName, setUserName] = useState(reduxUserName || "Usuario");
+  // const [profilePicture, setProfilePicture] = useState(reduxProfilePicture || undefined);
+  // const [isLoggedIn, setIsLoggedIn] = useState(reduxLoggedIn);
 
-  useEffect(() => {
-    setUserName(reduxUserName || "Usuario");
-    setProfilePicture(reduxProfilePicture);
-    setIsLoggedIn(reduxLoggedIn);
-    console.log("[UserDropdown] Props cambiaron:", { userName: reduxUserName, profilePicture: reduxProfilePicture, isLoggedIn: reduxLoggedIn });
-  }, [reduxUserName, reduxProfilePicture, reduxLoggedIn]);
-
+  // 2. ELIMINACIÓN: Quitamos el useEffect que los sincronizaba.
+  // useEffect(() => { ... }, [reduxUserName, reduxProfilePicture, reduxLoggedIn]);
+  
+  // 3. CAMBIO CLAVE: Usamos las props recibidas directamente, asegurando fallbacks.
+  const userName = reduxUserName || "Usuario";
+  const profilePicture = reduxProfilePicture;
+  const isLoggedIn = reduxLoggedIn;
+  
   const userInitials = useMemo(() => getInitials(userName), [userName]);
 
   const handleMouseEnter = () => setIsOpen(true);
