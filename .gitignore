@@ -1,0 +1,29 @@
+# Dependencias de módulos
+/node_modules
+
+# Variables de entorno secretas (¡CRUCIAL!)
+.env
+
+# Archivos de VS Code
+.vscode/
+
+# Archivos de log
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Compilaciones y Salidas
+/dist
+/build
+/out
+
+# Archivos temporales del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Si estás en Windows:
+# Puede que quieras ignorar los archivos de configuración
+# generados automáticamente por el sistema:
+# $Recycle.Bin/
+# desktop.ini
