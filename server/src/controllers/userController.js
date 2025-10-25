@@ -1,43 +1,43 @@
 import { UserService } from '../services/userService.js';
 import jwt from 'jsonwebtoken';
 
-// const isProduction = process.env.NODE_ENV === 'production';
-
-// // 1. Configuración de seguridad BASE (para SameSite y Secure)
-// const cookieSecurityConfig = {
-//   httpOnly: true,
-//   secure: isProduction,
-//   sameSite: isProduction ? 'None' : 'Lax',
-//   path: '/',
-// };
-
-
 const isProduction = process.env.NODE_ENV === 'production';
 
-// Modifica la configuración condicional:
-const cookieSecurityConfig = (maxAge) => {
-  if (isProduction) {
-    // EN PRODUCCIÓN (Render): Requiere HTTPS (secure: true)
-    // y SameSite: 'None' para funcionar entre dominios separados.
-    return {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None', // Permite el envío cross-site
-      path: '/',
-      maxAge: maxAge,
-    };
-  } else {
-    // EN DESARROLLO (Local): Usamos 'Lax' o 'Strict' si es posible,
-    // y secure: false (porque local no usa HTTPS).
-    return {
-      httpOnly: true,
-      secure: false, // Desactivado para local (HTTP)
-      sameSite: 'Lax', // Más seguro que 'None'
-      path: '/',
-      maxAge: maxAge,
-    };
-  }
+// 1. Configuración de seguridad BASE (para SameSite y Secure)
+const cookieSecurityConfig = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? 'None' : 'Lax',
+  path: '/',
 };
+
+
+// const isProduction = process.env.NODE_ENV === 'production';
+
+// // Modifica la configuración condicional:
+// const cookieSecurityConfig = (maxAge) => {
+//   if (isProduction) {
+//     // EN PRODUCCIÓN (Render): Requiere HTTPS (secure: true)
+//     // y SameSite: 'None' para funcionar entre dominios separados.
+//     return {
+//       httpOnly: true,
+//       secure: true,
+//       sameSite: 'None', // Permite el envío cross-site
+//       path: '/',
+//       maxAge: maxAge,
+//     };
+//   } else {
+//     // EN DESARROLLO (Local): Usamos 'Lax' o 'Strict' si es posible,
+//     // y secure: false (porque local no usa HTTPS).
+//     return {
+//       httpOnly: true,
+//       secure: false, // Desactivado para local (HTTP)
+//       sameSite: 'Lax', // Más seguro que 'None'
+//       path: '/',
+//       maxAge: maxAge,
+//     };
+//   }
+// };
 
 
 
