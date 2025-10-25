@@ -15,7 +15,7 @@ import jwt from 'jsonwebtoken';
 const isProduction = process.env.NODE_ENV === 'production';
 
 // Modifica la configuración condicional:
-const getCookieConfig = (maxAge) => {
+const cookieSecurityConfig = (maxAge) => {
   if (isProduction) {
     // EN PRODUCCIÓN (Render): Requiere HTTPS (secure: true)
     // y SameSite: 'None' para funcionar entre dominios separados.
