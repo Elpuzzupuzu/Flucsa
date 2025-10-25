@@ -42,7 +42,7 @@ const cookieSecurityConfig = (maxAge) => {
 
 
 // 2. Tiempos de vida (para reuso)
-const ACCESS_TOKEN_MAX_AGE = 1 * 60 * 500; // 5 minutos
+const ACCESS_TOKEN_MAX_AGE = 5 * 60 * 1000; // 5 minutos
 const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 días
 
 export const UserController = {
