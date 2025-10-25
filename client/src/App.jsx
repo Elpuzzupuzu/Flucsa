@@ -1,3 +1,4 @@
+// client/src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +13,7 @@ import ScrollToTop from './hooks/Scrolltop';
 
 // 🚩 Notificación
 import ToastNotification from './components/ToastComponent/ToastNotification';
+import ReduxToast from './components/ReduxToast/ReduxToast';
 import useNotification from './hooks/Notify/useNotification';
 
 // Páginas
@@ -77,22 +79,22 @@ function App() {
   }
 
   // --- Funciones para el carrito ---
-const addToCart = (product) => {
-  if (!isAuthenticated) {
-    notify('Debes iniciar sesión para agregar productos al carrito. 🛒', 'error');
-    return;
-  }
+  const addToCart = (product) => {
+    if (!isAuthenticated) {
+      notify('Debes iniciar sesión para agregar productos al carrito. 🛒', 'error');
+      return;
+    }
 
-  dispatch(addItemToCart({ producto_id: product.id, cantidad: 1 }))
-    .unwrap()
-    .then(() => {
-      notify(`✔️ "${product.nombre}" agregado al carrito`, 'success'); // Toast de éxito
-    })
-    .catch((error) => {
-      console.error(error);
-      notify('❌ Error al agregar el producto al carrito', 'error'); // Toast de error
-    });
-};
+    dispatch(addItemToCart({ producto_id: product.id, cantidad: 1 }))
+      .unwrap()
+      .then(() => {
+        notify(`✔️ "${product.nombre}" agregado al carrito`, 'success');
+      })
+      .catch((error) => {
+        console.error(error);
+        notify('❌ Error al agregar el producto al carrito', 'error');
+      });
+  };
 
   const updateCartQuantity = (id, quantity) => {
     dispatch(updateCartItemQuantity({ itemId: id, cantidad: quantity }));
@@ -160,6 +162,7 @@ const addToCart = (product) => {
 
         {/* 🚩 COMPONENTE DE NOTIFICACIÓN GLOBAL */}
         <ToastNotification />
+        <ReduxToast /> {/* Escucha los mensajes de Redux y dispara toast */}
 
         <Footer />
       </div>
