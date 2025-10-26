@@ -59,6 +59,8 @@ function App() {
     initAuth();
   }, [dispatch]);
 
+  
+
   // --- 2. Fetch de datos completos si es necesario ---
   useEffect(() => {
     if (reduxAuthChecked && user && !user.nombre) {
