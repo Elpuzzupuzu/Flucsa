@@ -1,6 +1,6 @@
 // client/src/api.js
 import axios from "axios";
-import { store } from "../app/store"; // <- usar llaves, coincide con export nombrado
+import { store } from "../app/store"; // <- Importamos el store de Redux
 import { logoutUser, setNotificationMessage } from "../features/user/usersSlice";
 
 // *** CAMBIO CLAVE AQUÍ: Usamos import.meta.env y el prefijo VITE_ ***
@@ -11,7 +11,32 @@ const api = axios.create({
     withCredentials: true,
 });
 
-// Interceptor de respuesta para manejar expiración de token
+// =======================================================
+// 🚀 INTERCEPTOR DE SOLICITUDES (NUEVO)
+// Adjunta el Access Token del estado de Redux al encabezado Authorization.
+// =======================================================
+api.interceptors.request.use(
+    (config) => {
+        // Obtenemos el Access Token del estado actual de Redux
+        const state = store.getState();
+        const accessToken = state.user.accessToken;
+
+        // Si existe un Access Token, lo adjuntamos al encabezado Authorization
+        if (accessToken) {
+            config.headers.Authorization = `Bearer ${accessToken}`;
+        }
+        
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+// =======================================================
+// INTERCEPTOR DE RESPUESTA (EXISTENTE)
+// Maneja la expiración y errores de autenticación (401/403).
+// =======================================================
 api.interceptors.response.use(
     (response) => response, // Si todo bien, devuelve la respuesta
     (error) => {
@@ -21,7 +46,7 @@ api.interceptors.response.use(
             // Opcional: mostrar mensaje al usuario
             store.dispatch(setNotificationMessage("Tu sesión expiró. Por favor, inicia sesión de nuevo."));
             
-            // Forzar logout en Redux
+            // Forzar logout en Redux (esto limpia el estado local y el Access Token de memoria)
             store.dispatch(logoutUser());
         }
 
