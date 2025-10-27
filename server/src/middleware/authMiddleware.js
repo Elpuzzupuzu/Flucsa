@@ -9,6 +9,7 @@ const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 const ACCESS_TOKEN_EXPIRATION = process.env.ACCESS_TOKEN_EXPIRATION || "10m";
 const REFRESH_TOKEN_EXPIRATION = process.env.REFRESH_TOKEN_EXPIRATION || "7d";
 const COOKIE_NAME = process.env.COOKIE_NAME || "auth_token";
+const REFRESH_COOKIE_NAME = "auth_refresh";
 const isProduction = process.env.NODE_ENV === "production";
 
 // Opciones de cookie
@@ -23,9 +24,10 @@ const cookieOptions = (maxAge) => ({
 // Middleware principal
 export const authMiddleware = async (req, res, next) => {
   try {
-    const { [COOKIE_NAME]: accessToken, auth_refresh: refreshToken } = req.cookies;
+    const { [REFRESH_COOKIE_NAME]: refreshToken } = req.cookies;
+    let accessToken = req.headers["authorization"]?.split(" ")[1]; // Esperamos Bearer token
 
-    // 1️⃣ Intentamos validar accessToken
+    // 1️⃣ Validamos accessToken si viene en header
     if (accessToken) {
       try {
         const decoded = jwt.verify(accessToken, ACCESS_SECRET);
@@ -40,7 +42,7 @@ export const authMiddleware = async (req, res, next) => {
       }
     }
 
-    // 2️⃣ Intentamos usar refreshToken para generar nuevo accessToken
+    // 2️⃣ Usamos refreshToken en cookie para generar nuevo accessToken
     if (refreshToken) {
       try {
         const decodedRefresh = jwt.verify(refreshToken, REFRESH_SECRET);
@@ -54,21 +56,20 @@ export const authMiddleware = async (req, res, next) => {
           { expiresIn: ACCESS_TOKEN_EXPIRATION }
         );
 
-        // Setear cookie nueva
-        res.cookie(COOKIE_NAME, newAccessToken, cookieOptions(msFromJWT(ACCESS_TOKEN_EXPIRATION)));
+        // Enviar nuevo accessToken en JSON para mobile / web
+        res.setHeader("x-access-token", newAccessToken); // opcional, también se puede devolver en JSON
 
         req.user = { id: user.id, rol: user.rol };
         return next();
       } catch {
         // refreshToken inválido o expirado
         res.clearCookie(COOKIE_NAME, cookieOptions(0));
-        res.clearCookie("auth_refresh", cookieOptions(0));
+        res.clearCookie(REFRESH_COOKIE_NAME, cookieOptions(0));
         return res.status(401).json({ error: "Sesión expirada, por favor loguéate de nuevo" });
       }
     }
 
     return res.status(401).json({ error: "No autorizado" });
-
   } catch (error) {
     console.error("authMiddleware error:", error);
     return res.status(500).json({ error: "Error interno del servidor" });
@@ -82,13 +83,3 @@ export const authRole = (roles = []) => (req, res, next) => {
   }
   next();
 };
-
-// 🔹 Helper para convertir '10m', '7d' a milisegundos
-function msFromJWT(jwtTime) {
-  const num = parseInt(jwtTime);
-  if (jwtTime.endsWith("s")) return num * 1000;
-  if (jwtTime.endsWith("m")) return num * 60 * 1000;
-  if (jwtTime.endsWith("h")) return num * 60 * 60 * 1000;
-  if (jwtTime.endsWith("d")) return num * 24 * 60 * 60 * 1000;
-  return num; // fallback en ms
-}

@@ -2,18 +2,14 @@ import { UserService } from '../services/userService.js';
 import jwt from 'jsonwebtoken';
 
 const isProduction = process.env.NODE_ENV === 'production';
-const ACCESS_TOKEN_MAX_AGE = 5 * 60 * 1000; // 5 minutos
-const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 días
-const COOKIE_NAME = process.env.COOKIE_NAME || 'auth_token';
+const COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 días
 
-// Configuración de cookies
-const cookieOptions = (maxAge) => ({
+const cookieConfig = {
   httpOnly: true,
   secure: isProduction,
   sameSite: isProduction ? 'None' : 'Lax',
   path: '/',
-  maxAge,
-});
+};
 
 export const UserController = {
   // ===============================
@@ -37,8 +33,9 @@ export const UserController = {
   login: async (req, res) => {
     try {
       const { correo, contraseña } = req.body;
-      if (!correo || !contraseña)
+      if (!correo || !contraseña) {
         return res.status(400).json({ error: 'Correo y contraseña son obligatorios' });
+      }
 
       const { user, accessToken, refreshToken, errorType } =
         await UserService.loginUser(correo, contraseña);
@@ -46,14 +43,33 @@ export const UserController = {
       if (errorType === 'USER_NOT_FOUND') return res.status(404).json({ error: 'Usuario no encontrado' });
       if (errorType === 'INVALID_PASSWORD') return res.status(401).json({ error: 'Contraseña incorrecta' });
 
-      // Setear cookies
-      res.cookie(COOKIE_NAME, accessToken, cookieOptions(ACCESS_TOKEN_MAX_AGE));
-      res.cookie('auth_refresh', refreshToken, cookieOptions(REFRESH_TOKEN_MAX_AGE));
+      // Guardamos solo refreshToken en cookie HttpOnly
+      res.cookie('refreshToken', refreshToken, { ...cookieConfig, maxAge: COOKIE_MAX_AGE });
 
-      res.status(200).json(user);
+      // Enviamos accessToken en JSON
+      res.status(200).json({ user, accessToken });
     } catch (error) {
-      console.error('Error en login:', error);
+      console.error('Error interno en login:', error);
       res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  },
+
+  // ===============================
+  // Refresh token
+  // ===============================
+  refresh: async (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) return res.status(401).json({ error: "No refresh token" });
+
+    try {
+      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+      const user = await UserService.getUserProfile(decoded.id);
+      const newAccessToken = UserService.generateAccessToken({ id: decoded.id, rol: user.rol });
+
+      res.status(200).json({ accessToken: newAccessToken, user });
+    } catch (err) {
+      res.clearCookie('refreshToken', cookieConfig);
+      return res.status(403).json({ error: "Refresh token inválido o expirado" });
     }
   },
 
@@ -61,13 +77,20 @@ export const UserController = {
   // Logout
   // ===============================
   logout: (req, res) => {
-    res.clearCookie(COOKIE_NAME, cookieOptions(0));
-    res.clearCookie('auth_refresh', cookieOptions(0));
+    res.clearCookie('refreshToken', cookieConfig);
     res.status(200).json({ message: 'Sesión cerrada exitosamente' });
   },
 
   // ===============================
-  // Perfil autenticado
+  // Perfil ligero autenticado
+  // ===============================
+  getAuthProfile: (req, res) => {
+    const { id, correo, nombre, apellido, rol } = req.user;
+    res.status(200).json({ id, correo, nombre, apellido, rol });
+  },
+
+  // ===============================
+  // Perfil completo (historial, wishlist, reviews)
   // ===============================
   getProfile: async (req, res) => {
     try {
@@ -100,14 +123,14 @@ export const UserController = {
       const userId = req.user.id;
       const { currentPassword, newPassword } = req.body;
 
-      if (!currentPassword || !newPassword)
+      if (!currentPassword || !newPassword) {
         return res.status(400).json({ error: 'Contraseña actual y nueva son requeridas.' });
+      }
 
       await UserService.updateUserPassword(userId, currentPassword, newPassword);
 
-      // Limpiar cookies tras cambio de contraseña
-      res.clearCookie(COOKIE_NAME, cookieOptions(0));
-      res.clearCookie('auth_refresh', cookieOptions(0));
+      // Limpiamos cookie al cambiar contraseña
+      res.clearCookie('refreshToken', cookieConfig);
 
       res.status(200).json({
         message: 'Contraseña actualizada exitosamente. Por favor, vuelve a iniciar sesión.',

@@ -1,3 +1,4 @@
+// client/src/features/user/usersSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios"; // Configurado con withCredentials: true
 
@@ -24,6 +25,10 @@ export const loginUser = createAsyncThunk(
   async (credentials, thunkAPI) => {
     try {
       const response = await api.post("/users/login", credentials);
+      // Guardamos el accessToken si el backend lo devuelve
+      if (response.data?.accessToken) {
+        thunkAPI.dispatch(setAccessToken(response.data.accessToken));
+      }
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || "Error al iniciar sesión");
@@ -101,13 +106,16 @@ export const updateUserPassword = createAsyncThunk(
   }
 );
 
-// 🔹 Nuevo: Renovar Access Token usando refresh token
+// Renovar Access Token usando refresh token
 export const refreshAccessToken = createAsyncThunk(
   "user/refreshAccessToken",
   async (_, thunkAPI) => {
     try {
       const response = await api.post("/users/refresh");
-      // El backend devuelve un mensaje; no es necesario actualizar user
+      // Guardamos accessToken si viene en la respuesta
+      if (response.data?.accessToken) {
+        thunkAPI.dispatch(setAccessToken(response.data.accessToken));
+      }
       return response.data;
     } catch (error) {
       // Si falla, el usuario se desloguea
@@ -141,6 +149,7 @@ const userSlice = createSlice({
   name: "user",
   initialState: {
     user: null,
+    accessToken: null, // nuevo campo para token en Redux
     loading: false,
     authChecked: false,
     error: null,
@@ -150,6 +159,7 @@ const userSlice = createSlice({
   reducers: {
     logoutSuccess: (state) => {
       state.user = null;
+      state.accessToken = null;
       state.loading = false;
       state.authChecked = true;
       state.error = null;
@@ -164,6 +174,9 @@ const userSlice = createSlice({
     },
     setNotificationMessage: (state, action) => {
       state.notificationMessage = action.payload;
+    },
+    setAccessToken: (state, action) => {
+      state.accessToken = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -212,7 +225,7 @@ const userSlice = createSlice({
       })
       .addCase(checkAuthStatus.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload; // payload ligero
+        state.user = action.payload;
         state.authChecked = true;
         state.error = null;
       })
@@ -226,6 +239,7 @@ const userSlice = createSlice({
       // logoutUser
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
+        state.accessToken = null;
         state.loading = false;
         state.authChecked = true;
         state.error = null;
@@ -233,6 +247,7 @@ const userSlice = createSlice({
       })
       .addCase(logoutUser.rejected, (state) => {
         state.user = null;
+        state.accessToken = null;
         state.loading = false;
         state.authChecked = true;
         state.error = "Error al cerrar sesión, se limpió el estado local.";
@@ -278,6 +293,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.successMessage = "Contraseña cambiada exitosamente. Por seguridad, vuelve a iniciar sesión.";
         state.user = null;
+        state.accessToken = null;
       })
       .addCase(updateUserPassword.rejected, (state, action) => {
         state.loading = false;
@@ -295,12 +311,18 @@ const userSlice = createSlice({
       .addCase(refreshAccessToken.rejected, (state, action) => {
         state.loading = false;
         state.user = null;
+        state.accessToken = null;
         state.error = action.payload.error || action.payload;
       });
   },
 });
 
-export const { logoutSuccess, clearSuccessMessage, setAuthChecked, setNotificationMessage } =
-  userSlice.actions;
+export const {
+  logoutSuccess,
+  clearSuccessMessage,
+  setAuthChecked,
+  setNotificationMessage,
+  setAccessToken, // nueva acción
+} = userSlice.actions;
 
 export default userSlice.reducer;
