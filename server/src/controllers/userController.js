@@ -43,8 +43,8 @@ export const UserController = {
       if (errorType === 'USER_NOT_FOUND') return res.status(404).json({ error: 'Usuario no encontrado' });
       if (errorType === 'INVALID_PASSWORD') return res.status(401).json({ error: 'Contraseña incorrecta' });
 
-      // Guardamos solo refreshToken en cookie HttpOnly
-      res.cookie('refreshToken', refreshToken, { ...cookieConfig, maxAge: COOKIE_MAX_AGE });
+      // Guardamos refreshToken en cookie HttpOnly
+      res.cookie('auth_refresh', refreshToken, { ...cookieConfig, maxAge: COOKIE_MAX_AGE });
 
       // Enviamos accessToken en JSON
       res.status(200).json({ user, accessToken });
@@ -58,7 +58,7 @@ export const UserController = {
   // Refresh token
   // ===============================
   refresh: async (req, res) => {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies.auth_refresh;
     if (!refreshToken) return res.status(401).json({ error: "No refresh token" });
 
     try {
@@ -68,7 +68,7 @@ export const UserController = {
 
       res.status(200).json({ accessToken: newAccessToken, user });
     } catch (err) {
-      res.clearCookie('refreshToken', cookieConfig);
+      res.clearCookie('auth_refresh', cookieConfig);
       return res.status(403).json({ error: "Refresh token inválido o expirado" });
     }
   },
@@ -77,7 +77,7 @@ export const UserController = {
   // Logout
   // ===============================
   logout: (req, res) => {
-    res.clearCookie('refreshToken', cookieConfig);
+    res.clearCookie('auth_refresh', cookieConfig);
     res.status(200).json({ message: 'Sesión cerrada exitosamente' });
   },
 
@@ -129,8 +129,8 @@ export const UserController = {
 
       await UserService.updateUserPassword(userId, currentPassword, newPassword);
 
-      // Limpiamos cookie al cambiar contraseña
-      res.clearCookie('refreshToken', cookieConfig);
+      // Limpiamos cookie auth_refresh al cambiar contraseña
+      res.clearCookie('auth_refresh', cookieConfig);
 
       res.status(200).json({
         message: 'Contraseña actualizada exitosamente. Por favor, vuelve a iniciar sesión.',
