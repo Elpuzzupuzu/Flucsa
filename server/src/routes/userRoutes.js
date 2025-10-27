@@ -5,34 +5,34 @@ import { authMiddleware } from '../middleware/authMiddleware.js';
 import { UserService } from '../services/userService.js';
 
 const router = express.Router();
-const COOKIE_NAME = process.env.COOKIE_NAME || 'auth_token';
+const COOKIE_NAME = 'auth_refresh'; // Siempre usamos auth_refresh
 const ACCESS_TOKEN_MAX_AGE = 5 * 60 * 1000; // 5 minutos
 const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 días
 const isProduction = process.env.NODE_ENV === 'production';
 
-// Configuración de cookies
+// Configuración dinámica de cookies
 const cookieOptions = (maxAge) => ({
   httpOnly: true,
-  secure: isProduction,
-  sameSite: isProduction ? 'None' : 'Lax',
+  secure: isProduction,               // ⚡ Solo HTTPS en producción
+  sameSite: isProduction ? 'None' : 'Lax', // Cross-origin seguro en prod
   path: '/',
   maxAge,
 });
 
 // ===============================
-// Rutas de Autenticación y Registro (Sin Middleware)
+// Rutas de Autenticación y Registro
 // ===============================
 router.post('/register', UserController.register);
 router.post('/login', UserController.login);
 router.post('/logout', UserController.logout);
 
 // ===============================
-// Rehidratación de sesión (Datos básicos del usuario autenticado)
+// Rehidratación de sesión (perfil ligero)
 // ===============================
-router.get('/auth', authMiddleware, UserController.getProfile);
+router.get('/auth', authMiddleware, UserController.getAuthProfile);
 
 // ===============================
-// Rutas de Perfil (Requieren authMiddleware)
+// Rutas de Perfil
 // ===============================
 router.put('/profile', authMiddleware, UserController.updateProfile);
 router.put('/password', authMiddleware, UserController.updatePassword);
@@ -43,23 +43,20 @@ router.get('/full-profile', authMiddleware, UserController.getProfile);
 // ===============================
 router.post('/refresh', async (req, res) => {
   try {
-    const refreshToken = req.cookies?.auth_refresh;
+    const refreshToken = req.cookies[COOKIE_NAME];
     if (!refreshToken) return res.status(401).json({ error: "No refresh token" });
 
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    const user = await UserService.getUserProfile(decoded.id);
 
     // Generar nuevo access token
-    const accessToken = UserService.generateAccessToken({ id: decoded.id, rol: decoded.rol || 'user' });
+    const accessToken = UserService.generateAccessToken({ id: decoded.id, rol: user.rol });
 
-    // Setear cookie de accessToken
-    res.cookie(COOKIE_NAME, accessToken, cookieOptions(ACCESS_TOKEN_MAX_AGE));
-
-    res.status(200).json({ message: "Access token renovado" });
+    res.status(200).json({ accessToken, user });
   } catch (err) {
     console.error('Error en refresh token:', err);
     res.clearCookie(COOKIE_NAME, cookieOptions(0));
-    res.clearCookie('auth_refresh', cookieOptions(0));
-    res.status(403).json({ error: "Refresh token inválido o expirado" });
+    return res.status(403).json({ error: "Refresh token inválido o expirado" });
   }
 });
 
