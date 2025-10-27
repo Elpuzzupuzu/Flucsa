@@ -2,7 +2,7 @@
 import { supabase } from '../config/supabaseClient.js';
 
 export const UserRepository = {
-  // Crear un usuario (existente)
+  // Crear un nuevo usuario
   createUser: async (user) => {
     const { data, error } = await supabase
       .from('usuarios')
@@ -12,18 +12,18 @@ export const UserRepository = {
     return data[0];
   },
 
-  // Obtener usuario por correo (existente)
+  // Obtener usuario por correo (para login)
   getUserByEmail: async (correo) => {
     const { data, error } = await supabase
       .from('usuarios')
       .select('*')
       .eq('correo', correo)
-      .maybeSingle();
+      .maybeSingle(); // Retorna un solo registro o null
     if (error) throw error;
     return data;
   },
 
-  // Obtener usuario por ID (existente)
+  // Obtener usuario por ID
   getUserById: async (id) => {
     const { data, error } = await supabase
       .from('usuarios')
@@ -34,29 +34,29 @@ export const UserRepository = {
     return data;
   },
 
-  // 🚀 NUEVO: Actualizar el perfil del usuario (nombre, apellido, etc.)
+  // Actualizar información general del usuario
   updateUser: async (userId, updateFields) => {
     const { data, error } = await supabase
       .from('usuarios')
       .update(updateFields)
       .eq('id', userId)
-      .select(); // select() para devolver los datos actualizados
+      .select();
     if (error) throw error;
     return data[0];
   },
 
-  // 🚀 NUEVO: Actualizar solo la contraseña (campo más sensible)
+  // Actualizar solo la contraseña (campo sensible)
   updateUserPassword: async (userId, hashedPassword) => {
     const { data, error } = await supabase
       .from('usuarios')
       .update({ contraseña: hashedPassword })
       .eq('id', userId)
-      .select('id, correo'); // Devolvemos un objeto ligero
+      .select('id, correo');
     if (error) throw error;
     return data[0];
   },
 
-  // Obtener lista de deseos de un usuario (existente)
+  // Obtener lista de deseos del usuario
   getWishlist: async (userId) => {
     const { data, error } = await supabase
       .from('lista_deseados')
@@ -66,7 +66,7 @@ export const UserRepository = {
     return data;
   },
 
-  // Obtener historial de compras de un usuario (existente)
+  // Obtener historial de compras
   getPurchaseHistory: async (userId) => {
     const { data, error } = await supabase
       .from('historial_compras')
@@ -76,7 +76,7 @@ export const UserRepository = {
     return data;
   },
 
-  // Obtener reseñas de un usuario (existente)
+  // Obtener reseñas realizadas por el usuario
   getReviews: async (userId) => {
     const { data, error } = await supabase
       .from('reseñas')
@@ -84,5 +84,5 @@ export const UserRepository = {
       .eq('usuario_id', userId);
     if (error) throw error;
     return data;
-  }
+  },
 };
