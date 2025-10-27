@@ -2,6 +2,8 @@ import { UserService } from '../services/userService.js';
 import jwt from 'jsonwebtoken';
 
 const isProduction = process.env.NODE_ENV === 'production';
+console.log("NODE_ENV:", process.env.NODE_ENV, "| isProduction:", isProduction);
+
 const COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 días
 
 // Configuración dinámica de cookies
@@ -33,6 +35,8 @@ export const UserController = {
       if (!correo || !contraseña) {
         return res.status(400).json({ error: 'Correo y contraseña son obligatorios' });
       }
+      console.log("Cookie config:", { ...cookieConfig, maxAge: COOKIE_MAX_AGE });
+
 
       const { user, accessToken, refreshToken, errorType } =
         await UserService.loginUser(correo, contraseña);
