@@ -2,35 +2,78 @@ import { ProductsService } from "../services/productsService.js";
 
 export const ProductsController = {
 
-async getAllProducts(req, res, next) {
-  try {
-    const { page = 1, limit = 10 } = req.query;
+// async getAllProducts(req, res, next) {
+//   try {
+//     const { page = 1, limit = 10 } = req.query;
 
-    console.log("📄 Parámetros de paginación:", { page, limit }); // 👈 Log útil
+//     console.log("📄 Parámetros de paginación:", { page, limit }); // 👈 Log útil
 
-    const products = await ProductsService.getAllProducts(Number(page), Number(limit));
+//     const products = await ProductsService.getAllProducts(Number(page), Number(limit));
 
-    if (!products || products.products.length === 0) {
-      return res.status(404).json({ message: "No se encontraron productos" });
-    }
+//     if (!products || products.products.length === 0) {
+//       return res.status(404).json({ message: "No se encontraron productos" });
+//     }
 
-    res.status(200).json(products);
-  } catch (error) {
-    console.error("❌ Error detallado al obtener productos:", error); // 👈 muestra el error real
+//     res.status(200).json(products);
+//   } catch (error) {
+//     console.error("❌ Error detallado al obtener productos:", error); // 👈 muestra el error real
 
-    next({
-      message: error.message || "Ocurrió un error al obtener productos",
-      status: 500,
-      stack: error.stack, // 👈 esto ayuda a depurar
-    });
-  }
-},
+//     next({
+//       message: error.message || "Ocurrió un error al obtener productos",
+//       status: 500,
+//       stack: error.stack, // 👈 esto ayuda a depurar
+//     });
+//   }
+// },
 
 
 
 
 
 // Buscar productos por nombre
+
+
+async getAllProducts(req, res, next) {
+    try {
+        const { 
+            page = 1, 
+            limit = 10,
+            mainCategoryId, 
+            subCategoryId,
+            searchQuery // 👈 Nuevo: Término de búsqueda
+        } = req.query;
+
+        console.log("📄 Parámetros de consulta:", { page, limit, mainCategoryId, subCategoryId, searchQuery });
+
+        // Pasar el nuevo parámetro al Servicio
+        const products = await ProductsService.getAllProducts(
+            Number(page), 
+            Number(limit), 
+            mainCategoryId, 
+            subCategoryId,
+            searchQuery 
+        );
+
+        if (!products || products.products.length === 0) {
+            return res.status(404).json({ message: "No se encontraron productos con estos criterios" });
+        }
+
+        res.status(200).json(products);
+    } catch (error) {
+        console.error("❌ Error detallado al obtener productos:", error);
+
+        next({
+            message: error.message || "Ocurrió un error al obtener productos",
+            status: 500,
+            stack: error.stack,
+        });
+    }
+},
+
+
+
+
+
 async searchProducts(req, res, next) {
   try {
     const { q } = req.query;

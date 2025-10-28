@@ -6,12 +6,39 @@ import api from "../../api/axios";
 // ===============================
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
-  async ({ page = 1, limit = 14 } = {}, thunkAPI) => {
+  // 🚀 AJUSTADO: Acepta un objeto de parámetros que puede incluir:
+  // page, limit, mainCategoryId, subCategoryId, searchQuery, etc.
+  async (queryParams = {}, thunkAPI) => {
+    // Definimos valores por defecto y combinamos con los queryParams recibidos
+    const defaults = { page: 1, limit: 14 };
+    const finalParams = { ...defaults, ...queryParams };
+    
+    // Construir los parámetros de URL para la llamada al backend
+    const urlParams = new URLSearchParams();
+    
+    // Añadir solo los parámetros que tienen un valor definido y no vacío
+    Object.keys(finalParams).forEach(key => {
+        const value = finalParams[key];
+        // Utilizamos el nombre de los parámetros del backend:
+        // page, limit, mainCategoryId, subCategoryId, searchQuery, etc.
+        if (value !== undefined && value !== null && value !== '') {
+            urlParams.append(key, value);
+        }
+    });
+
+    // Añadir timestamp para evitar el caché
+    urlParams.append('timestamp', Date.now());
+
     try {
-      const response = await api.get(
-        `/products?page=${page}&limit=${limit}&timestamp=${Date.now()}`
-      );
-      return { ...response.data, page, limit };
+      // 🎯 USAMOS LA RUTA UNIFICADA DEL BACKEND
+      const response = await api.get(`/products?${urlParams.toString()}`); 
+      
+      // El backend ahora devuelve { products, total }
+      return { 
+        ...response.data, 
+        page: finalParams.page, 
+        limit: finalParams.limit 
+      };
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data || "Error al obtener productos"
@@ -21,14 +48,16 @@ export const fetchProducts = createAsyncThunk(
 );
 
 // ===============================
-// Buscar productos
+// Buscar productos (Se mantiene, pero su funcionalidad es redundante)
 // ===============================
 export const searchProducts = createAsyncThunk(
   "products/searchProducts",
   async (query, thunkAPI) => {
+    // NOTA: Esta lógica debería ser reemplazada por:
+    // return thunkAPI.dispatch(fetchProducts({ searchQuery: query }));
     try {
-      const response = await api.get(`/products/search?q=${query}`);
-      return response.data; // esperamos un array de productos
+      const response = await api.get(`/products/search?q=${query}`); // <- Ruta obsoleta
+      return response.data; 
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data || "Error al buscar productos"
@@ -38,14 +67,16 @@ export const searchProducts = createAsyncThunk(
 );
 
 // ===============================
-// Filtrar productos
+// Filtrar productos (Se mantiene, pero su funcionalidad es redundante)
 // ===============================
 export const filterProducts = createAsyncThunk(
   "products/filterProducts",
   async (filters, thunkAPI) => {
+    // NOTA: Esta lógica debería ser reemplazada por:
+    // return thunkAPI.dispatch(fetchProducts(filters));
     try {
-      const response = await api.post("/products/filter", filters);
-      return response.data; // { products: [...], total: n }
+      const response = await api.post("/products/filter", filters); // <- Ruta obsoleta (y método POST)
+      return response.data; 
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data || "Error al filtrar productos"
@@ -55,7 +86,7 @@ export const filterProducts = createAsyncThunk(
 );
 
 // ===============================
-// Obtener producto por ID
+// Obtener producto por ID (Sin cambios)
 // ===============================
 export const fetchProductById = createAsyncThunk(
   "products/fetchProductById",
@@ -72,7 +103,7 @@ export const fetchProductById = createAsyncThunk(
 );
 
 // ===============================
-// Agregar nuevo producto
+// Agregar nuevo producto (Sin cambios)
 // ===============================
 export const addProduct = createAsyncThunk(
   "products/addProduct",
@@ -89,7 +120,7 @@ export const addProduct = createAsyncThunk(
 );
 
 // ===============================
-// Actualizar producto
+// Actualizar producto (Sin cambios)
 // ===============================
 export const updateProduct = createAsyncThunk(
   "products/updateProduct",
@@ -115,7 +146,7 @@ export const updateProduct = createAsyncThunk(
 );
 
 // ===============================
-// Slice
+// Slice (Sin cambios significativos en reducers/extraReducers)
 // ===============================
 const productsSlice = createSlice({
   name: "products",
@@ -154,10 +185,16 @@ const productsSlice = createSlice({
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
+        // 🎯 AJUSTE: La respuesta del backend ya trae 'products' y 'total'.
         state.items = action.payload.products;
         state.total = action.payload.total;
         state.page = action.payload.page;
         state.limit = action.payload.limit || state.limit;
+        
+        // Cuando fetchProducts es exitoso, asumimos que estamos en el flujo principal.
+        // Opcional: limpiar los resultados obsoletos de las búsquedas separadas.
+        state.searchResults = []; 
+        state.filteredItems = []; 
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
@@ -165,7 +202,7 @@ const productsSlice = createSlice({
       })
 
       // ===============================
-      // searchProducts
+      // searchProducts (Se mantiene, pero obsoleta)
       // ===============================
       .addCase(searchProducts.pending, (state) => {
         state.searchLoading = true;
@@ -181,7 +218,7 @@ const productsSlice = createSlice({
       })
 
       // ===============================
-      // filterProducts
+      // filterProducts (Se mantiene, pero obsoleta)
       // ===============================
       .addCase(filterProducts.pending, (state) => {
         state.filterLoading = true;

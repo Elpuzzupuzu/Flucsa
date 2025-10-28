@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Sliders, Package, DollarSign, X, Filter, Grid3x3, Droplets, Gauge, Link, CircleDot } from 'lucide-react';
-import { fetchProducts } from '../../../features/products/productsSlice'; // Ajusta la ruta según tu proyecto
+import { Sliders, Package, DollarSign, X, Filter, Droplets, Link, CircleDot } from 'lucide-react';
+import { fetchProducts } from '../../../features/products/productsSlice'; // Asegúrate que esta ruta es correcta
 
 const FilterSidebar = ({ filters, onFilterChange, isOpen, onToggle }) => {
   const dispatch = useDispatch();
   const [isAnimating, setIsAnimating] = useState(false);
 
+  // NOTA: Estas categorías DEBERÍAN cargarse desde la API y contener el UUID real.
+  // Utiliza IDs reales de tu base de datos aquí para las pruebas.
   const categories = [
-    { name: 'Ferreteria', icon: Droplets },
-    { name: 'Industriales', icon: Link },
-    { name: 'Domesticos', icon: CircleDot },
-    { name: 'Piscinas', icon: Filter },
-    // { name: 'Medidores', icon: Gauge },
-    // { name: 'Acoples', icon: Grid3x3 }
+    { name: 'Ferreteria', id: '2ded7b39-d779-476d-93fb-3f83fe981b4e', icon: Droplets },
+    { name: 'Industriales', id: '381dd166-bbc5-43ac-96d1-96116fe4f355', icon: Link },
+    { name: 'Domesticos', id: 'b05d6896-6aee-4461-9385-b46d32ec7c0a', icon: CircleDot },
+    { name: 'Piscinas', id: 'c33a2429-2647-43b7-aa52-c307b38f2274', icon: Filter },
   ];
 
   const priceRanges = [
@@ -23,29 +23,76 @@ const FilterSidebar = ({ filters, onFilterChange, isOpen, onToggle }) => {
     { label: 'Más de $300', value: '300+' }
   ];
 
-  const handleCategoryChange = (category, isChecked) => {
-    const newCategories = isChecked
-      ? [...filters.categories, category]
-      : filters.categories.filter(c => c !== category);
+  const handleCategoryChange = (categoryId) => {
+    // Si la categoría ya está seleccionada, la deseleccionamos (null).
+    const newCategoryId = filters.mainCategoryId === categoryId ? null : categoryId;
+    
+    // 1. Actualizar el estado local
+    onFilterChange({ ...filters, mainCategoryId: newCategoryId });
 
-    onFilterChange({ ...filters, categories: newCategories });
+    // 2. Preparar los parámetros para el backend
+    const paramsToSend = { 
+        page: 1, // Resetear a la página 1
+        limit: 14, 
+        // 🎯 Usamos el nombre del parámetro del backend: mainCategoryId
+        mainCategoryId: newCategoryId, 
+        // Conservar otros filtros si existen, como la búsqueda de texto:
+        searchQuery: filters.searchQuery || undefined
+    };
 
-    // Llamada al backend con filtros actualizados
-    dispatch(fetchProducts({ page: 1, limit: 14, filters: { ...filters, categories: newCategories } }));
+    // 3. Llamar al backend
+    dispatch(fetchProducts(paramsToSend));
   };
 
   const handlePriceRangeChange = (priceRange) => {
-    onFilterChange({ ...filters, priceRange });
+    // Si el rango ya está seleccionado, lo deseleccionamos ('').
+    const newPriceRange = filters.priceRange === priceRange ? '' : priceRange;
+    
+    // 1. Actualizar el estado local
+    onFilterChange({ ...filters, priceRange: newPriceRange });
+    
+    // 2. Descomponer el rango para los parámetros del backend (minPrice, maxPrice)
+    const [minStr, maxStr] = newPriceRange.split('-');
+    
+    // Nota: Aunque el backend aún no procesa minPrice/maxPrice, preparamos la llamada.
+    const minPrice = minStr ? parseFloat(minStr) : undefined;
+    // Si es '300+', maxStr es '+', por lo que maxPrice es undefined.
+    const maxPrice = maxStr && maxStr !== '+' ? parseFloat(maxStr) : undefined;
+    
+    // 3. Preparar los parámetros para el backend
+    const paramsToSend = { 
+        page: 1, 
+        limit: 14, 
+        mainCategoryId: filters.mainCategoryId, // Conservar filtro de categoría
+        searchQuery: filters.searchQuery || undefined,
+        // 🎯 Campos para la implementación futura de rango de precio en el backend
+        minPrice: minPrice, 
+        maxPrice: maxPrice, 
+    };
 
-    dispatch(fetchProducts({ page: 1, limit: 14, filters: { ...filters, priceRange } }));
+    // 4. Llamar al backend
+    dispatch(fetchProducts(paramsToSend));
   };
 
   const clearAllFilters = () => {
-    onFilterChange({ categories: [], priceRange: '' });
-    dispatch(fetchProducts({ page: 1, limit: 14, filters: {} }));
+    // 1. Limpiar el estado local de filtros
+    onFilterChange({ 
+        categories: [], 
+        priceRange: '', 
+        mainCategoryId: null, 
+        searchQuery: filters.searchQuery // Conservar la búsqueda si es relevante
+    });
+    
+    // 2. Llamar al backend con solo la paginación y la búsqueda de texto
+    dispatch(fetchProducts({ 
+        page: 1, 
+        limit: 14,
+        searchQuery: filters.searchQuery || undefined
+    }));
   };
 
-  const getFilterCount = () => filters.categories.length + (filters.priceRange ? 1 : 0);
+  // Cuenta los filtros aplicados (categoría y rango de precio)
+  const getFilterCount = () => (filters.mainCategoryId ? 1 : 0) + (filters.priceRange ? 1 : 0);
 
   useEffect(() => {
     if (isOpen) setIsAnimating(true);
@@ -100,19 +147,19 @@ const FilterSidebar = ({ filters, onFilterChange, isOpen, onToggle }) => {
                   Categorías
                 </h4>
                 <div className="space-y-2">
-                  {categories.map(({ name, icon: Icon }, index) => (
+                  {categories.map(({ name, id, icon: Icon }, index) => (
                     <label 
-                      key={name} 
+                      key={id} 
                       className={`flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-sm ${isOpen ? 'translate-x-0 opacity-100' : 'translate-x-4 opacity-0'}`}
                       style={{ transitionDelay: isOpen ? `${300 + index * 70}ms` : '0ms' }}
                     >
                       <input
                         type="checkbox"
-                        checked={filters.categories.includes(name)}
-                        onChange={(e) => handleCategoryChange(name, e.target.checked)}
+                        checked={filters.mainCategoryId === id}
+                        onChange={() => handleCategoryChange(id)} 
                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-all duration-200"
                       />
-                      <Icon className={`w-4 h-4 transition-all duration-200 ${filters.categories.includes(name) ? 'text-blue-600 scale-110' : 'text-gray-500'}`} />
+                      <Icon className={`w-4 h-4 transition-all duration-200 ${filters.mainCategoryId === id ? 'text-blue-600 scale-110' : 'text-gray-500'}`} />
                       <span className="text-sm text-gray-700">{name}</span>
                     </label>
                   ))}
@@ -163,9 +210,9 @@ const FilterSidebar = ({ filters, onFilterChange, isOpen, onToggle }) => {
                 >
                   <h5 className="text-sm font-medium text-blue-900 mb-2">Filtros Aplicados:</h5>
                   <div className="space-y-1">
-                    {filters.categories.length > 0 && (
+                    {filters.mainCategoryId && (
                       <div className="text-xs text-blue-700">
-                        <strong>Categorías:</strong> {filters.categories.join(', ')}
+                        <strong>Categoría:</strong> {categories.find(c => c.id === filters.mainCategoryId)?.name || filters.mainCategoryId}
                       </div>
                     )}
                     {filters.priceRange && (

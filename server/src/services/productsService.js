@@ -2,10 +2,28 @@ import { ProductsRepository } from "../repositories/productsRepository.js";
 
 export const ProductsService = {
   // Obtener productos paginados
-  async getAllProducts(page = 1, limit = 10) {
-    const { products, total } = await ProductsRepository.getProductsPaginated(page, limit);
+  // async getAllProducts(page = 1, limit = 10) {
+  //   const { products, total } = await ProductsRepository.getProductsPaginated(page, limit);
+  //   return { products, total };
+  // },
+
+async getAllProducts(page = 1, limit = 10, mainCategoryId, subCategoryId, searchQuery) {
+    const { products, total } = await ProductsRepository.getProductsPaginated(
+        page, 
+        limit, 
+        mainCategoryId, 
+        subCategoryId,
+        searchQuery // 👈 Se pasa al Repositorio
+    );
     return { products, total };
-  },
+},
+
+
+
+
+
+
+
 // find by id
   async getProductById(id) {
     const product = await ProductsRepository.getProductById(id);
