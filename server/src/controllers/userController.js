@@ -56,51 +56,23 @@ export const UserController = {
   },
 
   // Refresh token
-  // refresh: async (req, res) => {
-  //   const refreshToken = req.cookies.auth_refresh;
-  //   if (!refreshToken) return res.status(401).json({ error: "No refresh token" });
-
-  //   try {
-  //     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-  //     const user = await UserService.getUserProfile(decoded.id);
-
-  //     const newAccessToken = UserService.generateAccessToken({ id: decoded.id, rol: user.rol });
-
-  //     res.status(200).json({ accessToken: newAccessToken, user });
-  //   } catch (err) {
-  //     console.error('Refresh token inválido o expirado:', err);
-  //     res.clearCookie('auth_refresh', cookieConfig);
-  //     return res.status(403).json({ error: "Refresh token inválido o expirado" });
-  //   }
-  // },
-
   refresh: async (req, res) => {
-  // Permitir recibir el token desde la cookie o el cuerpo (para móviles)
-  const refreshToken = req.cookies.auth_refresh || req.body.token;
+    const refreshToken = req.cookies.auth_refresh;
+    if (!refreshToken) return res.status(401).json({ error: "No refresh token" });
 
-  if (!refreshToken) {
-    console.warn("❌ No se recibió refresh token ni en cookie ni en body");
-    return res.status(401).json({ error: "No refresh token" });
-  }
+    try {
+      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+      const user = await UserService.getUserProfile(decoded.id);
 
-  try {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-    const user = await UserService.getUserProfile(decoded.id);
+      const newAccessToken = UserService.generateAccessToken({ id: decoded.id, rol: user.rol });
 
-    const newAccessToken = UserService.generateAccessToken({
-      id: decoded.id,
-      rol: user.rol,
-    });
-
-    console.log("✅ Nuevo access token generado para:", user.correo);
-
-    res.status(200).json({ accessToken: newAccessToken, user });
-  } catch (err) {
-    console.error("Refresh token inválido o expirado:", err.message);
-    res.clearCookie("auth_refresh", cookieConfig);
-    return res.status(403).json({ error: "Refresh token inválido o expirado" });
-  }
-},
+      res.status(200).json({ accessToken: newAccessToken, user });
+    } catch (err) {
+      console.error('Refresh token inválido o expirado:', err);
+      res.clearCookie('auth_refresh', cookieConfig);
+      return res.status(403).json({ error: "Refresh token inválido o expirado" });
+    }
+  },
 
   // Logout
   logout: (req, res) => {
