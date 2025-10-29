@@ -1,90 +1,138 @@
 // hooks/useProductsLogic.js
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../../../features/products/productsSlice";
 
 export const useProductsLogic = () => {
-  const dispatch = useDispatch();
-  const { items: products, total, loading, error } = useSelector((s) => s.products);
+    const dispatch = useDispatch();
+    // 🎯 Obtenemos los productos paginados/filtrados y el total del Redux store
+    const { items: products, total, loading, error, limit: reduxLimit } = useSelector((s) => s.products);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(14);  // ESTO SE ENCARGA DE LA CARGA INICIAL DEL GRID EN PRODUCTS 
-  const [viewMode, setViewMode] = useState("grid");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("name");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [filters, setFilters] = useState({ categories: [], priceRange: "" });
+    // Estados locales (sincronizados con la API)
+    const [currentPage, setPage] = useState(1);
+    const [itemsPerPage, setItemsPerPageState] = useState(14); 
+    
+    // Otros estados
+    const [viewMode, setViewMode] = useState("grid");
+    const [searchTerm, setSearchTermState] = useState("");
+    const [sortBy, setSortBy] = useState("name"); 
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    
+    // 🎯 Filtros: Usamos la estructura ajustada (mainCategoryId)
+    const [filters, setFiltersState] = useState({ mainCategoryId: null, priceRange: "" });
 
-  // Fetch productos al cargar o al cambiar página/itemsPerPage
-  useEffect(() => {
-    dispatch(fetchProducts({ page: currentPage, limit: itemsPerPage }));
-  }, [dispatch, currentPage, itemsPerPage]);
+    // =========================================================================
+    // LÓGICA UNIFICADA DE LLAMADA A LA API
+    // =========================================================================
 
-  const availableCategories = useMemo(() => {
-    const cats = products.map(p => p.categoria_principal_nombre || p.categoria || "");
-    return Array.from(new Set(cats)).filter(Boolean);
-  }, [products]);
+    const loadProducts = useCallback((page, currentFilters, currentSearch, currentItemsPerPage) => {
+        // Parsear priceRange a minPrice/maxPrice (preparado para el backend)
+        const [minStr, maxStr] = currentFilters.priceRange.split('-');
+        const minPrice = minStr ? parseFloat(minStr) : undefined;
+        const maxPrice = maxStr && maxStr !== '+' ? parseFloat(maxStr) : undefined;
 
-  const filteredProducts = useMemo(() => {
-    return products.filter(p => {
-      const matchSearch =
-        p.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.descripcion?.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchCat =
-        filters.categories.length === 0 ||
-        filters.categories.some(cat =>
-          (p.categoria_principal_nombre || p.categoria || "")
-            .toLowerCase()
-            .includes(cat.toLowerCase())
+        // Disparar la acción con TODOS los parámetros
+        dispatch(fetchProducts({
+            page: page,
+            limit: currentItemsPerPage, 
+            mainCategoryId: currentFilters.mainCategoryId, // Filtro de categoría
+            searchQuery: currentSearch, // Búsqueda de texto
+            minPrice: minPrice, // Filtro de precio (mínimo)
+            maxPrice: maxPrice, // Filtro de precio (máximo)
+            // Agrega 'sortBy' aquí si el backend soporta ordenamiento
+        }));
+    }, [dispatch]);
+
+
+    // =========================================================================
+    // WRAPPERS DE INTERACCIÓN (Disparan la carga y cambian la página)
+    // =========================================================================
+
+    // 1. Manejo del cambio de PÁGINA (mantiene filtros)
+    const handleSetCurrentPage = (page) => {
+        setPage(page);
+        // Llama a la API manteniendo el estado de filtros y búsqueda
+        loadProducts(page, filters, searchTerm, itemsPerPage);
+    };
+
+    // 2. Manejo de la BÚSQUEDA (resetea página)
+    const handleSetSearchTerm = (term) => {
+        setPage(1); // Resetear a la página 1
+        setSearchTermState(term);
+        // Llama a la API con la nueva búsqueda
+        loadProducts(1, filters, term, itemsPerPage);
+    };
+
+    // 3. Manejo de FILTROS (resetea página)
+    const handleSetFilters = (newFilters) => {
+        setPage(1); // Resetear a la página 1
+        setFiltersState(newFilters); 
+        // Llama a la API con los nuevos filtros
+        loadProducts(1, newFilters, searchTerm, itemsPerPage);
+    };
+    
+    // 4. Manejo de Items por página (resetea página)
+    const handleSetItemsPerPage = (limit) => {
+        setPage(1); // Resetear a la página 1
+        setItemsPerPageState(limit);
+        loadProducts(1, filters, searchTerm, limit);
+    };
+
+
+    // =========================================================================
+    // LÓGICA DE MONTAJE Y MEMORIZACIÓN
+    // =========================================================================
+
+    // Carga inicial al montar el componente
+    useEffect(() => {
+        loadProducts(currentPage, filters, searchTerm, itemsPerPage);
+    }, [loadProducts]);
+
+
+    // La ordenación por FE (Front-End) sigue siendo necesaria si la API no ordena
+    const sortedProducts = useMemo(() => {
+        return [...products].sort((a, b) =>
+            sortBy === "price"
+                ? (a.precio || 0) - (b.precio || 0)
+                : a.nombre.localeCompare(b.nombre)
         );
-      let matchPrice = true;
-      if (filters.priceRange) {
-        const price = parseFloat(p.precio) || 0;
-        if (filters.priceRange === "0-50") matchPrice = price < 50;
-        else if (filters.priceRange === "50-100") matchPrice = price >= 50 && price <= 100;
-        else if (filters.priceRange === "100-300") matchPrice = price > 100 && price <= 300;
-        else if (filters.priceRange === "300+") matchPrice = price > 300;
-      }
-      return matchSearch && matchCat && matchPrice;
-    });
-  }, [products, searchTerm, filters]);
+    }, [products, sortBy]);
 
-  const sortedProducts = useMemo(() => {
-    return [...filteredProducts].sort((a, b) =>
-      sortBy === "price"
-        ? (a.precio || 0) - (b.precio || 0)
-        : a.nombre.localeCompare(b.nombre)
-    );
-  }, [filteredProducts, sortBy]);
+    // totalPages usando el total real del slice
+    const totalPages = Math.ceil(total / itemsPerPage);
+    const currentProducts = sortedProducts; // Los productos actuales ya están paginados/filtrados por el backend
 
-  // totalPages usando el total real del slice
-  const totalPages = Math.ceil(total / itemsPerPage);
-  const currentProducts = sortedProducts; // ya son los productos de la página actual
+    const availableCategories = useMemo(() => {
+        // En un entorno de producción, esto debería cargarse desde una API separada.
+        // Aquí se devuelve una lista vacía para evitar la lógica de FE obsoleta.
+        return []; 
+    }, []);
 
-  const getFilterCount = () => filters.categories.length + (filters.priceRange ? 1 : 0);
+    // Calcula cuántos filtros están activos (Categoría o Rango de Precio)
+    const getFilterCount = () => (filters.mainCategoryId ? 1 : 0) + (filters.priceRange ? 1 : 0);
 
-  return {
-    products,
-    loading,
-    error,
-    currentProducts,
-    totalPages,
-    currentPage,
-    setCurrentPage,
-    viewMode,
-    setViewMode,
-    searchTerm,
-    setSearchTerm,
-    sortBy,
-    setSortBy,
-    itemsPerPage,
-    setItemsPerPage,
-    sidebarOpen,
-    setSidebarOpen,
-    filters,
-    setFilters,
-    availableCategories,
-    sortedProducts,
-    getFilterCount
-  };
+    return {
+        products,
+        loading,
+        error,
+        currentProducts,
+        totalPages,
+        currentPage,
+        setCurrentPage: handleSetCurrentPage, // 👈 Función que dispara la carga con filtros
+        viewMode,
+        setViewMode,
+        searchTerm,
+        setSearchTerm: handleSetSearchTerm, // 👈 Función que resetea la página y carga
+        sortBy,
+        setSortBy,
+        itemsPerPage,
+        setItemsPerPage: handleSetItemsPerPage, // 👈 Función que resetea la página y carga
+        sidebarOpen,
+        setSidebarOpen,
+        filters,
+        setFilters: handleSetFilters, // 👈 Función que resetea la página y carga
+        availableCategories,
+        sortedProducts,
+        getFilterCount
+    };
 };

@@ -1,59 +1,48 @@
 import React from 'react';
-import { Home, Droplet, Wrench, Factory } from 'lucide-react';
+// Importa tus imágenes
+import domesticoImg from '../../assets/imgs/domestico.jpg';
+import piscinaImg from '../../assets/imgs/piscina-playa.jpg';
+import ferreteriaImg from '../../assets/imgs/ferreteria.jpg';
+import industrialImg from  '../../assets/imgs/industrial.jpg';
 
-// CategoryCard con diseño estilo Amazon - tarjetas con imagen
-function CategoryCard({ title, bgColor, textColor, icon, image }) {
-  return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group h-full flex flex-col">
-      {/* Imagen de la categoría */}
-      <div className="relative h-48 md:h-64 overflow-hidden bg-gray-100">
-        <div className={`absolute inset-0 ${bgColor} opacity-10 group-hover:opacity-20 transition-opacity duration-300`}></div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          {/* Placeholder de imagen - aquí irían tus imágenes reales */}
-          <div className={`w-full h-full flex items-center justify-center ${bgColor} bg-opacity-5`}>
-            {icon}
-          </div>
-        </div>
-      </div>
-      
-      {/* Título de la categoría */}
-      <div className="p-4 bg-white">
-        <h3 className="text-gray-900 font-semibold text-lg group-hover:text-blue-600 transition-colors duration-200">
-          {title}
-        </h3>
-      </div>
-    </div>
-  );
-}
+// Importa el componente hijo
+import CategoryCard from './CategoryCard';
+import { useNavigate } from 'react-router-dom';
 
-// CategoryGrid con diseño tipo Amazon
+// CategoryGrid con diseño 
 function CategoryGrid() {
   const categories = [
     {
       title: 'Doméstico',
       bgColor: 'bg-gradient-to-br from-orange-400 to-orange-500',
       textColor: 'text-orange-900',
-      icon: <Home className="w-24 h-24 text-orange-500" />
+      image: domesticoImg
     },
     {
       title: 'Piscina',
       bgColor: 'bg-gradient-to-br from-cyan-400 to-cyan-500',
       textColor: 'text-cyan-900',
-      icon: <Droplet className="w-24 h-24 text-cyan-500" />
+      image: piscinaImg
     },
     {
       title: 'Ferretería',
       bgColor: 'bg-gradient-to-br from-pink-400 to-pink-500',
       textColor: 'text-pink-900',
-      icon: <Wrench className="w-24 h-24 text-pink-500" />
+      image: ferreteriaImg
     },
     {
       title: 'Industrial',
       bgColor: 'bg-gradient-to-br from-blue-400 to-blue-500',
       textColor: 'text-blue-900',
-      icon: <Factory className="w-24 h-24 text-blue-500" />
+      image: industrialImg
     },
   ];
+
+  const navigate = useNavigate();
+
+  const handleViewProducts = () => {
+    navigate("/productos");
+  };
 
   return (
     <div className="bg-gradient-to-b from-blue-900 to-blue-800 py-12 px-4 relative overflow-hidden">
@@ -67,7 +56,7 @@ function CategoryGrid() {
         {/* Header */}
         <div className="text-center mb-10">
           <h2 className="text-4xl font-bold text-white mb-4">
-            Nuestras <span className="text-purple-400">Categorías</span>
+            Principales<span className="text-purple-400">Categorías</span>
           </h2>
           <p className="text-blue-200 text-lg max-w-3xl mx-auto">
             Descubre nuestra amplia gama de productos organizados por categorías, 
@@ -83,14 +72,14 @@ function CategoryGrid() {
               title={category.title}
               bgColor={category.bgColor}
               textColor={category.textColor}
-              icon={category.icon}
+              image={category.image}
             />
           ))}
         </div>
 
         {/* Botón CTA */}
         <div className="text-center mb-12">
-          <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+          <button  onClick={handleViewProducts}  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
             Ver Todos los Productos
           </button>
         </div>

@@ -38,7 +38,7 @@ const ProductCard = ({ product, viewMode = 'grid', onAddToCart }) => {
     e.preventDefault();
 
     if (!isAuthenticated) {
-      notify('Debes iniciar sesión para agregar al carrito. 🛒'); // Notificación
+      notify('Debes iniciar sesión para agregar a la lista. 🛒'); // Notificación
       return; 
     }
     
@@ -131,7 +131,7 @@ const ProductCard = ({ product, viewMode = 'grid', onAddToCart }) => {
             className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 py-1.5 px-3 rounded-full transition-all duration-200 font-medium text-xs shadow-sm hover:shadow-md flex items-center justify-center gap-1.5"
           >
             <ShoppingCart className="w-3.5 h-3.5" />
-            Agregar al carrito
+            Agregar a la lista
           </button>
         </div>
       </div>

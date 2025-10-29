@@ -1,16 +1,27 @@
 import React from 'react';
 
-function CategoryCard({ title, iconBgColor, textColor, dotColor, icon }) {
+// CategoryCard con diseño estilo Amazon - tarjetas con imagen
+function CategoryCard({ title, bgColor, textColor, image }) {
   return (
-    <div className={`relative ${iconBgColor} rounded-xl p-6 flex flex-col justify-between items-start min-h-[192px] shadow-md`}>
-      <div className="flex items-center space-x-2">
-        <div className={`w-3 h-3 ${dotColor} rounded-full`}></div>
-        <span className={`font-semibold text-lg ${textColor}`}>{title}</span>
-      </div>
-      <div className="mt-auto">
-        <div className="w-16 h-16 bg-opacity-20 rounded-lg flex items-center justify-center" style={{ backgroundColor: iconBgColor, opacity: 0.3 }}>
-          {icon} {/* Renderiza el ícono pasado como prop */}
+    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer group h-full flex flex-col">
+      {/* Imagen de la categoría */}
+      <div className="relative h-48 md:h-64 overflow-hidden bg-gray-100">
+        <div className={`absolute inset-0 ${bgColor} opacity-10 group-hover:opacity-20 transition-opacity duration-300`}></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          {/* Imagen real de la categoría */}
+          <img 
+            src={image} 
+            alt={title}
+            className="w-full h-full object-cover"
+          />
         </div>
+      </div>
+      
+      {/* Título de la categoría */}
+      <div className="p-4 bg-white">
+        <h3 className="text-gray-900 font-semibold text-lg group-hover:text-blue-600 transition-colors duration-200">
+          {title}
+        </h3>
       </div>
     </div>
   );

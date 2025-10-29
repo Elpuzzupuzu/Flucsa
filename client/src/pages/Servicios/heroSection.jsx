@@ -107,9 +107,9 @@ const HeroSection = ({ isVisible }) => {
               <p className="text-xl text-gray-100 leading-relaxed">
                 Soluciones hidráulicas y de construcción{" "}
                 <span className="font-bold bg-gradient-to-r from-cyan-300 via-orange-300 to-amber-300 bg-clip-text text-transparent animate-gradient">
-                  innovadoras y de alta calidad
+                  innovadoras y de alta calidad.
                 </span>{" "}
-                para transformar tu hogar o negocio con la excelencia que mereces
+                
               </p>
 
               {/* Categories with enhanced animations */}
