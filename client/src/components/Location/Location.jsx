@@ -10,105 +10,117 @@ const Location = () => {
   };
 
   return (
-    <section className="relative bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 py-20 px-6 overflow-hidden">
-      <div className="max-w-6xl mx-auto relative z-10">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#1C2E82] via-[#2d4bc7] to-[#4361ee] rounded-2xl mb-6 shadow-2xl ring-4 ring-white/50">
-            <MapPin className="w-8 h-8 text-white drop-shadow-lg" />
-          </div>
-
-          <h2 className="text-5xl font-black bg-gradient-to-r from-[#1C2E82] via-[#2d4bc7] to-[#4361ee] bg-clip-text text-transparent mb-4 tracking-tight leading-tight">
-            Dónde nos ubicamos?
+    <section className="bg-white py-16 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header minimalista */}
+        <div className="mb-12">
+          <h2 className="text-3xl font-semibold text-gray-900 mb-3">
+            Nuestra Ubicación
           </h2>
-
-          <p className="text-slate-700 text-xl max-w-2xl mx-auto leading-relaxed font-medium">
-            Visítanos y conoce nuestra sucursal más cercana. Estamos estratégicamente ubicados para brindarte el mejor servicio.
+          <p className="text-gray-600 max-w-2xl">
+            Visítanos en nuestra sucursal o contáctanos por los medios que prefieras.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Mapa */}
-          <div className="group">
-            <div className="bg-white rounded-3xl shadow-2xl border border-white/60 overflow-hidden transform transition-all duration-500 hover:scale-[1.02] hover:shadow-3xl backdrop-blur-sm">
-              <div className="bg-gradient-to-r from-[#1C2E82] to-[#2d4bc7] p-6">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                    <MapPin className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-bold text-lg">Mapa Interactivo</h3>
-                    <p className="text-white/80 text-sm">Explora nuestra ubicación</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative">
-                <iframe
-                  title="Ubicación de la empresa"
-                  src={companyInfo.mapEmbedUrl}
-                  className="w-full h-96 transition-all duration-300 group-hover:brightness-105"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                ></iframe>
-              </div>
+          <div className="order-2 lg:order-1">
+            <div className="bg-gray-50 rounded-lg overflow-hidden border border-gray-200 h-full shadow-sm">
+              <iframe
+                title="Ubicación de la empresa"
+                src={companyInfo.mapEmbedUrl}
+                className="w-full h-96 lg:h-full min-h-96"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
             </div>
           </div>
 
-          {/* Contacto */}
-          <div className="space-y-8">
+          {/* Información de contacto */}
+          <div className="order-1 lg:order-2 space-y-6">
             {/* Dirección */}
-            <div className="group bg-white rounded-3xl p-8 shadow-xl border border-white/60 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 backdrop-blur-sm">
-              <div className="flex items-start space-x-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-[#1C2E82] via-[#2d4bc7] to-[#4361ee] rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <MapPin className="w-6 h-6 text-white drop-shadow-sm" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-black text-[#1C2E82] mb-2 group-hover:text-[#2d4bc7] transition-colors duration-300">Dirección</h3>
-                  <p className="text-slate-700 leading-relaxed font-medium">{companyInfo.address}</p>
-                </div>
+            <div className="flex items-start gap-4 group">
+              <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-1 group-hover:bg-blue-100 transition-colors">
+                <MapPin className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 mb-1 uppercase tracking-wide">
+                  Dirección
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {companyInfo.address}
+                </p>
               </div>
             </div>
+
+            <div className="border-t border-gray-200"></div>
 
             {/* Teléfono */}
-            <div className="group bg-white rounded-3xl p-8 shadow-xl border border-white/60 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 backdrop-blur-sm">
-              <div className="flex items-start space-x-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-[#ED0000] via-[#ff4444] to-[#ff6b6b] rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <Phone className="w-6 h-6 text-white drop-shadow-sm" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-black text-[#1C2E82] mb-2 group-hover:text-[#ED0000] transition-colors duration-300">Teléfono</h3>
-                  <a href={`tel:${companyInfo.phone}`} className="text-slate-700 leading-relaxed font-medium hover:text-[#ED0000] transition-colors duration-300">{companyInfo.phone}</a>
-                </div>
+            <div className="flex items-start gap-4 group">
+              <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-1 group-hover:bg-green-100 transition-colors">
+                <Phone className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 mb-1 uppercase tracking-wide">
+                  Teléfono
+                </h3>
+                <a 
+                  href={`tel:${companyInfo.phone}`} 
+                  className="text-gray-600 hover:text-green-600 transition-colors"
+                >
+                  {companyInfo.phone}
+                </a>
               </div>
             </div>
 
+            <div className="border-t border-gray-200"></div>
+
             {/* Email */}
-            <div className="group bg-white rounded-3xl p-8 shadow-xl border border-white/60 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 backdrop-blur-sm">
-              <div className="flex items-start space-x-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-[#1C2E82] via-[#2d4bc7] to-[#4361ee] rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <Mail className="w-6 h-6 text-white drop-shadow-sm" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-black text-[#1C2E82] mb-2 group-hover:text-[#2d4bc7] transition-colors duration-300">Email</h3>
-                  <a href={`mailto:${companyInfo.email}`} className="text-slate-700 leading-relaxed font-medium hover:text-[#1C2E82] transition-colors duration-300">{companyInfo.email}</a>
-                </div>
+            <div className="flex items-start gap-4 group">
+              <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-1 group-hover:bg-purple-100 transition-colors">
+                <Mail className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 mb-1 uppercase tracking-wide">
+                  Email
+                </h3>
+                <a 
+                  href={`mailto:${companyInfo.email}`} 
+                  className="text-gray-600 hover:text-purple-600 transition-colors"
+                >
+                  {companyInfo.email}
+                </a>
               </div>
             </div>
 
             {/* Botón Cómo llegar */}
-            <div className="text-center lg:text-left pt-6">
+            <div className="pt-6">
               <a
                 href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(companyInfo.address)}&travelmode=driving`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex items-center bg-gradient-to-r from-[#ED0000] via-[#ff4444] to-[#ff6b6b] rounded-3xl px-10 py-5 text-white font-black text-lg shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300 cursor-pointer border-2 border-white/30 backdrop-blur-sm"
+                className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors w-full sm:w-auto"
               >
-                <span className="mr-3 group-hover:mr-4 transition-all duration-300">Cómo llegar</span>
-                <Navigation className="w-4 h-4 text-white" />
+                <Navigation className="w-4 h-4" />
+                <span>Cómo llegar</span>
               </a>
+            </div>
+
+            {/* Horarios (opcional) */}
+            <div className="pt-4 pb-2">
+              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <h3 className="text-sm font-semibold text-gray-900 mb-2 uppercase tracking-wide">
+                  Horario de Atención
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Lunes a Viernes: 8:00 AM - 6:00 PM
+                </p>
+                <p className="text-sm text-gray-600">
+                  Sábado: 9:00 AM - 2:00 PM
+                </p>
+              </div>
             </div>
           </div>
         </div>

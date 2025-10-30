@@ -1,106 +1,128 @@
 import React from 'react';
-// Importa tus imágenes
+import { Truck, Wrench, ShoppingBag } from 'lucide-react';
+
+// Imágenes de ejemplo - reemplaza con tus imports reales
 import domesticoImg from '../../assets/imgs/domestico.jpg';
 import piscinaImg from '../../assets/imgs/piscina-playa.jpg';
 import ferreteriaImg from '../../assets/imgs/ferreteria.jpg';
 import industrialImg from  '../../assets/imgs/industrial.jpg';
 
-// Importa el componente hijo
-import CategoryCard from './CategoryCard';
-import { useNavigate } from 'react-router-dom';
+// CategoryCard simulado - mantén tu componente original
+const CategoryCard = ({ title, image }) => {
+  return (
+    <div className="group bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+      <div className="relative h-64 overflow-hidden">
+        <img
+          src={image}
+          alt={title}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+      </div>
+      <div className="p-5 bg-white">
+        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+          {title}
+        </h3>
+      </div>
+    </div>
+  );
+};
 
-// CategoryGrid con diseño 
+// CategoryGrid con diseño profesional
 function CategoryGrid() {
   const categories = [
     {
       title: 'Doméstico',
-      bgColor: 'bg-gradient-to-br from-orange-400 to-orange-500',
-      textColor: 'text-orange-900',
       image: domesticoImg
     },
     {
       title: 'Piscina',
-      bgColor: 'bg-gradient-to-br from-cyan-400 to-cyan-500',
-      textColor: 'text-cyan-900',
       image: piscinaImg
     },
     {
       title: 'Ferretería',
-      bgColor: 'bg-gradient-to-br from-pink-400 to-pink-500',
-      textColor: 'text-pink-900',
       image: ferreteriaImg
     },
     {
       title: 'Industrial',
-      bgColor: 'bg-gradient-to-br from-blue-400 to-blue-500',
-      textColor: 'text-blue-900',
       image: industrialImg
     },
   ];
 
-  const navigate = useNavigate();
-
   const handleViewProducts = () => {
-    navigate("/productos");
+    // navigate("/productos");
+    console.log('Navegar a productos');
   };
 
   return (
-    <div className="bg-gradient-to-b from-blue-900 to-blue-800 py-12 px-4 relative overflow-hidden">
-      {/* Elementos geométricos decorativos */}
-      <div className="absolute top-16 right-16 w-12 h-12 bg-cyan-400 rounded-lg rotate-12 opacity-80"></div>
-      <div className="absolute top-24 right-24 w-6 h-6 bg-yellow-400 rounded-full opacity-90"></div>
-      <div className="absolute top-32 right-12 w-8 h-8 bg-green-400 rounded-lg rotate-45 opacity-75"></div>
-      <div className="absolute bottom-16 left-16 w-8 h-8 bg-pink-400 rounded-lg -rotate-12 opacity-80"></div>
-      
-      <div className="max-w-7xl mx-auto relative z-10">
+    <section className="bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-10">
-          <h2 className="text-4xl font-bold text-white mb-4">
-            Principales<span className="text-purple-400">Categorías</span>
+        <div className="mb-12">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-1 h-6 bg-blue-600 rounded-full"></div>
+            <span className="text-sm font-semibold text-blue-600 uppercase tracking-wide">
+              Explora por categoría
+            </span>
+          </div>
+          <h2 className="text-3xl font-semibold text-gray-900 mb-3">
+            Principales Categorías
           </h2>
-          <p className="text-blue-200 text-lg max-w-3xl mx-auto">
+          <p className="text-gray-600 max-w-3xl">
             Descubre nuestra amplia gama de productos organizados por categorías, 
             cada sección está diseñada para satisfacer tus necesidades específicas.
           </p>
         </div>
 
-        {/* Grid de categorías estilo Amazon */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        {/* Grid de categorías */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {categories.map((category, index) => (
             <CategoryCard 
               key={index}
               title={category.title}
-              bgColor={category.bgColor}
-              textColor={category.textColor}
               image={category.image}
             />
           ))}
         </div>
 
         {/* Botón CTA */}
-        <div className="text-center mb-12">
-          <button  onClick={handleViewProducts}  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+        <div className="text-center mb-16">
+          <button 
+            onClick={handleViewProducts}  
+            className="px-8 py-3 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-colors duration-200"
+          >
             Ver Todos los Productos
           </button>
         </div>
 
-        {/* Footer con información adicional */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8 border-t border-blue-700">
-          <div className="text-center">
-            <h4 className="font-semibold text-white mb-2 text-base">Envío / Procurement</h4>
-            <p className="text-blue-200 text-sm">Servicio de entrega nacional</p>
+        {/* Servicios destacados */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t border-gray-200">
+          <div className="flex flex-col items-center text-center group">
+            <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
+              <Truck className="w-6 h-6 text-blue-600" />
+            </div>
+            <h4 className="font-semibold text-gray-900 mb-2">Envío / Procurement</h4>
+            <p className="text-gray-600 text-sm">Servicio de entrega nacional</p>
           </div>
-          <div className="text-center">
-            <h4 className="font-semibold text-white mb-2 text-base">Ingeniería del plástico</h4>
-            <p className="text-blue-200 text-sm">Soluciones técnicas especializadas</p>
+
+          <div className="flex flex-col items-center text-center group">
+            <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-100 transition-colors">
+              <Wrench className="w-6 h-6 text-green-600" />
+            </div>
+            <h4 className="font-semibold text-gray-900 mb-2">Ingeniería del plástico</h4>
+            <p className="text-gray-600 text-sm">Soluciones técnicas especializadas</p>
           </div>
-          <div className="text-center">
-            <h4 className="font-semibold text-white mb-2 text-base">Venta / Equipamientos</h4>
-            <p className="text-blue-200 text-sm">Equipo profesional y comercial</p>
+
+          <div className="flex flex-col items-center text-center group">
+            <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-100 transition-colors">
+              <ShoppingBag className="w-6 h-6 text-purple-600" />
+            </div>
+            <h4 className="font-semibold text-gray-900 mb-2">Venta / Equipamientos</h4>
+            <p className="text-gray-600 text-sm">Equipo profesional y comercial</p>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
