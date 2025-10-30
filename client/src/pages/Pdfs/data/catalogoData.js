@@ -1,3 +1,17 @@
+import piscina from "../../../assets/imgs/piscina-playa.jpg"
+import industrial from "../../../assets/imgs/industrial.jpg"
+import domesticos from "../../../assets/imgs/domestico.jpg"
+import ferreteria from "../../../assets/imgs/ferreteria.jpg"
+
+
+
+
+
+
+
+
+
+
 export const catalogos = [
   {
     name: "Flucsa",
@@ -5,13 +19,23 @@ export const catalogos = [
     imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1gXRY8CfNzOLmbreIoo0uboEqI6JIUC8P6w&s",
   },
   {
-    name: "Catálogo Industrial",
-    fileName: "industrial.pdf",
-    imageUrl: "https://m.media-amazon.com/images/I/517mwnl1zXL._UF894,1000_QL80_.jpg",
+    name: "Piscinas",
+    fileName: "piscinas.pdf",
+    imageUrl: piscina
   },
   {
-    name: "Productos 2024",
-    fileName: "productos-2024.pdf",
-    imageUrl: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&h=300&fit=crop",
+    name: "Domesticos",
+    fileName: "domesticos.pdf",
+    imageUrl: domesticos
+  },
+  {
+    name: "Ferreteria",
+    fileName: "ferreteria.pdf",
+    imageUrl: ferreteria
+  },
+  {
+    name: "Industrial",
+    fileName: "industrial.pdf",
+    imageUrl: industrial
   },
 ];
