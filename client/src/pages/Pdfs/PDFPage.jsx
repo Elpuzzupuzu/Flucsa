@@ -10,10 +10,10 @@ const PDFCatalog = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="mb-12">
                     <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                        Catálogo de PDFs
+                        Catálogo de PDF
                     </h1>
                     <p className="text-lg text-gray-600 max-w-3xl">
-                        Descubre nuestra amplia gama de catálogos en formato PDF, cada sección está diseñada para satisfacer tus necesidades específicas.
+                        Descubre nuestra amplia gama de catálogos en formato PDF.
                     </p>
                 </div>
 
