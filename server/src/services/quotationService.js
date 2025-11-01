@@ -1,11 +1,6 @@
-// quotationService.js
 
-// Importaciones
-// NOTA: Re-agregamos la importación de supabase, que aunque no se usa directamente aquí,
-// es estándar si el archivo de configuración está en ese path. 
-import { supabase } from '../config/supabaseClient.js'; 
-import { CarritoRepository } from '../repositories/cartRepository.js'; 
 import * as QuotationRepo from '../repositories/quotationRepository.js';
+import { CarritoRepository } from '../repositories/cartRepository.js'; 
 
 // ==========================================================
 // MÉTODOS DE LÓGICA DE NEGOCIO
@@ -13,15 +8,10 @@ import * as QuotationRepo from '../repositories/quotationRepository.js';
 
 /**
  * Genera una cotización permanente a partir del carrito activo del usuario.
- * @param {string} usuarioId - UUID del usuario solicitante.
- * @returns {Promise<object>} La cotización generada, incluyendo sus ítems.
  */
 async function generateQuotation(usuarioId) {
     try {
-        // 1. Obtener el ID del carrito activo
         const carritoId = await CarritoRepository.getOrCreateActiveCartId(usuarioId);
-
-        // 2. Obtener Ítems del Carrito con Detalles de Producto
         const carritoItems = await CarritoRepository.getCartItemsByCartId(carritoId);
 
         if (!carritoItems || carritoItems.length === 0) {
@@ -31,7 +21,6 @@ async function generateQuotation(usuarioId) {
         let totalCotizado = 0;
         const itemsCotizacion = [];
 
-        // 3. Preparar Datos (Congelar) y Calcular Total
         for (const item of carritoItems) {
             const producto = item.producto;
             
@@ -39,8 +28,7 @@ async function generateQuotation(usuarioId) {
                 throw new Error(`Producto ID ${item.producto_id} no tiene datos de precio válidos.`);
             }
 
-            const subtotal = producto.precio * item.cantidad;
-            totalCotizado += subtotal;
+            totalCotizado += producto.precio * item.cantidad;
 
             itemsCotizacion.push({
                 producto_id: item.producto_id,
@@ -50,16 +38,12 @@ async function generateQuotation(usuarioId) {
             });
         }
         
-        // --- INICIO DE LA TRANSACCIÓN LÓGICA ---
-        
-        // 4. Crear Cabecera de la Cotización
         const { id: nuevaCotizacionId } = await QuotationRepo.createQuotation(
             usuarioId, 
             totalCotizado, 
             carritoId
         );
         
-        // 5. Vincular y Guardar Ítems Congelados
         const itemsConCotizacionId = itemsCotizacion.map(item => ({
             ...item,
             cotizacion_id: nuevaCotizacionId 
@@ -67,7 +51,6 @@ async function generateQuotation(usuarioId) {
         
         await QuotationRepo.addQuotationItems(itemsConCotizacionId);
         
-        // 6. Finalizar: obtener la cotización completa para la respuesta
         return QuotationRepo.getQuotationById(nuevaCotizacionId); 
 
     } catch (error) {
@@ -78,36 +61,70 @@ async function generateQuotation(usuarioId) {
 
 
 // ==========================================================
-// MÉTODOS CRUD (Delegación)
+// MÉTODOS CRUD (Delegación + RBAC)
 // ==========================================================
+
+/**
+ * Obtiene la lista de cotizaciones, filtrando por usuario a menos que sea admin.
+ */
+async function getQuotations(usuarioId, rolUsuario) {
+    if (rolUsuario === 'admin') {
+        // ADMIN: Obtiene TODAS las cotizaciones
+        return QuotationRepo.getAllQuotations(); 
+    } else {
+        // USER: Obtiene SOLO las suyas
+        return QuotationRepo.getQuotationsByUserId(usuarioId);
+    }
+}
 
 async function getQuotationDetails(id) {
     return QuotationRepo.getQuotationById(id);
 }
 
-/**
- * Obtiene la lista de cotizaciones para un usuario. (AGREGADO)
- */
-async function getQuotationsByUserId(usuarioId) {
-    if (!usuarioId) {
-        throw new Error("Se requiere el ID de usuario para listar las cotizaciones.");
-    }
-    return QuotationRepo.getQuotationsByUserId(usuarioId);
-}
-
 async function updateQuotationStatus(id, nuevoEstado) {
+    // 💡 Lógica adicional podría ir aquí para restringir quién puede cambiar estados críticos.
     return QuotationRepo.updateQuotationStatus(id, nuevoEstado);
 }
 
-async function deleteQuotation(id) {
-    return QuotationRepo.deleteQuotation(id);
+
+/**
+ * Permite eliminar (admin) o cancelar (user) una cotización.
+ */
+async function deleteOrCancelQuotation(cotizacionId, usuarioId, rolUsuario) {
+    const cotizacion = await QuotationRepo.getQuotationById(cotizacionId);
+
+    if (!cotizacion) {
+        throw new Error("Cotización no encontrada.");
+    }
+    
+    const esPropietario = cotizacion.usuario_id === usuarioId;
+    const esAdmin = rolUsuario === 'admin';
+
+    if (esAdmin) {
+        // ADMIN: Puede eliminar directamente del sistema
+        await QuotationRepo.deleteQuotation(cotizacionId);
+        return { message: "Cotización eliminada por administrador." };
+    }
+
+    if (esPropietario) {
+        // USER: Solo puede "cancelar" si está en estado GENERADA
+        if (cotizacion.estado_cotizacion !== 'GENERADA') {
+            throw new Error("No tienes permiso para cancelar esta cotización en su estado actual.");
+        }
+        // El usuario cancela cambiando el estado a 'CANCELADA'
+        await QuotationRepo.updateQuotationStatus(cotizacionId, 'CANCELADA');
+        return { message: "Cotización cancelada por el usuario." };
+    } 
+    
+    // Si no es ni Admin ni Propietario
+    throw new Error("Acceso denegado. No tienes permiso para realizar esta acción.");
 }
 
 
 export {
     generateQuotation,
+    getQuotations, // Nuevo para manejar listado por rol
     getQuotationDetails,
-    getQuotationsByUserId, // <<< ¡AHORA SÍ EXPORTADO!
     updateQuotationStatus,
-    deleteQuotation
+    deleteOrCancelQuotation // Nuevo para manejar eliminación/cancelación por rol
 };

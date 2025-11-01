@@ -1,47 +1,44 @@
-// src/routes/quotationRoutes.js
 import { Router } from 'express';
-// 💡 Asumimos que también has creado los métodos CRUD en el controlador
+// 💡 Importamos tus middlewares, renombrando authMiddleware a protect para claridad.
+// Asegúrate que la ruta a tu authMiddleware sea correcta.
+import { authMiddleware as protect, authRole } from '../middleware/authMiddleware.js'; 
 import { 
     createQuotation, 
     getQuotationDetails,
-    getQuotationsByUser, // Nuevo para listar las cotizaciones de un usuario
+    getQuotationsByUser,
     updateQuotationStatus, 
     deleteQuotation 
 } from '../controllers/quotationController.js'; 
 
 const router = Router();
+const ONLY_ADMIN = ['admin']; // Definición del rol de administrador
 
 // ==========================================================
-// RUTAS DE COTIZACIÓN
+// RUTAS DE COTIZACIÓN PROTEGIDAS
 // ==========================================================
 
 // 📝 RUTA 1: CREAR (Generate)
-// Genera una nueva cotización a partir del carrito activo.
-// Se recomienda proteger esta ruta con un middleware de autenticación (authMiddleware).
-router.post('/', createQuotation); 
-// Ejemplo de uso: POST /api/quotations
+router.post('/', protect, createQuotation); 
+// Ejemplo: POST /api/quotations
 
-// 📝 RUTA 2: LEER (Listar por Usuario)
-// Obtiene todas las cotizaciones de un usuario específico.
-// Idealmente, el ID del usuario se obtiene del token (req.user.id).
-router.get('/', getQuotationsByUser); 
-// Ejemplo de uso: GET /api/quotations
+// 📝 RUTA 2: LEER (Listar por Usuario/Admin)
+// La ruta es la misma, la lógica de filtrado se maneja en el Servicio.
+router.get('/', protect, getQuotationsByUser); 
+// Ejemplo: GET /api/quotations
 
 // 📝 RUTA 3: LEER (Detalle por ID)
-// Obtiene los detalles de una cotización específica.
-router.get('/:id', getQuotationDetails);
-// Ejemplo de uso: GET /api/quotations/a1b2c3d4-e5f6-7890-abcd-ef0123456789
+router.get('/:id', protect, getQuotationDetails);
+// Ejemplo: GET /api/quotations/a1b2c3d4...
 
 // 📝 RUTA 4: ACTUALIZAR (Cambiar Estado)
-// Permite actualizar el estado de la cotización (ej: de GENERADA a ACEPTADA).
-router.patch('/:id/status', updateQuotationStatus);
-// Ejemplo de uso: PATCH /api/quotations/a1b2c3d4.../status con { "estado": "ACEPTADA" }
+// Restringido a usuarios logueados (el servicio debe verificar la propiedad/rol).
+router.patch('/:id/status', protect, updateQuotationStatus);
+// Ejemplo: PATCH /api/quotations/a1b2c3d4.../status con { "estado": "ACEPTADA" }
 
-// 📝 RUTA 5: BORRAR
-// Elimina permanentemente una cotización.
-// Esta ruta debe estar restringida a administradores o al usuario creador.
-router.delete('/:id', deleteQuotation);
-// Ejemplo de uso: DELETE /api/quotations/a1b2c3d4-e5f6-7890-abcd-ef0123456789
+// 📝 RUTA 5: BORRAR / CANCELAR
+// Restringido a usuarios logueados (el servicio decide si es DELETE o PATCH a CANCELADA).
+router.delete('/:id', protect, deleteQuotation);
+// Ejemplo: DELETE /api/quotations/a1b2c3d4...
 
 
 export default router;

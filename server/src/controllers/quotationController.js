@@ -1,19 +1,12 @@
-// quotationController.js
 import * as QuotationService from '../services/quotationService.js';
 
 // ==========================================================
-// 1. CREATE (Crear Cotización) - RUTA: POST /api/quotations
+// 1. CREATE
 // ==========================================================
 
 async function createQuotation(req, res) {
-    // 💡 Asumimos que el usuarioId viene de req.body, pero DEBERÍA venir de la autenticación (req.user.id)
-    const usuarioId = req.body.usuario_id; 
-
-    if (!usuarioId) {
-        return res.status(401).json({ 
-            message: "Acceso denegado. Se requiere autenticación del usuario (usuario_id)." 
-        });
-    }
+    // 💡 ID del usuario viene de req.user.id proporcionado por el middleware
+    const usuarioId = req.user.id; 
 
     try {
         const cotizacion = await QuotationService.generateQuotation(usuarioId);
@@ -24,9 +17,8 @@ async function createQuotation(req, res) {
         });
 
     } catch (error) {
-        console.error("Error en quotationController.createQuotation:", error.message);
+        console.error("Error en createQuotation:", error.message);
         
-        // Manejo de errores de negocio esperados
         if (error.message.includes("vacío") || error.message.includes("no válido")) {
             return res.status(400).json({ message: error.message });
         }
@@ -36,20 +28,20 @@ async function createQuotation(req, res) {
 }
 
 // ==========================================================
-// 2. READ (Detalle por ID) - RUTA: GET /api/quotations/:id
+// 2. READ (Detalle por ID)
 // ==========================================================
 
 async function getQuotationDetails(req, res) {
     const { id } = req.params;
-
+    // 💡 Aquí se debería añadir la verificación de propiedad si fuera necesario
+    // Para simplificar, asumimos que el servicio de arriba maneja la autorización.
+    
     try {
         const cotizacion = await QuotationService.getQuotationDetails(id);
 
         if (!cotizacion) {
             return res.status(404).json({ message: "Cotización no encontrada." });
         }
-        
-        // 💡 Aquí se debería verificar que la cotización pertenezca al usuario autenticado (si no es admin)
 
         res.status(200).json(cotizacion);
     } catch (error) {
@@ -59,21 +51,16 @@ async function getQuotationDetails(req, res) {
 }
 
 // ==========================================================
-// 2B. READ (Listar por Usuario) - RUTA: GET /api/quotations
+// 2B. READ (Listar por Usuario o Admin)
 // ==========================================================
 
-// 💡 Nota: Asumimos que esta ruta filtra por el usuario autenticado
 async function getQuotationsByUser(req, res) {
-    // Asumimos que el ID del usuario se obtiene del token o query params
-    const usuarioId = req.query.usuario_id || req.body.usuario_id; 
+    const usuarioId = req.user.id;
+    const rolUsuario = req.user.rol;
     
-    if (!usuarioId) {
-        return res.status(401).json({ message: "Se requiere el ID de usuario para listar cotizaciones." });
-    }
-
     try {
-        // 💡 Asumimos que existe un método para listar en el servicio
-        const cotizaciones = await QuotationService.getQuotationsByUserId(usuarioId);
+        // El Servicio decide si lista todas (admin) o solo las del usuario (user)
+        const cotizaciones = await QuotationService.getQuotations(usuarioId, rolUsuario); 
 
         res.status(200).json(cotizaciones);
     } catch (error) {
@@ -82,14 +69,14 @@ async function getQuotationsByUser(req, res) {
     }
 }
 
-
 // ==========================================================
-// 3. UPDATE (Actualizar Estado) - RUTA: PATCH /api/quotations/:id/status
+// 3. UPDATE (Actualizar Estado)
 // ==========================================================
 
 async function updateQuotationStatus(req, res) {
     const { id } = req.params;
-    const { estado } = req.body; // El nuevo estado (e.g., 'ACEPTADA')
+    const { estado } = req.body; 
+    // 💡 También deberías pasar req.user.rol aquí si solo el admin puede cambiar ciertos estados
 
     if (!estado) {
         return res.status(400).json({ message: "El campo 'estado' es requerido." });
@@ -114,23 +101,28 @@ async function updateQuotationStatus(req, res) {
 
 
 // ==========================================================
-// 4. DELETE (Eliminar) - RUTA: DELETE /api/quotations/:id
+// 4. DELETE (Eliminar/Cancelar)
 // ==========================================================
 
 async function deleteQuotation(req, res) {
     const { id } = req.params;
+    const usuarioId = req.user.id;
+    const rolUsuario = req.user.rol;
 
     try {
-        // 💡 Aquí es crucial: El servicio debe verificar permisos de borrado (Admin o propietario)
-        await QuotationService.deleteQuotation(id);
+        // El servicio maneja la lógica de rol
+        await QuotationService.deleteOrCancelQuotation(id, usuarioId, rolUsuario);
         
-        res.status(204).send(); // 204 No Content para borrado exitoso
+        res.status(204).send(); 
     } catch (error) {
         console.error("Error en deleteQuotation:", error.message);
         
-        // Si el error indica que no se encontró el registro (posiblemente un 404 del servicio)
+        // Manejo de errores de negocio y permisos
         if (error.message.includes("no encontrada")) {
              return res.status(404).json({ message: error.message });
+        }
+        if (error.message.includes("permiso") || error.message.includes("cancelar")) {
+             return res.status(403).json({ message: error.message }); // 403 Prohibido
         }
         
         res.status(500).json({ message: "Error al eliminar la cotización." });
@@ -141,7 +133,7 @@ async function deleteQuotation(req, res) {
 export {
     createQuotation,
     getQuotationDetails,
-    getQuotationsByUser, // Exportado
-    updateQuotationStatus, // Exportado
-    deleteQuotation // Exportado
+    getQuotationsByUser,
+    updateQuotationStatus,
+    deleteQuotation
 };

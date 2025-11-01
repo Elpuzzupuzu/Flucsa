@@ -14,7 +14,9 @@ import userRoutes from "./routes/userRoutes.js";
 import whishListRoutes from "./routes/wishListRoutes.js";
 import pdfRoutes from "./routes/pdfRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
-import quotationRoutes from "./routes/quotationRoutes.js"; // <<< AGREGADO
+import quotationRoutes from "./routes/quotationRoutes.js"; // 
+import orderRoutes from "./routes/orderRoutes.js"; // <<< AGREGADO
+
 
 // =======================================================
 // 🔧 CONFIGURACIÓN INICIAL
@@ -80,6 +82,10 @@ app.use("/api/wishlist", whishListRoutes);
 app.use("/api/carrito", cartRoutes);
 app.use("/api/pdfs", pdfRoutes);
 app.use("/api/quotations", quotationRoutes); // <<< MONTAJE DE LA RUTA
+app.use("/api/orders", orderRoutes); // <<< MONTAJE DE LA RUTA
+
+
+
 
 // =======================================================
 // 🧱 SERVIR FRONTEND (PRODUCCIÓN)

@@ -1,15 +1,10 @@
-// src/repositories/quotationRepository.js
 import { supabase } from '../config/supabaseClient.js';
 
 const TABLA_COTIZACIONES = 'cotizaciones';
 const TABLA_COTIZACION_ITEMS = 'cotizaciones_items';
 
 /**
- * Crea la cabecera de la cotización. (CREATE - Parte 1)
- * @param {string} usuarioId - UUID del usuario que cotiza.
- * @param {number} totalCotizado - Total de la cotización.
- * @param {string} carritoIdOrigen - ID del carrito original.
- * @returns {object} La nueva cotización creada (solo el ID).
+ * Crea la cabecera de la cotización.
  */
 async function createQuotation(usuarioId, totalCotizado, carritoIdOrigen) {
     const { data, error } = await supabase
@@ -30,8 +25,7 @@ async function createQuotation(usuarioId, totalCotizado, carritoIdOrigen) {
 }
 
 /**
- * Agrega los items congelados a la cotización. (CREATE - Parte 2)
- * @param {Array<object>} items - Lista de ítems de cotización a insertar.
+ * Agrega los items congelados a la cotización.
  */
 async function addQuotationItems(items) {
     const { error } = await supabase
@@ -45,12 +39,9 @@ async function addQuotationItems(items) {
 }
 
 /**
- * Obtiene una cotización específica con todos sus ítems. (READ - Detalle)
- * @param {string} id - ID de la cotización.
- * @returns {object} La cotización completa.
+ * Obtiene una cotización específica con todos sus ítems.
  */
 async function getQuotationById(id) {
-    // PostgREST JOIN implícito para obtener ítems
     const { data, error } = await supabase
         .from(TABLA_COTIZACIONES)
         .select(`
@@ -67,13 +58,8 @@ async function getQuotationById(id) {
     return data;
 }
 
-// ==========================================================
-// ⭐️ FUNCIÓN FALTANTE QUE CAUSABA EL ERROR ⭐️
-// ==========================================================
 /**
- * Obtiene todas las cotizaciones de un usuario específico. (READ - Lista)
- * @param {string} usuarioId - ID del usuario.
- * @returns {Promise<Array<object>>} Lista de cotizaciones con sus ítems.
+ * Obtiene todas las cotizaciones de un usuario específico. (Para roles 'user')
  */
 async function getQuotationsByUserId(usuarioId) {
     const { data, error } = await supabase
@@ -82,7 +68,7 @@ async function getQuotationsByUserId(usuarioId) {
             *,
             ${TABLA_COTIZACION_ITEMS} (*)
         `)
-        .eq('usuario_id', usuarioId) // FILTRA por el ID del usuario
+        .eq('usuario_id', usuarioId)
         .order('fecha_creacion', { ascending: false }); 
 
     if (error) {
@@ -91,18 +77,33 @@ async function getQuotationsByUserId(usuarioId) {
     }
     return data || []; 
 }
-// ==========================================================
 
 /**
- * Actualiza el estado de una cotización. (UPDATE)
- * @param {string} id - ID de la cotización a actualizar.
- * @param {string} nuevoEstado - Nuevo estado.
- * @returns {object} La cotización actualizada.
+ * Obtiene TODAS las cotizaciones (Solo para uso de Admin).
+ */
+async function getAllQuotations() {
+    const { data, error } = await supabase
+        .from(TABLA_COTIZACIONES)
+        .select(`
+            *,
+            ${TABLA_COTIZACION_ITEMS} (*)
+        `)
+        .order('fecha_creacion', { ascending: false });
+
+    if (error) {
+        console.error('Error en getAllQuotations:', error);
+        throw new Error(`Error al listar todas las cotizaciones: ${error.message}`);
+    }
+    return data || [];
+}
+
+/**
+ * Actualiza el estado de una cotización.
  */
 async function updateQuotationStatus(id, nuevoEstado) {
     const { data, error } = await supabase
         .from(TABLA_COTIZACIONES)
-        .update({ estado_cotizacion: nuevoEstado })
+        .update({ estado_cotizacion: nuevoEstado, fecha_actualizacion: new Date() })
         .eq('id', id)
         .select()
         .single();
@@ -115,8 +116,7 @@ async function updateQuotationStatus(id, nuevoEstado) {
 }
 
 /**
- * Elimina una cotización. (DELETE)
- * @param {string} id - ID de la cotización a eliminar.
+ * Elimina una cotización. (Usado principalmente por el admin)
  */
 async function deleteQuotation(id) {
     const { error } = await supabase
@@ -136,7 +136,8 @@ export {
     createQuotation,
     addQuotationItems,
     getQuotationById,
-    getQuotationsByUserId, // <<< ¡LA EXPORTACIÓN CRUCIAL!
+    getQuotationsByUserId,
+    getAllQuotations, // Exportado para uso admin
     updateQuotationStatus,
     deleteQuotation
 };

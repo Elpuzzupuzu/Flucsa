@@ -173,5 +173,14 @@ export const CarritoRepository = {
 
         if (error) throw error;
         return true;
-    }
+    },
+    deactivateCart: async (carritoId) => {
+        const { error } = await supabase
+            .from('carritos')
+            .update({ activo: false, finalizado_en: new Date().toISOString() })
+            .eq('id', carritoId);
+
+        if (error) throw new Error(`Error al desactivar carrito: ${error.message}`);
+        // No devuelve data
+    },
 };
