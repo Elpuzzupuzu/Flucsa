@@ -153,4 +153,55 @@ async filterProducts(req, res, next) {
       next(error);
     }
   }
+,
+
+  //// NUEVO 
+
+  // NUEVO MÉTODO: Obtiene los productos más vendidos por ventas_anuales y paginados.
+    async getTopSellingProductsController(req, res, next) {
+        try {
+            // Obtener parámetros de paginación desde la query
+            const page = parseInt(req.query.page) || 1;
+            const pageSize = parseInt(req.query.pageSize) || 50; // Por defecto 50, como solicitaste
+
+            console.log("📄 Parámetros Top Ventas:", { page, pageSize });
+
+            if (page < 1 || pageSize < 1) {
+                return res.status(400).json({ 
+                    message: "Los parámetros 'page' y 'pageSize' deben ser números positivos." 
+                });
+            }
+
+            // Llamar al método del Servicio
+            const { products, total } = await ProductsService.getTopSellingProducts(page, pageSize);
+
+            if (!products || products.length === 0) {
+                return res.status(404).json({ message: "No se encontraron productos en la lista de top ventas" });
+            }
+
+            // Calcular información de paginación
+            const totalPages = Math.ceil(total / pageSize);
+
+            // Devolver la respuesta en el formato consistente (productos y paginación)
+            res.status(200).json({
+                products: products,
+                total: total,
+                totalPages: totalPages,
+                currentPage: page,
+                pageSize: pageSize,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1,
+            });
+
+        } catch (error) {
+            console.error("❌ Error detallado al obtener productos más vendidos:", error);
+
+            // Manejo de errores consistente con el resto del controlador
+            next({
+                message: error.message || "Ocurrió un error al obtener la lista de top ventas",
+                status: 500,
+                stack: error.stack,
+            });
+        }
+    }
 };

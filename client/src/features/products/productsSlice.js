@@ -120,7 +120,7 @@ export const addProduct = createAsyncThunk(
 );
 
 // ===============================
-// Actualizar producto (Sin cambios)
+// Actualizar producto 
 // ===============================
 export const updateProduct = createAsyncThunk(
   "products/updateProduct",
@@ -145,6 +145,53 @@ export const updateProduct = createAsyncThunk(
   }
 );
 
+
+// ===============================
+// top vendidos 
+// ===============================
+//  Obtener productos más vendidos con paginación
+export const fetchTopSellingProducts = createAsyncThunk(
+    "products/fetchTopSellingProducts",
+    async (queryParams = {}, thunkAPI) => {
+        // Valores por defecto
+        const defaults = { page: 1, pageSize: 50 };
+        const finalParams = { ...defaults, ...queryParams };
+        
+        const urlParams = new URLSearchParams();
+        
+        // Añadir parámetros (page, pageSize)
+        Object.keys(finalParams).forEach(key => {
+            const value = finalParams[key];
+            if (value !== undefined && value !== null && value !== '') {
+                // Usamos 'pageSize' aquí para coincidir con el backend
+                urlParams.append(key, value); 
+            }
+        });
+
+        urlParams.append('timestamp', Date.now());
+
+        try {
+            // 🎯 USAMOS LA RUTA ESPECÍFICA /products/top-ventas
+            const response = await api.get(`/products/top-ventas?${urlParams.toString()}`); 
+            
+            // El backend devuelve { products, total, totalPages, currentPage, pageSize, ... }
+            return { 
+                ...response.data, 
+                page: finalParams.page, 
+                limit: finalParams.pageSize // Usamos 'limit' para consistencia en el estado
+            };
+        } catch (error) {
+            return thunkAPI.rejectWithValue(
+                error.response?.data || "Error al obtener productos más vendidos"
+            );
+        }
+    }
+);
+
+
+
+
+
 // ===============================
 // Slice (Sin cambios significativos en reducers/extraReducers)
 // ===============================
@@ -163,6 +210,14 @@ const productsSlice = createSlice({
     filteredItems: [],
     filterLoading: false,
     filterError: null,
+
+    ///
+    topSellingItems: [],
+    topSellingTotal: 0,
+    topSellingPage: 1,
+    topSellingLimit: 50, // Por defecto 50 según tu lógica de backend
+    topSellingLoading: false,
+    topSellingError: null,
   },
   reducers: {
     clearSearchResults(state) {
@@ -273,7 +328,25 @@ const productsSlice = createSlice({
       })
       .addCase(updateProduct.rejected, (state, action) => {
         state.error = action.payload;
-      });
+
+        ///top vendidos ////
+      }).addCase(fetchTopSellingProducts.pending, (state) => {
+            state.topSellingLoading = true;
+            state.topSellingError = null;
+        })
+        .addCase(fetchTopSellingProducts.fulfilled, (state, action) => {
+            state.topSellingLoading = false;
+            // Mapeamos los campos de la respuesta del backend
+            state.topSellingItems = action.payload.products;
+            state.topSellingTotal = action.payload.total;
+            state.topSellingPage = action.payload.page;
+            state.topSellingLimit = action.payload.limit;
+        })
+        .addCase(fetchTopSellingProducts.rejected, (state, action) => {
+            state.topSellingLoading = false;
+            state.topSellingError = action.payload;
+            state.topSellingItems = [];
+        });
   },
 });
 

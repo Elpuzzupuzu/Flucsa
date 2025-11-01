@@ -62,4 +62,25 @@ async getAllProducts(page = 1, limit = 10, mainCategoryId, subCategoryId, search
     if (!existing) throw new Error("Producto no encontrado");
     return await ProductsRepository.deleteProduct(id);
   },
+
+
+  //// NUEVO
+
+
+  async getTopSellingProducts(page, pageSize) {
+        try {
+            // La lógica de negocio aquí es mínima, solo llama al repositorio
+            const result = await ProductsRepository.getTopSellingProducts(page, pageSize);
+            
+            // Si fuera necesario, aquí se podría añadir lógica como:
+            // - Formatear datos
+            // - Aplicar reglas de caché
+            // - Coordinar la llamada a otro repositorio (ej. sumar datos de 'reviews')
+
+            return result;
+        } catch (error) {
+            // Relanza el error para que sea capturado por el controlador
+            throw error; 
+        }
+    },
 };

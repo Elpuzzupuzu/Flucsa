@@ -1,44 +1,24 @@
 import React from 'react';
 
-/**
- * Componente que renderiza un conjunto de estrellas basado en una calificación (rating).
- * Muestra estrellas completas y medias estrellas.
- * @param {number} rating - La calificación a mostrar (ej. 4.5).
- */
-const StarRating = ({ rating = 0 }) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-    
-    // Rellenar estrellas completas
-    for (let i = 0; i < fullStars; i++) {
-        stars.push(
-            <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-            </svg>
-        );
-    }
-    
-    // Agregar media estrella si es necesario
-    if (hasHalfStar) {
-        stars.push(
-            <svg key="half" className="w-4 h-4 text-yellow-400" viewBox="0 0 20 20">
-                {/* Definición del degradado para la media estrella */}
-                <defs>
-                    <linearGradient id="half-fill">
-                        <stop offset="50%" stopColor="currentColor"/>
-                        <stop offset="50%" stopColor="transparent"/>
-                    </linearGradient>
-                </defs>
-                {/* Usar el degradado como relleno */}
-                <path fill="url(#half-fill)" d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-            </svg>
-        );
-    }
+const StarRating = ({ rating }) => {
+    // Usamos rating redondeado para la lógica de llenado de estrellas
+    const filledStars = Math.round(rating); 
     
     return (
-        <div className="flex items-center gap-1">
-            {stars}
+        <div className="flex items-center gap-0.5">
+            {[1, 2, 3, 4, 5].map((star) => (
+                <svg
+                    key={star}
+                    className={`w-4 h-4 ${
+                        // Condición para pintar la estrella
+                        star <= filledStars ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+                    }`}
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                >
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+            ))}
         </div>
     );
 };

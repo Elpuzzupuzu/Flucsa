@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -15,6 +14,7 @@ import userRoutes from "./routes/userRoutes.js";
 import whishListRoutes from "./routes/wishListRoutes.js";
 import pdfRoutes from "./routes/pdfRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
+import quotationRoutes from "./routes/quotationRoutes.js"; // <<< AGREGADO
 
 // =======================================================
 // 🔧 CONFIGURACIÓN INICIAL
@@ -36,24 +36,24 @@ app.set("trust proxy", 1);
 // 🌐 CORS CONFIG
 // =======================================================
 const allowedOrigins = [
-  "http://localhost:5173", // desarrollo local
+    "http://localhost:5173", // desarrollo local
 ];
 
 const productionOrigins = process.env.FRONTEND_ORIGINS; // ej: "https://flucsa.onrender.com"
 
 if (productionOrigins) {
-  const prodOriginsArray = productionOrigins.split(",").map(url => url.trim());
-  allowedOrigins.push(...prodOriginsArray);
+    const prodOriginsArray = productionOrigins.split(",").map(url => url.trim());
+    allowedOrigins.push(...prodOriginsArray);
 } else {
-  allowedOrigins.push("https://flucsa.onrender.com");
+    allowedOrigins.push("https://flucsa.onrender.com");
 }
 
 app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true, // permite cookies cross-site
-    optionsSuccessStatus: 200, // evita errores en preflight requests
-  })
+    cors({
+        origin: allowedOrigins,
+        credentials: true, // permite cookies cross-site
+        optionsSuccessStatus: 200, // evita errores en preflight requests
+    })
 );
 
 // =======================================================
@@ -66,7 +66,7 @@ app.use(cookieParser());
 // 🚀 RUTA DE PRUEBA RAÍZ
 // =======================================================
 app.get("/", (req, res) => {
-  res.send("🚀 Servidor Flucsa corriendo correctamente...");
+    res.send("🚀 Servidor Flucsa corriendo correctamente...");
 });
 
 // =======================================================
@@ -79,6 +79,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/wishlist", whishListRoutes);
 app.use("/api/carrito", cartRoutes);
 app.use("/api/pdfs", pdfRoutes);
+app.use("/api/quotations", quotationRoutes); // <<< MONTAJE DE LA RUTA
 
 // =======================================================
 // 🧱 SERVIR FRONTEND (PRODUCCIÓN)
@@ -88,29 +89,29 @@ const __dirname = path.dirname(__filename);
 const clientDistPath = path.join(__dirname, "../../client/dist");
 
 if (process.env.NODE_ENV === "production") {
-  // Servir archivos estáticos de React/Vite
-  app.use(express.static(clientDistPath));
+    // Servir archivos estáticos de React/Vite
+    app.use(express.static(clientDistPath));
 
-  // Redirigir cualquier ruta no-API al index.html (para React Router)
-  app.get("*", (req, res) => {
-    if (!req.path.startsWith("/api")) {
-      res.sendFile(path.join(clientDistPath, "index.html"));
-    }
-  });
+    // Redirigir cualquier ruta no-API al index.html (para React Router)
+    app.get("*", (req, res) => {
+        if (!req.path.startsWith("/api")) {
+            res.sendFile(path.join(clientDistPath, "index.html"));
+        }
+    });
 }
 
 // =======================================================
 // ⚠️ MANEJO CENTRALIZADO DE ERRORES
 // =======================================================
 app.use((err, req, res, next) => {
-  console.error("❌ Error interno:", err.message);
-  res.status(500).json({ error: "Error interno del servidor" });
+    console.error("❌ Error interno:", err.message);
+    res.status(500).json({ error: "Error interno del servidor" });
 });
 
 // =======================================================
 // 🚀 LEVANTAR SERVIDOR
 // =======================================================
 app.listen(PORT, () => {
-  console.log(`✅ Servidor corriendo en el puerto ${PORT}`);
-  console.log("🌐 Orígenes permitidos:", allowedOrigins);
+    console.log(`✅ Servidor corriendo en el puerto ${PORT}`);
+    console.log("🌐 Orígenes permitidos:", allowedOrigins);
 });

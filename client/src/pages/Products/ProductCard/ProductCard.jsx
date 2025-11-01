@@ -32,7 +32,7 @@ const ProductCard = ({ product, viewMode = 'grid', onAddToCart }) => {
     setIsLiked(!isLiked);
   };
 
-  // 🚩 FUNCIÓN MODIFICADA PARA COMPROBAR AUTENTICACIÓN (Carrito)
+  //  FUNCIÓN MODIFICADA PARA COMPROBAR AUTENTICACIÓN (Carrito)
   const handleAddToCartClick = (e) => {
     e.stopPropagation();
     e.preventDefault();

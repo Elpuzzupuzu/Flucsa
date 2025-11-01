@@ -2,23 +2,6 @@ import { supabase } from "../config/supabaseClient.js";
 
 export const ProductsRepository = {
   // Obtener productos con paginación
-//  async getProductsPaginated(page = 1, limit = 10) {
-//   const start = (page - 1) * limit;
-//   const end = start + limit - 1;
-
-//   const { data: products, count, error } = await supabase
-//     .from("productos")
-//     .select("*", { count: "exact" })
-//     .order("nombre", { ascending: true })
-//     .range(start, end);
-
-//   if (error) throw new Error("Error al obtener productos: " + error.message);
-
-//   return {
-//     products: products || [],
-//     total: count || 0,
-//   };
-// },
 async getProductsPaginated(page = 1, limit = 10, mainCategoryId, subCategoryId, searchQuery) {
     const start = (page - 1) * limit;
     const end = start + limit - 1;
@@ -61,14 +44,6 @@ async getProductsPaginated(page = 1, limit = 10, mainCategoryId, subCategoryId, 
         total: count || 0,
     };
 },
-
-
-
-
-
-
-
-
 
 
 //// Search Products 
@@ -160,4 +135,52 @@ async filterProducts({ categories = [], priceRange = '' }) {
     if (error) throw error;
     return data || null;
   },
+////nuevo 
+
+// NUEVO MÉTODO: Obtiene los productos con más ventas anuales, ordenados y paginados.
+async getTopSellingProducts(page = 1, pageSize = 50) {
+    const limit = pageSize;
+    const start = (page - 1) * limit;
+    const end = start + limit - 1;
+
+    try {
+        // 1. Consulta para obtener el CONTEO total de filas
+        // 🟢 CORRECCIÓN: Se usa 'head: true' dentro del objeto de opciones de select()
+        const { count, error: countError } = await supabase
+            .from('productos') 
+            .select(`id`, { 
+                count: 'exact',
+                head: true // ✅ Este es el reemplazo moderno para .head()
+            });
+
+        if (countError) {
+            throw countError;
+        }
+        
+        // 2. Consulta para obtener los DATOS paginados (esta parte ya estaba correcta)
+        const { data: products, error } = await supabase
+            .from('productos')
+            .select(`*`)
+            .order('ventas_anuales', { ascending: false }) 
+            .range(start, end);
+        
+        if (error) {
+            throw error;
+        }
+
+        return { 
+            products: products || [], 
+            total: count || 0,
+        };
+
+    } catch (error) {
+        throw new Error("Error en Repositorio (getTopSellingProducts): " + error.message);
+    }
+}
+
+  
+
+
+  ////
+  
 };
