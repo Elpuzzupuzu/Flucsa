@@ -1,3 +1,4 @@
+//quotationRepository.js
 import { supabase } from '../config/supabaseClient.js';
 
 const TABLA_COTIZACIONES = 'cotizaciones';

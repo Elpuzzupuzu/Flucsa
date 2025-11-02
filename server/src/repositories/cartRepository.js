@@ -47,28 +47,35 @@ export const CarritoRepository = {
      * @param {string} carritoId - El ID del carrito (obtenido de getOrCreateActiveCartId).
      * @returns {Promise<Array>} Lista de artículos del carrito con detalles de producto anidados.
      */
-    getCartItemsByCartId: async (carritoId) => {
-        const { data: items, error } = await supabase
-            .from('carrito_items')
-            .select(`
-                id,
-                cantidad,
-                agregado_en,
-                producto_id,
-                producto:productos ( 
-                    id,
-                    nombre,
-                    precio,
-                    existencias,
-                    url_imagen:imagen 
-                )
-            `)
-            .eq('carrito_id', carritoId)
-            .order('agregado_en', { ascending: false });
+   getOrCreateActiveCartId: async (usuarioId) => {
+    // 1️⃣ Intenta obtener el carrito activo
+    let { data: cart, error: getError } = await supabase
+        .from('carritos')
+        .select('id')
+        .eq('usuario_id', usuarioId)
+        .eq('activo', true)
+        .maybeSingle();
 
-        if (error) throw error;
-        return items;
-    },
+    if (getError) throw getError;
+
+    // 2️⃣ Si existe, devolver el ID directamente
+    if (cart) return cart.id;
+
+    // 3️⃣ Si no existe, usar UPSERT para crear sin violar la UNIQUE constraint
+    const { data: newCart, error: upsertError } = await supabase
+        .from('carritos')
+        .upsert(
+            { usuario_id: usuarioId, activo: true },
+            { onConflict: 'usuario_id' } // ⚙️ evita error de clave duplicada
+        )
+        .select('id')
+        .single();
+
+    if (upsertError) throw upsertError;
+
+    return newCart.id;
+},
+
 
     /**
      * Busca un artículo específico en la tabla carrito_items.
@@ -183,4 +190,32 @@ export const CarritoRepository = {
         if (error) throw new Error(`Error al desactivar carrito: ${error.message}`);
         // No devuelve data
     },
+
+    /**
+ * Obtiene todos los artículos de un carrito (detalle) haciendo JOIN con productos.
+ * @param {string} carritoId - El ID del carrito.
+ * @returns {Promise<Array>} Lista de ítems del carrito con detalles del producto.
+ */
+getCartItemsByCartId: async (carritoId) => {
+    const { data, error } = await supabase
+        .from('carrito_items')
+        .select(`
+            id,
+            cantidad,
+            producto_id,
+            producto:productos (
+                id,
+                nombre,
+                descripcion,
+                precio,
+                existencias,
+                url_imagen:imagen,
+                marca
+            )
+        `)
+        .eq('carrito_id', carritoId);
+
+    if (error) throw error;
+    return data || [];
+},
 };

@@ -1,9 +1,12 @@
-// client/src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkAuthStatus, fetchUserProfile } from './features/user/usersSlice';
-import { addItemToCart, updateCartItemQuantity, removeCartItem } from './features/cart/cartSlice';
+import {
+  addItemToCart,
+  updateCartItemQuantity,
+  removeCartItem,
+} from './features/cart/cartSlice';
 
 // Componentes base
 import Header from './components/Header/Header';
@@ -37,6 +40,12 @@ import AdminRoute from './pages/Auth/AdminRoute';
 // Admin
 import AdminProducts from './admin/products/AdminProducts';
 
+// ==========================================================
+// 🚨 IMPORTS DE COTIZACIONES
+// ==========================================================
+import QuotationManager from '../src/pages/Quotations/QuotationManager';
+import QuotationDetailPage from '../src/pages/Quotations/QuotationDetailPage';
+
 function App() {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
@@ -45,7 +54,9 @@ function App() {
   const { notify } = useNotification();
 
   // Obtenemos 'user' y 'authChecked' del store
-  const { user, authChecked: reduxAuthChecked } = useSelector((state) => state.user);
+  const { user, authChecked: reduxAuthChecked } = useSelector(
+    (state) => state.user
+  );
   const isAuthenticated = !!user;
 
   const [isInitialAuthChecked, setIsInitialAuthChecked] = useState(false);
@@ -58,8 +69,6 @@ function App() {
     };
     initAuth();
   }, [dispatch]);
-
-  
 
   // --- 2. Fetch de datos completos si es necesario ---
   useEffect(() => {
@@ -120,7 +129,10 @@ function App() {
             {/* Páginas públicas */}
             <Route path="/" element={<Home />} />
             <Route path="/productos" element={<ProductsPage addToCart={addToCart} />} />
-            <Route path="/productos/:id" element={<ProductDetails onAddToCart={addToCart} />} />
+            <Route
+              path="/productos/:id"
+              element={<ProductDetails onAddToCart={addToCart} />}
+            />
             <Route path="/catalogo-pdfs" element={<PDFCatalog />} />
             <Route path="/acerca-de-nosotros" element={<AboutUsPage />} />
             <Route path="/servicios" element={<ServicesPage />} />
@@ -137,6 +149,26 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ========================================================== */}
+            {/* 🚨 RUTAS DE COTIZACIONES (PROTEGIDAS) */}
+            {/* ========================================================== */}
+            <Route
+              path="/cotizaciones"
+              element={
+                <ProtectedRoute>
+                  <QuotationManager />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cotizaciones/:id"
+              element={
+                <ProtectedRoute>
+                  <QuotationDetailPage />
                 </ProtectedRoute>
               }
             />

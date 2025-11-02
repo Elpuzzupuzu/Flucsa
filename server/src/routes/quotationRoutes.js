@@ -1,3 +1,4 @@
+//qupatationRoutes.js
 import { Router } from 'express';
 // 💡 Importamos tus middlewares, renombrando authMiddleware a protect para claridad.
 // Asegúrate que la ruta a tu authMiddleware sea correcta.
