@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkAuthStatus, fetchUserProfile } from './features/user/usersSlice';
@@ -39,12 +39,14 @@ import AdminRoute from './pages/Auth/AdminRoute';
 
 // Admin
 import AdminProducts from './admin/products/AdminProducts';
+import AdminQuotationManager from './pages/Quotations/AdminQuotationManager';
+
 
 // ==========================================================
-// 🚨 IMPORTS DE COTIZACIONES
+// 🚨 IMPORTS DE COTIZACIONES (Rutas corregidas)
 // ==========================================================
-import QuotationManager from '../src/pages/Quotations/QuotationManager';
-import QuotationDetailPage from '../src/pages/Quotations/QuotationDetailPage';
+import QuotationManager from './pages/Quotations/QuotationManager';
+import QuotationDetailPage from './pages/Quotations/QuotationDetailPage';
 
 function App() {
   const dispatch = useDispatch();
@@ -59,15 +61,11 @@ function App() {
   );
   const isAuthenticated = !!user;
 
-  const [isInitialAuthChecked, setIsInitialAuthChecked] = useState(false);
-
-  // --- 1. Ejecutar checkAuthStatus y marcar la verificación inicial ---
+  // --- 1. Ejecutar checkAuthStatus (Autenticación Inicial) ---
+  // Este useEffect dispara el thunk checkAuthStatus SÓLO al montar el componente.
+  // Confiamos en que userSlice establecerá `reduxAuthChecked` a true cuando termine.
   useEffect(() => {
-    const initAuth = async () => {
-      await dispatch(checkAuthStatus()).unwrap().catch(() => {});
-      setIsInitialAuthChecked(true);
-    };
-    initAuth();
+    dispatch(checkAuthStatus()); 
   }, [dispatch]);
 
   // --- 2. Fetch de datos completos si es necesario ---
@@ -77,11 +75,12 @@ function App() {
     }
   }, [reduxAuthChecked, user, dispatch]);
 
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] =useState(false);
   const onCartToggle = () => setIsCartOpen((prev) => !prev);
 
   // Render loader mientras se verifica la sesión
-  if (!isInitialAuthChecked) {
+  // CONDICIÓN CORREGIDA: Usamos `reduxAuthChecked` directamente.
+  if (!reduxAuthChecked) {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 text-gray-600">
         <p className="text-xl text-indigo-500">Verificando sesión...</p>
@@ -143,7 +142,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
-            {/* Rutas protegidas */}
+            {/* Rutas protegidas de Usuario */}
             <Route
               path="/mi-cuenta"
               element={
@@ -154,7 +153,7 @@ function App() {
             />
 
             {/* ========================================================== */}
-            {/* 🚨 RUTAS DE COTIZACIONES (PROTEGIDAS) */}
+            {/*  RUTAS DE COTIZACIONES (USUARIO) */}
             {/* ========================================================== */}
             <Route
               path="/cotizaciones"
@@ -173,7 +172,9 @@ function App() {
               }
             />
 
-            {/* Admin */}
+            {/* ========================================================== */}
+            {/*  RUTAS ADMIN */}
+            {/* ========================================================== */}
             <Route
               path="/admin/products"
               element={
@@ -182,6 +183,17 @@ function App() {
                 </AdminRoute>
               }
             />
+            
+            {/*  NUEVA RUTA ADMIN DE COTIZACIONES */}
+            <Route
+              path="/admin/quotations"
+              element={
+                <AdminRoute>
+                  <AdminQuotationManager />
+                </AdminRoute>
+              }
+            />
+
           </Routes>
         </main>
 

@@ -26,19 +26,18 @@ const COMMON_NAV_ITEMS = [
   { path: '/servicios', label: 'Servicios', icon: Settings },
   { path: '/acerca-de-nosotros', label: 'Nosotros', icon: Users },
   { path: '/contacto', label: 'Contacto', icon: Phone },
-  // RUTA AÑADIDA: Catálogos PDF
   { path: '/catalogo-pdfs', label: 'Catálogos', icon: FileText },
 ];
 
 // Rutas específicas para usuarios autenticados (no admin)
 const USER_NAV_ITEMS = [
-  { path: '/cotizaciones', label: 'Cotizaciones', icon: Handshake }, // 🚨 RUTA DE USUARIO
+  { path: '/cotizaciones', label: 'Cotizaciones', icon: Handshake }, //
 ];
 
 // Rutas específicas para un usuario Administrador (Admin)
 const ADMIN_NAV_ITEMS = [
   { path: '/admin/products', label: 'Admin Productos', icon: LayoutDashboard },
-  { path: '/admin/quotations', label: 'Gestionar Cotizaciones', icon: ListChecks }, // 🚨 RUTA DE ADMIN
+  { path: '/admin/quotations', label: 'Gestionar Cotizaciones', icon: ListChecks }, // 
   { path: '/admin/manage', label: 'Administración General', icon: Settings },
 ];
 

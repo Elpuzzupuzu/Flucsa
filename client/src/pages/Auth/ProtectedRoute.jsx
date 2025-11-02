@@ -3,10 +3,12 @@ import { Navigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
 const ProtectedRoute = ({ children }) => {
-  const { user, loading, authChecked } = useSelector((state) => state.user);
+  // 🚨 Usamos authChecked para saber si la verificación inicial ha terminado.
+  const { user, authChecked } = useSelector((state) => state.user);
   const isLoggedIn = !!user;
 
-  // Mientras verificamos la sesión inicial, mostramos loader
+  // 1. Mostrar loader mientras se verifica la sesión inicial
+  // Si authChecked es false, significa que aún estamos esperando la respuesta del servidor.
   if (!authChecked) {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 text-gray-600">
@@ -16,12 +18,13 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  // Una vez que authChecked es true, si no hay usuario, redirige al login
+  // 2. Una vez que authChecked es true, si no hay usuario, redirige al home.
+  // Esto mantiene la lógica de redirigir al home que solicitaste al inicio.
   if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
-  // Usuario autenticado, renderiza los hijos
+  // 3. Usuario autenticado, renderiza los hijos
   return children;
 };
 
