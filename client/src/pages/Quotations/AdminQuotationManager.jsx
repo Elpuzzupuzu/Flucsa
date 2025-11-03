@@ -23,6 +23,13 @@ const AdminQuotationManager = () => {
     // 1. Estado de Redux
     const { list: allQuotations, loading, error } = useSelector(state => state.quotations);
 
+    // **********************************************
+    // Agrega el console.log aquí:
+    useEffect(() => {
+        console.log('Datos de Redux - Cotizaciones:', { allQuotations, loading, error });
+    }, [allQuotations, loading, error]); // Se ejecutará cada vez que estos valores cambien
+    // **********************************************
+
     // 2. Estado Local (Filtros)
     const [filterStatus, setFilterStatus] = useState('ALL');
     const [searchTerm, setSearchTerm] = useState('');
@@ -43,24 +50,58 @@ const AdminQuotationManager = () => {
     }, [allQuotations]);
 
     // 5. Filtrado Combinado (useMemo)
-    const filteredQuotations = useMemo(() => {
-        let result = allQuotations;
+    // const filteredQuotations = useMemo(() => {
+    //     let result = allQuotations;
         
-        if (filterStatus !== 'ALL') {
-            result = result.filter(q => q.estado_cotizacion === filterStatus);
-        }
+    //     if (filterStatus !== 'ALL') {
+    //         result = result.filter(q => q.estado_cotizacion === filterStatus);
+    //     }
         
-        if (searchTerm.trim()) {
-            const search = searchTerm.toLowerCase();
-            result = result.filter(q => 
+    //     if (searchTerm.trim()) {
+    //         const search = searchTerm.toLowerCase();
+    //         result = result.filter(q => 
+    //             q.id?.toLowerCase().includes(search) ||
+    //             q.usuario_nombre?.toLowerCase().includes(search) ||
+    //             q.usuario_email?.toLowerCase().includes(search)
+    //         );
+    //     }
+        
+    //     return result;
+    // }, [allQuotations, filterStatus, searchTerm]);
+
+// 5. Filtrado Combinado (useMemo)
+const filteredQuotations = useMemo(() => {
+    let result = allQuotations;
+    
+    if (filterStatus !== 'ALL') {
+        result = result.filter(q => q.estado_cotizacion === filterStatus);
+    }
+    
+    if (searchTerm.trim()) {
+        const search = searchTerm.toLowerCase();
+        
+        result = result.filter(q => {
+            // Asegúrate de que q.usuario_id exista y no sea nulo antes de acceder a sus propiedades
+            const usuario = q.usuario_id;
+            
+            // Si la cotización no tiene usuario asociado (raro, pero posible si la FK es nullable)
+            if (!usuario) {
+                return false; 
+            }
+            
+            // Combinar nombre y apellido para una búsqueda más robusta
+            const fullName = `${usuario.nombre || ''} ${usuario.apellido || ''}`.toLowerCase();
+            
+            return (
                 q.id?.toLowerCase().includes(search) ||
-                q.usuario_nombre?.toLowerCase().includes(search) ||
-                q.usuario_email?.toLowerCase().includes(search)
+                fullName.includes(search) || // Busca en Nombre Completo
+                usuario.correo?.toLowerCase().includes(search) // Busca en Correo
             );
-        }
-        
-        return result;
-    }, [allQuotations, filterStatus, searchTerm]);
+        });
+    }
+    
+    return result;
+}, [allQuotations, filterStatus, searchTerm]); // Fin del useMemo
 
     // 6. Handlers de Eventos
     const handleUpdateStatus = useCallback((id, newStatus) => {

@@ -3,7 +3,7 @@ import { supabase } from '../config/supabaseClient.js';
 
 const TABLA_COTIZACIONES = 'cotizaciones';
 const TABLA_COTIZACION_ITEMS = 'cotizaciones_items';
-
+const TABLA_USUARIOS = 'usuarios';
 /**
  * Crea la cabecera de la cotización.
  */
@@ -80,14 +80,32 @@ async function getQuotationsByUserId(usuarioId) {
 }
 
 /**
- * Obtiene TODAS las cotizaciones (Solo para uso de Admin).
+ * Obtiene TODAS las cotizaciones (Solo para uso de Admin) ESTE SE VA A MODIFICAR.
  */
+
+// async function getAllQuotations() {
+//     const { data, error } = await supabase
+//         .from(TABLA_COTIZACIONES)
+//         .select(`
+//             *,
+//             ${TABLA_COTIZACION_ITEMS} (*)
+//         `)
+//         .order('fecha_creacion', { ascending: false });
+
+//     if (error) {
+//         console.error('Error en getAllQuotations:', error);
+//         throw new Error(`Error al listar todas las cotizaciones: ${error.message}`);
+//     }
+//     return data || [];
+// }
+
 async function getAllQuotations() {
     const { data, error } = await supabase
         .from(TABLA_COTIZACIONES)
         .select(`
             *,
-            ${TABLA_COTIZACION_ITEMS} (*)
+            ${TABLA_COTIZACION_ITEMS} (*),
+            usuario_id (nombre, apellido, correo)  // <-- ¡USANDO EL NOMBRE DE LA FK!
         `)
         .order('fecha_creacion', { ascending: false });
 
@@ -97,6 +115,12 @@ async function getAllQuotations() {
     }
     return data || [];
 }
+
+
+
+
+
+
 
 /**
  * Actualiza el estado de una cotización.

@@ -77,6 +77,8 @@ async function getQuotations(usuarioId, rolUsuario) {
     }
 }
 
+
+
 async function getQuotationDetails(id) {
     return QuotationRepo.getQuotationById(id);
 }

@@ -52,7 +52,7 @@ async function getQuotationDetails(req, res) {
 }
 
 // ==========================================================
-// 2B. READ (Listar por Usuario o Admin)
+// 2B. READ (Listar por Usuario o Admin) <----- ESTE ESE EL IMPORTANTE 
 // ==========================================================
 
 async function getQuotationsByUser(req, res) {
