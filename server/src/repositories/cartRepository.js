@@ -181,6 +181,10 @@ export const CarritoRepository = {
         if (error) throw error;
         return true;
     },
+
+    
+    ///////////desactiva el carrito 
+
     deactivateCart: async (carritoId) => {
         const { error } = await supabase
             .from('carritos')

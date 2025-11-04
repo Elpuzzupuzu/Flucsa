@@ -43,7 +43,7 @@ export const fetchQuotations = createAsyncThunk(
 );
 
 /**
- * 🚨 NUEVO THUNK: Obtiene los detalles de una cotización específica.
+ * Obtiene los detalles de una cotización específica.
  * GET /api/quotations/:id
  */
 export const fetchQuotationById = createAsyncThunk(
@@ -111,6 +111,18 @@ const quotationSlice = createSlice({
     reducers: {
         clearQuotationError: (state) => {
             state.error = null;
+        },
+        /**
+         * 🚨 NUEVA ACCIÓN: Resetea el estado de éxito temporal del UI.
+         * Elimina la cotización recién creada (asumida en list[0]) para que 
+         * el componente CartFooter pueda volver a su estado inicial.
+         */
+        resetQuotationUI: (state) => {
+            // Eliminamos la cotización que se agregó al principio de la lista
+            // en 'createQuotation.fulfilled' para mostrar el éxito en el carrito.
+            state.list = state.list.slice(1); 
+            state.loading = false;
+            state.error = null;
         }
     },
     extraReducers: (builder) => {
@@ -121,7 +133,8 @@ const quotationSlice = createSlice({
             })
             .addCase(createQuotation.fulfilled, (state, action) => {
                 state.loading = false;
-                state.list.unshift(action.payload); // Agrega al inicio
+                // Agrega la cotización recién creada al inicio de la lista
+                state.list.unshift(action.payload); 
             })
             .addCase(createQuotation.rejected, (state, action) => {
                 state.loading = false; state.error = action.payload || "Fallo la creación de la cotización";
@@ -139,15 +152,13 @@ const quotationSlice = createSlice({
                 state.loading = false; state.error = action.payload || "Fallo al cargar las cotizaciones";
             })
 
-            // --- fetchQuotationById (NUEVO HANDLER) ---
+            // --- fetchQuotationById ---
             .addCase(fetchQuotationById.pending, (state) => {
                 state.loading = true; state.error = null;
             })
             .addCase(fetchQuotationById.fulfilled, (state, action) => {
                 state.loading = false;
                 const detailedQuotation = action.payload;
-                
-                // Actualiza o agrega el ítem detallado a la lista (útil para la caché y el detalle)
                 const index = state.list.findIndex(q => q.id === detailedQuotation.id);
                 if (index !== -1) {
                     state.list[index] = detailedQuotation;
@@ -190,6 +201,6 @@ const quotationSlice = createSlice({
     },
 });
 
-export const { clearQuotationError } = quotationSlice.actions;
+export const { clearQuotationError, resetQuotationUI } = quotationSlice.actions;
 
 export default quotationSlice.reducer;
