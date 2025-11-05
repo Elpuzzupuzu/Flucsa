@@ -1,10 +1,51 @@
 // client/src/features/user/usersSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios"; // Configurado con withCredentials: true
-
 // ===============================
 // THUNKS
 // ===============================
+
+
+
+// ===============================
+// Helper: Formatear payload completo (CORREGIDO)
+// ===============================
+const formatUserPayload = (apiResponse) => {
+    // 1. Identificar si la respuesta tiene la estructura anidada o plana.
+    // La respuesta del login es: { accessToken, user: { ...datos } }
+    // La respuesta de checkAuth/fetchUserProfile podría ser solo: { ...datos }
+    
+    // Obtenemos los datos esenciales. Si está anidado (login), usamos 'user', si no, el payload completo.
+    const userData = apiResponse.user || apiResponse; 
+    
+    // Si no hay datos relevantes, retornamos null
+    if (!userData || !userData.id) return null;
+
+    // 2. Retornar el objeto plano y añadir isAdmin
+    return {
+        // Campos esenciales para tu app
+        id: userData.id,
+        nombre: userData.nombre,
+        apellido: userData.apellido,
+        correo: userData.correo,
+
+        // Campos de rol y perfil
+        rol: userData.rol,
+        foto_perfil: userData.foto_perfil,
+        
+        // 🚨 CAMBIO CRUCIAL: Agregar la propiedad isAdmin 🚨
+        isAdmin: userData.rol === 'admin',
+
+        // Campos compuestos o de autenticación
+        name: 
+            userData.nombre && userData.apellido
+                ? `${userData.nombre} ${userData.apellido}`
+                : undefined,
+        
+        // Aseguramos que el accessToken siempre se incluya si existe en el payload principal
+        accessToken: apiResponse.accessToken || null, 
+    };
+}
 
 // Registro de usuario
 export const registerUser = createAsyncThunk(
@@ -128,19 +169,19 @@ export const refreshAccessToken = createAsyncThunk(
 // ===============================
 // Helper: Formatear payload completo
 // ===============================
-const formatUserPayload = (userData) => {
-  if (!userData) return null;
-  return {
-    ...userData,
-    name:
-      userData.nombre && userData.apellido
-        ? `${userData.nombre} ${userData.apellido}`
-        : undefined,
-    rol: userData.rol,
-    foto_perfil: userData.foto_perfil,
-    email: userData.correo,
-  };
-};
+// const formatUserPayload = (userData) => {
+//   if (!userData) return null;
+//   return {
+//     ...userData,
+//     name:
+//       userData.nombre && userData.apellido
+//         ? `${userData.nombre} ${userData.apellido}`
+//         : undefined,
+//     rol: userData.rol,
+//     foto_perfil: userData.foto_perfil,
+//     email: userData.correo,
+//   };
+// };
 
 // ===============================
 // SLICE

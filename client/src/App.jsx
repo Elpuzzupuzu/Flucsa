@@ -1,85 +1,44 @@
-import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { checkAuthStatus, fetchUserProfile } from './features/user/usersSlice';
-import {
-  addItemToCart,
-  updateCartItemQuantity,
-  removeCartItem,
-} from './features/cart/cartSlice';
+import React, { useState } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
-// Componentes base
+// === Hooks Personalizados ===
+import { useAppInitialization } from './hooks/App/useAppInitialitation'; 
+import { useRealtimeQuotation } from './hooks/useRealtimeQuotation/useRealtimeQuotation';
+import { useCartActions } from './hooks/Cart/useCartActions'; 
+import { useSocketManager } from './hooks/Socket/useSocketManager'; // 👈 IMPORTACIÓN REQUERIDA
+
+// === Componentes Base y Rutas ===
 import Header from './components/Header/Header';
 import TopBar from './components/TopBar/TopBar';
 import Footer from './components/Footer/Footer';
 import ScrollToTop from './hooks/Scrolltop';
-
-// 🚩 Notificación
+import ShoppingCart from './pages/Products/ShoppingCart/ShoppingCart';
 import ToastNotification from './components/ToastComponent/ToastNotification';
 import ReduxToast from './components/ReduxToast/ReduxToast';
-import useNotification from './hooks/Notify/useNotification';
-
-// Páginas
-import Home from './pages/Home/Home';
-import ProductsPage from './pages/Products/Products';
-import ShoppingCart from './pages/Products/ShoppingCart/ShoppingCart';
-import ProductDetails from './pages/ProductDetails/ProductDetails';
-import AboutUsPage from './pages/AboutUs/AboutUsPage';
-import ServicesPage from './pages/Servicios/ServicesPage';
-import ServiceMenuPage from './pages/serviceMenu/serviceMenuPage';
-import ContactPage from './pages/Contact/ContactPage';
-import PDFCatalog from './pages/Pdfs/PDFPage';
-
-// Auth
-import Login from './pages/Auth/login';
-import Register from './pages/Auth/Register';
-import ProfilePage from './pages/Auth/ProfilePage/ProfilePage';
-import ProtectedRoute from './pages/Auth/ProtectedRoute';
-import AdminRoute from './pages/Auth/AdminRoute';
-
-// Admin
-import AdminProducts from './admin/products/AdminProducts';
-import AdminQuotationManager from './pages/Quotations/AdminQuotationManager';
-
-
-// ==========================================================
-// 🚨 IMPORTS DE COTIZACIONES (Rutas corregidas)
-// ==========================================================
-import QuotationManager from './pages/Quotations/QuotationManager';
-import QuotationDetailPage from './pages/Quotations/QuotationDetailPage';
+import AppRoutes from './AppRoutes/appRoutes'; 
 
 function App() {
-  const dispatch = useDispatch();
+  // === Lógica Central ===
+  const { isAuthenticated, user, reduxAuthChecked } = useAppInitialization();
+
+  // 1. GESTIONAR LA CONEXIÓN GLOBAL DEL SOCKET (NUEVO PASO)
+  // Se conecta solo si el usuario está autenticado.
+  const socketInstance = useSocketManager(isAuthenticated); 
+
+  // 2. Ejecutar Lógica de Sockets (Tiempo Real)
+  // 📢 Ahora se le pasa la instancia del socket y el objeto user.
+  useRealtimeQuotation(socketInstance, user); 
+
+  // Usa el nuevo hook para obtener las funciones del carrito
+  const { addToCart, updateCartQuantity, removeFromCart, handleProceedToCheckout } = useCartActions(); 
+
+  // --- Estado Local UI ---
   const cartItems = useSelector((state) => state.cart.items);
-
-  // 🚩 Hook de notificación (react-toastify)
-  const { notify } = useNotification();
-
-  // Obtenemos 'user' y 'authChecked' del store
-  const { user, authChecked: reduxAuthChecked } = useSelector(
-    (state) => state.user
-  );
-  const isAuthenticated = !!user;
-
-  // --- 1. Ejecutar checkAuthStatus (Autenticación Inicial) ---
-  // Este useEffect dispara el thunk checkAuthStatus SÓLO al montar el componente.
-  // Confiamos en que userSlice establecerá `reduxAuthChecked` a true cuando termine.
-  useEffect(() => {
-    dispatch(checkAuthStatus()); 
-  }, [dispatch]);
-
-  // --- 2. Fetch de datos completos si es necesario ---
-  useEffect(() => {
-    if (reduxAuthChecked && user && !user.nombre) {
-      dispatch(fetchUserProfile());
-    }
-  }, [reduxAuthChecked, user, dispatch]);
-
-  const [isCartOpen, setIsCartOpen] =useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const onCartToggle = () => setIsCartOpen((prev) => !prev);
 
   // Render loader mientras se verifica la sesión
-  // CONDICIÓN CORREGIDA: Usamos `reduxAuthChecked` directamente.
   if (!reduxAuthChecked) {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 text-gray-600">
@@ -87,34 +46,6 @@ function App() {
       </div>
     );
   }
-
-  // --- Funciones para el carrito ---
-  const addToCart = (product) => {
-    if (!isAuthenticated) {
-      notify('Debes iniciar sesión para agregar productos al carrito. 🛒', 'error');
-      return;
-    }
-
-    dispatch(addItemToCart({ producto_id: product.id, cantidad: 1 }))
-      .unwrap()
-      .then(() => {
-        notify(`✔️ "${product.nombre}" agregado al carrito`, 'success');
-      })
-      .catch((error) => {
-        console.error(error);
-        notify('❌ Error al agregar el producto al carrito', 'error');
-      });
-  };
-
-  const updateCartQuantity = (id, quantity) => {
-    dispatch(updateCartItemQuantity({ itemId: id, cantidad: quantity }));
-  };
-
-  const removeFromCart = (id) => {
-    dispatch(removeCartItem(id));
-  };
-
-  const handleProceedToCheckout = () => {};
 
   return (
     <BrowserRouter>
@@ -124,77 +55,7 @@ function App() {
         <Header cartItems={cartItems} onCartToggle={onCartToggle} />
 
         <main className="flex-1">
-          <Routes>
-            {/* Páginas públicas */}
-            <Route path="/" element={<Home />} />
-            <Route path="/productos" element={<ProductsPage addToCart={addToCart} />} />
-            <Route
-              path="/productos/:id"
-              element={<ProductDetails onAddToCart={addToCart} />}
-            />
-            <Route path="/catalogo-pdfs" element={<PDFCatalog />} />
-            <Route path="/acerca-de-nosotros" element={<AboutUsPage />} />
-            <Route path="/servicios" element={<ServicesPage />} />
-            <Route path="/servicios/:category" element={<ServiceMenuPage />} />
-            <Route path="/contacto" element={<ContactPage />} />
-
-            {/* Auth */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-
-            {/* Rutas protegidas de Usuario */}
-            <Route
-              path="/mi-cuenta"
-              element={
-                <ProtectedRoute>
-                  <ProfilePage />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* ========================================================== */}
-            {/*  RUTAS DE COTIZACIONES (USUARIO) */}
-            {/* ========================================================== */}
-            <Route
-              path="/cotizaciones"
-              element={
-                <ProtectedRoute>
-                  <QuotationManager />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/cotizaciones/:id"
-              element={
-                <ProtectedRoute>
-                  <QuotationDetailPage />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* ========================================================== */}
-            {/*  RUTAS ADMIN */}
-            {/* ========================================================== */}
-            <Route
-              path="/admin/products"
-              element={
-                <AdminRoute>
-                  <AdminProducts />
-                </AdminRoute>
-              }
-            />
-            
-            {/*  NUEVA RUTA ADMIN DE COTIZACIONES */}
-            <Route
-              path="/admin/quotations"
-              element={
-                <AdminRoute>
-                  <AdminQuotationManager />
-                </AdminRoute>
-              }
-            />
-
-          </Routes>
+          <AppRoutes addToCart={addToCart} />
         </main>
 
         <ShoppingCart
@@ -206,9 +67,9 @@ function App() {
           onProceedToCheckout={handleProceedToCheckout}
         />
 
-        {/* 🚩 COMPONENTE DE NOTIFICACIÓN GLOBAL */}
+        {/* Notificaciones Globales */}
         <ToastNotification />
-        <ReduxToast /> {/* Escucha los mensajes de Redux y dispara toast */}
+        <ReduxToast /> 
 
         <Footer />
       </div>

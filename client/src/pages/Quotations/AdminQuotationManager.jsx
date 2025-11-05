@@ -26,7 +26,7 @@ const AdminQuotationManager = () => {
     // **********************************************
     // Agrega el console.log aquí:
     useEffect(() => {
-        console.log('Datos de Redux - Cotizaciones:', { allQuotations, loading, error });
+        // console.log('Datos de Redux - Cotizaciones:', { allQuotations, loading, error });
     }, [allQuotations, loading, error]); // Se ejecutará cada vez que estos valores cambien
     // **********************************************
 
@@ -49,25 +49,7 @@ const AdminQuotationManager = () => {
         };
     }, [allQuotations]);
 
-    // 5. Filtrado Combinado (useMemo)
-    // const filteredQuotations = useMemo(() => {
-    //     let result = allQuotations;
-        
-    //     if (filterStatus !== 'ALL') {
-    //         result = result.filter(q => q.estado_cotizacion === filterStatus);
-    //     }
-        
-    //     if (searchTerm.trim()) {
-    //         const search = searchTerm.toLowerCase();
-    //         result = result.filter(q => 
-    //             q.id?.toLowerCase().includes(search) ||
-    //             q.usuario_nombre?.toLowerCase().includes(search) ||
-    //             q.usuario_email?.toLowerCase().includes(search)
-    //         );
-    //     }
-        
-    //     return result;
-    // }, [allQuotations, filterStatus, searchTerm]);
+    
 
 // 5. Filtrado Combinado (useMemo)
 const filteredQuotations = useMemo(() => {
