@@ -1,12 +1,6 @@
-// Ruta sugerida: src/components/AppRoutes/AppRoutes.jsx
-
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
-// ==========================================================
-// IMPORTACIONES DE PÁGINAS (MOVIDAS DESDE App.jsx)
-// Asegúrate de que estas rutas sean correctas
-// ==========================================================
 // Páginas públicas
 import Home from '../pages/Home/Home';
 import ProductsPage from '../pages/Products/Products';
@@ -32,63 +26,60 @@ import AdminQuotationManager from '../pages/Quotations/AdminQuotationManager';
 import QuotationManager from '../pages/Quotations/QuotationManager';
 import QuotationDetailPage from '../pages/Quotations/QuotationDetailPage';
 
+// Layouts
+import UserLayout from '../layouts/userLayout';
+import AdminLayout from '../layouts/adminLayout';
+import PublicLayout from '../layouts/PublicLayout';
 
-/**
- * Componente que define todas las rutas de la aplicación.
- * @param {function} addToCart - Función para agregar un producto al carrito (pasada desde App.jsx).
- */
 export default function AppRoutes({ addToCart }) {
   return (
     <Routes>
       {/* ========================================================== */}
-      {/* Páginas públicas */}
+      {/* PÁGINAS PÚBLICAS */}
       {/* ========================================================== */}
-      <Route path="/" element={<Home />} />
-      <Route path="/productos" element={<ProductsPage addToCart={addToCart} />} />
-      <Route
-        path="/productos/:id"
-        element={<ProductDetails onAddToCart={addToCart} />}
-      />
-      <Route path="/catalogo-pdfs" element={<PDFCatalog />} />
-      <Route path="/acerca-de-nosotros" element={<AboutUsPage />} />
-      <Route path="/servicios" element={<ServicesPage />} />
-      <Route path="/servicios/:category" element={<ServiceMenuPage />} />
-      <Route path="/contacto" element={<ContactPage />} />
-
-      {/* Auth */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route path="/" element={<PublicLayout />}>
+        <Route index element={<Home />} />
+        <Route path="productos" element={<ProductsPage addToCart={addToCart} />} />
+        <Route path="productos/:id" element={<ProductDetails onAddToCart={addToCart} />} />
+        <Route path="catalogo-pdfs" element={<PDFCatalog />} />
+        <Route path="acerca-de-nosotros" element={<AboutUsPage />} />
+        <Route path="servicios" element={<ServicesPage />} />
+        <Route path="servicios/:category" element={<ServiceMenuPage />} />
+        <Route path="contacto" element={<ContactPage />} />
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
+      </Route>
 
       {/* ========================================================== */}
-      {/* Rutas protegidas de Usuario */}
+      {/* RUTAS DE USUARIO */}
       {/* ========================================================== */}
       <Route
         path="/mi-cuenta"
-        element={<ProtectedRoute><ProfilePage /></ProtectedRoute>}
-      />
-
-      {/* RUTAS DE COTIZACIONES (USUARIO) */}
-      <Route
-        path="/cotizaciones"
-        element={<ProtectedRoute><QuotationManager /></ProtectedRoute>}
-      />
-      <Route
-        path="/cotizaciones/:id"
-        element={<ProtectedRoute><QuotationDetailPage /></ProtectedRoute>}
-      />
+        element={
+          <ProtectedRoute>
+            <UserLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<ProfilePage />} />
+        <Route path="cotizaciones" element={<QuotationManager />} />
+        <Route path="cotizaciones/:id" element={<QuotationDetailPage />} />
+      </Route>
 
       {/* ========================================================== */}
       {/* RUTAS ADMIN */}
       {/* ========================================================== */}
       <Route
-        path="/admin/products"
-        element={<AdminRoute><AdminProducts /></AdminRoute>}
-      />
-      
-      <Route
-        path="/admin/quotations"
-        element={<AdminRoute><AdminQuotationManager /></AdminRoute>}
-      />
+        path="/admin"
+        element={
+          <AdminRoute>
+            <AdminLayout />
+          </AdminRoute>
+        }
+      >
+        <Route path="products" element={<AdminProducts />} />
+        <Route path="quotations" element={<AdminQuotationManager />} />
+      </Route>
     </Routes>
   );
 }
