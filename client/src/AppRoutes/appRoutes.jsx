@@ -10,6 +10,7 @@ import ServicesPage from '../pages/Servicios/ServicesPage';
 import ServiceMenuPage from '../pages/serviceMenu/serviceMenuPage';
 import ContactPage from '../pages/Contact/ContactPage';
 import PDFCatalog from '../pages/Pdfs/PDFPage';
+import NatalieCatering from '../pages/Test/Natalie';
 
 // Auth
 import Login from '../pages/Auth/login';
@@ -49,6 +50,9 @@ export default function AppRoutes({ addToCart }) {
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="cotizaciones/:id" element={<QuotationDetailPage />} />
+        {/* <Route path="natalie" element={<NatalieCatering />} /> */}
+
+
       </Route>
 
       {/* ========================================================== */}

@@ -6,7 +6,9 @@ import io from 'socket.io-client';
 // 🚨 CAMBIO CRÍTICO: Usamos VITE_SOCKET_URL. 
 // Esta variable debe apuntar a la raíz del backend (ej: https://flucsa-backend.onrender.com)
 // y debe estar configurada en el servicio frontend de Render.
-const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:4000';
+// const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:4000';
+const SOCKET_SERVER_URL = 'https://flucsa.onrender.com';
+
 
 /**
  * Hook personalizado para manejar la conexión y los eventos de Socket.IO.
