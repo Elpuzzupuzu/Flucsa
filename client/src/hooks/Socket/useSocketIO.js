@@ -3,8 +3,11 @@
 import { useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 
-// 🚨 Asegúrate de que esta URL coincida con la URL de tu backend
- const SOCKET_SERVER_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+// 🚨 CAMBIO CRÍTICO: Usamos VITE_SOCKET_URL. 
+// Esta variable debe apuntar a la raíz del backend (ej: https://flucsa-backend.onrender.com)
+// y debe estar configurada en el servicio frontend de Render.
+const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:4000';
+
 /**
  * Hook personalizado para manejar la conexión y los eventos de Socket.IO.
  * @param {string} eventName - El nombre del evento de Socket.IO a escuchar (ej: 'nueva_cotizacion').
