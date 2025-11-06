@@ -5,8 +5,8 @@ import cookieParser from "cookie-parser";
 import "express-async-errors"; // Manejo de errores async
 import path from "path";
 import { fileURLToPath } from "url";
-import http from "http"; // 🚨 NUEVA IMPORTACIÓN: Módulo HTTP nativo
-import { Server } from "socket.io"; // 🚨 NUEVA IMPORTACIÓN: Socket.IO Server
+import http from "http"; // Módulo HTTP nativo
+import { Server } from "socket.io"; // Socket.IO Server
 
 // Rutas
 import productsRoutes from "./routes/productsRoutes.js";
@@ -34,25 +34,22 @@ const PORT = process.env.PORT || 4000;
 // El servidor HTTP debe envolver la aplicación Express
 const server = http.createServer(app); 
 
-// Configuración de CORS para Socket.IO
-// Usamos los mismos orígenes que Express, pero Socket.IO necesita su propia config
-const allowedOrigins = [
-    "http://localhost:5173", // desarrollo local
+// 🚨 CAMBIO CRÍTICO DE CORS: Array fijo y explícito de orígenes permitidos
+const SOCKET_ALLOWED_ORIGINS = [
+    "http://localhost:5173",        // Desarrollo local
+    "https://flucsa.onrender.com",  // Dominio de Render (si lo usas como frontend)
+    "https://www.flucsa.com.mx",    // Dominio con www
+    "https://flucsa.com.mx",        // Dominio sin www
 ];
-const productionOrigins = process.env.FRONTEND_ORIGINS; 
 
-if (productionOrigins) {
-    const prodOriginsArray = productionOrigins.split(",").map(url => url.trim());
-    allowedOrigins.push(...prodOriginsArray);
-} else {
-    allowedOrigins.push("https://flucsa.onrender.com");
-}
+// Usamos esta lista para Express y Socket.IO
+const allowedOrigins = SOCKET_ALLOWED_ORIGINS; 
 
 const io = new Server(server, {
     cors: {
-        origin: allowedOrigins,
+        origin: allowedOrigins, // Usa el array fijo
         methods: ["GET", "POST"],
-        credentials: true // Permite la sincronización de cookies/sesiones (si es necesario)
+        credentials: true // Necesario porque el cliente usa withCredentials: true
     }
 });
 
@@ -88,7 +85,7 @@ app.set("trust proxy", 1); // Indispensable para cookies `secure`
 // =======================================================
 app.use(
     cors({
-        origin: allowedOrigins,
+        origin: allowedOrigins, // Usa el mismo array para Express
         credentials: true, 
         optionsSuccessStatus: 200,
     })
@@ -149,7 +146,7 @@ app.use((err, req, res, next) => {
 // =======================================================
 // 🚀 LEVANTAR SERVIDOR
 // =======================================================
-// 🚨 CAMBIO CRÍTICO: Usamos 'server.listen' en lugar de 'app.listen'
+// Usamos 'server.listen' para que Socket.IO funcione
 server.listen(PORT, () => {
     console.log(`✅ Servidor Express y Socket.IO corriendo en el puerto ${PORT}`);
     console.log("🌐 Orígenes permitidos:", allowedOrigins);
