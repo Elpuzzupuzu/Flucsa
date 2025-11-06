@@ -48,6 +48,7 @@ export default function AppRoutes({ addToCart }) {
         <Route path="contacto" element={<ContactPage />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
+        <Route path="cotizaciones/:id" element={<QuotationDetailPage />} />
       </Route>
 
       {/* ========================================================== */}
