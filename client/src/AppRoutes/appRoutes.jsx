@@ -79,6 +79,8 @@ export default function AppRoutes({ addToCart }) {
       >
         <Route path="products" element={<AdminProducts />} />
         <Route path="quotations" element={<AdminQuotationManager />} />
+        <Route path="cotizaciones/:id" element={<QuotationDetailPage />} />
+
       </Route>
     </Routes>
   );
