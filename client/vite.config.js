@@ -10,7 +10,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   
   // 👇 importante para servir desde Express correctamente
-  base: './', // rutas relativas
+  base: '/', // rutas relativas
   
   build: {
     outDir: 'dist', // carpeta donde se genera el build

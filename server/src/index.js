@@ -16,9 +16,8 @@ import userRoutes from "./routes/userRoutes.js";
 import whishListRoutes from "./routes/wishListRoutes.js";
 import pdfRoutes from "./routes/pdfRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
-import quotationRoutes from "./routes/quotationRoutes.js"; 
-import orderRoutes from "./routes/orderRoutes.js"; 
-
+import quotationRoutes from "./routes/quotationRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 // =======================================================
 // 🔧 CONFIGURACIÓN INICIAL
@@ -31,69 +30,50 @@ const PORT = process.env.PORT || 4000;
 // -------------------------------------------------------
 // 🚨 1. CREACIÓN DEL SERVIDOR HTTP Y SOCKET.IO
 // -------------------------------------------------------
-// El servidor HTTP debe envolver la aplicación Express
-const server = http.createServer(app); 
+const server = http.createServer(app);
 
-// 🚨 CAMBIO CRÍTICO DE CORS: Array fijo y explícito de orígenes permitidos
 const SOCKET_ALLOWED_ORIGINS = [
-    "http://localhost:5173",        // Desarrollo local
-    "https://flucsa.onrender.com",  // Dominio de Render (si lo usas como frontend)
-    "https://www.flucsa.com.mx",    // Dominio con www
-    "https://flucsa.com.mx",        // Dominio sin www
+  "http://localhost:5173",
+  "https://flucsa.onrender.com",
+  "https://www.flucsa.com.mx",
+  "https://flucsa.com.mx",
 ];
 
-// Usamos esta lista para Express y Socket.IO
-const allowedOrigins = SOCKET_ALLOWED_ORIGINS; 
+const allowedOrigins = SOCKET_ALLOWED_ORIGINS;
 
 const io = new Server(server, {
-    cors: {
-        origin: allowedOrigins, // Usa el array fijo
-        methods: ["GET", "POST"],
-        credentials: true // Necesario porque el cliente usa withCredentials: true
-    }
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
 });
 
-// -------------------------------------------------------
-// 🚨 2. INTEGRACIÓN: Hacer 'io' accesible en las rutas
-// -------------------------------------------------------
-// Creamos un middleware para adjuntar la instancia io al objeto req
+// Middleware para adjuntar io
 app.use((req, res, next) => {
-    req.io = io;
-    next();
+  req.io = io;
+  next();
 });
 
-// -------------------------------------------------------
-//  3. MANEJO DE CONEXIONES SOCKET.IO (Lógica de Debug)
-// -------------------------------------------------------
-io.on('connection', (socket) => {
-    console.log(`✅ Socket conectado: ${socket.id}`);
-
-    // Opcional: Escuchar un evento de desconexión
-    socket.on('disconnect', () => {
-        console.log(`❌ Socket desconectado: ${socket.id}`);
-    });
+// Eventos de Socket.IO
+io.on("connection", (socket) => {
+  console.log(`✅ Socket conectado: ${socket.id}`);
+  socket.on("disconnect", () => {
+    console.log(`❌ Socket desconectado: ${socket.id}`);
+  });
 });
 
-
 // =======================================================
-//  CONFIGURACIÓN CRÍTICA PARA RENDER / HTTPS / COOKIES
+// 🌐 CONFIG CORS / COOKIES / EXPRESS
 // =======================================================
-app.set("trust proxy", 1); // Indispensable para cookies `secure`
-
-// =======================================================
-// 🌐 CORS CONFIG (Express)
-// =======================================================
+app.set("trust proxy", 1);
 app.use(
-    cors({
-        origin: allowedOrigins, // Usa el mismo array para Express
-        credentials: true, 
-        optionsSuccessStatus: 200,
-    })
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
 );
-
-// =======================================================
-// 🧩 MIDDLEWARES GLOBALES
-// =======================================================
 app.use(express.json());
 app.use(cookieParser());
 
@@ -101,7 +81,7 @@ app.use(cookieParser());
 // 🚀 RUTA DE PRUEBA RAÍZ
 // =======================================================
 app.get("/", (req, res) => {
-    res.send("🚀 Servidor Flucsa corriendo correctamente...");
+  res.send("🚀 Servidor Flucsa corriendo correctamente...");
 });
 
 // =======================================================
@@ -114,40 +94,36 @@ app.use("/api/users", userRoutes);
 app.use("/api/wishlist", whishListRoutes);
 app.use("/api/carrito", cartRoutes);
 app.use("/api/pdfs", pdfRoutes);
-app.use("/api/quotations", quotationRoutes); 
-app.use("/api/orders", orderRoutes); 
-
+app.use("/api/quotations", quotationRoutes);
+app.use("/api/orders", orderRoutes);
 
 // =======================================================
-// 🧱 SERVIR FRONTEND (PRODUCCIÓN)
+// 🧱 SERVIR FRONTEND (PRODUCCIÓN O LOCAL TEST DE BUILD)
 // =======================================================
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const clientDistPath = path.join(__dirname, "../../client/dist");
 
-if (process.env.NODE_ENV === "production") {
-    app.use(express.static(clientDistPath));
+// Servir archivos estáticos del frontend
+app.use(express.static(clientDistPath));
 
-    app.get("*", (req, res) => {
-        if (!req.path.startsWith("/api")) {
-            res.sendFile(path.join(clientDistPath, "index.html"));
-        }
-    });
-}
+// Redirigir TODAS las rutas no-API a React (index.html)
+app.get(/^\/(?!api).*/, (req, res) => {
+  res.sendFile(path.join(clientDistPath, "index.html"));
+});
 
 // =======================================================
 // ⚠️ MANEJO CENTRALIZADO DE ERRORES
 // =======================================================
 app.use((err, req, res, next) => {
-    console.error("❌ Error interno:", err.message);
-    res.status(500).json({ error: "Error interno del servidor" });
+  console.error("❌ Error interno:", err.message);
+  res.status(500).json({ error: "Error interno del servidor" });
 });
 
 // =======================================================
 // 🚀 LEVANTAR SERVIDOR
 // =======================================================
-// Usamos 'server.listen' para que Socket.IO funcione
 server.listen(PORT, () => {
-    console.log(`✅ Servidor Express y Socket.IO corriendo en el puerto ${PORT}`);
-    console.log("🌐 Orígenes permitidos:", allowedOrigins);
+  console.log(`✅ Servidor Express y Socket.IO corriendo en el puerto ${PORT}`);
+  console.log("🌐 Orígenes permitidos:", allowedOrigins);
 });
