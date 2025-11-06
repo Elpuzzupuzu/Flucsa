@@ -5,7 +5,7 @@ import Header from "../components/Header/Header";
 export default function userLayout() {
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <main className="pt-4">
         <Outlet />
       </main>
