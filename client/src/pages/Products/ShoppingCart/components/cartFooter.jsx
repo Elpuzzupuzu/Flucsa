@@ -69,7 +69,7 @@ const CartFooter = ({ total }) => {
                 </div>
                 <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-600">Envío:</span>
-                    <span className="font-medium text-green-600 animate-pulse">Gratis</span>
+                    <span className="font-medium text-green-600 animate-pulse">Disponible</span>
                 </div>
                 <div className="border-t pt-2">
                     <div className="flex justify-between items-center">

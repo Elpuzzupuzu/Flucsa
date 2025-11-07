@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const ToastNotification = () => (
   <ToastContainer
     position="top-right"
-    autoClose={3000}          // Duración de 3 segundos
+    autoClose={500}          // Duración de 3 segundos
     hideProgressBar={false}
     newestOnTop
     closeOnClick
