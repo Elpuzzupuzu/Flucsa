@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 
-const SOCKET_SERVER_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000'; 
+const SOCKET_SERVER_URL = import.meta.env.VITE_API_URL || 'https://flucsa-backend.onrender.com'; 
 
 // Usamos una variable fuera del hook para mantener la instancia única a través de todos los módulos
 // OJO: Esto puede ser delicado, pero garantiza la unicidad. Alternativamente, puedes pasarlo por contexto.
