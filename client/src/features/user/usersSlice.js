@@ -18,13 +18,9 @@ const formatUserPayload = (apiResponse) => {
 
     // La respuesta de checkAuth/fetchUserProfile podría ser solo: { ...datos }
 
-   
-
     // Obtenemos los datos esenciales. Si está anidado (login), usamos 'user', si no, el payload completo.
 
     const userData = apiResponse.user || apiResponse;
-
-   
 
     // Si no hay datos relevantes, retornamos null
 
@@ -46,22 +42,15 @@ const formatUserPayload = (apiResponse) => {
 
         correo: userData.correo,
 
-
-
         // Campos de rol y perfil
 
         rol: userData.rol,
 
         foto_perfil: userData.foto_perfil,
 
-       
-
-        // 🚨 CAMBIO CRUCIAL: Agregar la propiedad isAdmin 🚨
+        //  CAMBIO CRUCIAL: Agregar la propiedad isAdmin 🚨
 
         isAdmin: userData.rol === 'admin',
-
-
-
         // Campos compuestos o de autenticación
 
         name:
@@ -71,9 +60,6 @@ const formatUserPayload = (apiResponse) => {
                 ? `${userData.nombre} ${userData.apellido}`
 
                 : undefined,
-
-       
-
         // Aseguramos que el accessToken siempre se incluya si existe en el payload principal
 
         accessToken: apiResponse.accessToken || null,
@@ -201,22 +187,6 @@ export const refreshAccessToken = createAsyncThunk(
   }
 );
 
-// ===============================
-// Helper: Formatear payload completo
-// ===============================
-// const formatUserPayload = (userData) => {
-//   if (!userData) return null;
-//   return {
-//     ...userData,
-//     name:
-//       userData.nombre && userData.apellido
-//         ? `${userData.nombre} ${userData.apellido}`
-//         : undefined,
-//     rol: userData.rol,
-//     foto_perfil: userData.foto_perfil,
-//     email: userData.correo,
-//   };
-// };
 
 // ===============================
 // SLICE

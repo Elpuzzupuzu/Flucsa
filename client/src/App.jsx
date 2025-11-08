@@ -27,7 +27,7 @@ function App() {
   const socketInstance = useSocketManager(isAuthenticated); 
 
   // 2. Ejecutar Lógica de Sockets (Tiempo Real)
-  // 📢 Ahora se le pasa la instancia del socket y el objeto user.
+  // Ahora se le pasa la instancia del socket y el objeto user.
   useRealtimeQuotation(socketInstance, user); 
 
   // Usa el nuevo hook para obtener las funciones del carrito

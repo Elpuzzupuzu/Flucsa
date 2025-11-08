@@ -29,6 +29,7 @@ const COMMON_NAV_ITEMS = [
   { path: '/catalogo-pdfs', label: 'Catálogos', icon: FileText },
 ];
 
+
 // Rutas específicas para usuarios autenticados (no admin)
 const USER_NAV_ITEMS = [
   { path: '/cotizaciones', label: 'Cotizaciones', icon: Handshake }, //

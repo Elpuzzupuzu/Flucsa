@@ -21,7 +21,7 @@ const QuotationManager = () => {
         list: quotations, 
         loading, 
         error 
-    } = useSelector(state => state.quotation); 
+    } = useSelector(state => state.quotations); 
 
     const { notify } = useNotification(); 
     

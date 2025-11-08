@@ -6,16 +6,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import QuotationDetailsCard from './components/QuotationDetailsCard';
 
-
 const QuotationDetailPage = () => {
     const { id } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    //// test
-    const currentUser = useSelector(state => state.user);   /// este selector obtiene del store al usuario 
-    // useEffect(()=>{
-    //     console.log("usuario", currentUser) ///<----log para ver la estrutura del user
-    // })
 
     const quotation = useSelector(state => 
         state.quotations.list.find(q => q.id === id) 
@@ -29,16 +23,8 @@ const QuotationDetailPage = () => {
         // }
     }, [dispatch, id, quotation, loading]);
 
-
-     /// funcion para el navigate actualizada 
     const handleGoBack = useCallback(() => {
-        if(currentUser.user.rol == "admin"){
         navigate('/admin/quotations');
-        }
-        else{
-            navigate('/cotizaciones')
-        }
-       
     }, [navigate]);
 
     // --- Renderizado con diseño moderno ---
