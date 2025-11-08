@@ -123,9 +123,10 @@ const quotationSlice = createSlice({
         resetQuotationUI: (state) => {
             state.loading = false;
             state.error = null;
+            state.list=[];
         },
         /**
-         * 🚨 NUEVO: Añade una cotización recibida de Socket.IO (INSERT).
+         *  NUEVO: Añade una cotización recibida de Socket.IO (INSERT).
          * Usado por el Custom Hook para el evento 'nueva_cotizacion'.
          */
         quotationAdded: (state, action) => {
