@@ -42,11 +42,16 @@ const SOCKET_ALLOWED_ORIGINS = [
 const allowedOrigins = SOCKET_ALLOWED_ORIGINS;
 
 const io = new Server(server, {
-  cors: {
-    origin: allowedOrigins,
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+  //  OPCIONES DE ESTABILIDAD 
+  // Aumentado el tiempo que el servidor espera un pong (de 20s a 40s)
+  pingTimeout: 40000, 
+  // Reducimos el tiempo entre pings (de 25s a 20s) para mantener viva la conexión
+  pingInterval: 20000, 
 });
 
 // Middleware para adjuntar io
