@@ -5,49 +5,53 @@ import io from 'socket.io-client';
 
 const SOCKET_SERVER_URL = import.meta.env.VITE_API_URL || 'https://flucsa-backend.onrender.com'; 
 
-// Usamos una variable fuera del hook para mantener la instancia única a través de todos los módulos
-// OJO: Esto puede ser delicado, pero garantiza la unicidad. Alternativamente, puedes pasarlo por contexto.
 let globalSocket = null; 
 
-/**
- * Hook maestro para gestionar la conexión y desconexión global de Socket.IO.
- * Debe llamarse una sola vez en App.jsx.
- * @param {boolean} shouldConnect - Controla si la conexión debe estar activa (ej: isAuthenticated).
- */
 export const useSocketManager = (shouldConnect) => {
-    
-    // Usamos una ref para la instancia local, aunque la globalSocket almacene el valor.
-    // Podrías usar useRef como lo hacías antes si prefieres no usar una variable global.
-    const socketRef = useRef(globalSocket);
+    const socketRef = useRef(globalSocket);
 
-    useEffect(() => {
-        // CONEXIÓN
-        if (shouldConnect && !globalSocket) {
-            globalSocket = io(SOCKET_SERVER_URL, {
-                withCredentials: true,
-            });
-            socketRef.current = globalSocket;
+    useEffect(() => {
+        // CONEXIÓN
+        if (shouldConnect && !globalSocket) {
+            // ⭐ APLICACIÓN DE LAS OPCIONES DE ESTABILIDAD ⭐
+            globalSocket = io(SOCKET_SERVER_URL, {
+                withCredentials: true,
+                
+                // --- Opciones de Estabilidad ---
+                // Debe ser menor que el pingTimeout del servidor (que ajustamos a 40s)
+                pingTimeout: 30000, 
+                // Debe ser menor que el pingInterval del servidor (que ajustamos a 20s)
+                pingInterval: 15000, 
+                // Aumentar el tiempo de espera inicial
+                timeout: 30000, 
+                // Más intentos de reconexión
+                reconnectionAttempts: 30, 
+            });
+            socketRef.current = globalSocket;
 
-            globalSocket.on('connect', () => {
-                console.log(`📡 Socket Manager: Conectado con ID: ${globalSocket.id}`);
-            });
+            globalSocket.on('connect', () => {
+                console.log(`📡 Socket Manager: Conectado con ID: ${globalSocket.id}`);
+            });
+            
+            // AÑADIR LOGGING DE RAZÓN DE DESCONEXIÓN
+            globalSocket.on('disconnect', (reason) => {
+                console.log(`❌ Socket Manager: Desconectado. Razón: ${reason}`);
+            });
             
-            globalSocket.on('disconnect', () => {
-                console.log('❌ Socket Manager: Desconectado.');
-            });
+            // AÑADIR LOGGING DE RECONEXIÓN
+            globalSocket.on('reconnect', (attemptNumber) => {
+                console.log(`✅ Socket Manager: Reconectado tras ${attemptNumber} intentos.`);
+            });
 
-        // DESCONEXIÓN
-        } else if (!shouldConnect && globalSocket) {
-            globalSocket.disconnect();
-            globalSocket = null; // Limpiar la variable global
-            socketRef.current = null;
-        }
 
-        // Cleanup: El cleanup principal se realiza en el else if anterior al cambiar shouldConnect.
-        // Aquí no hay necesidad de desconexión adicional.
+        // DESCONEXIÓN
+        } else if (!shouldConnect && globalSocket) {
+            globalSocket.disconnect();
+            globalSocket = null;
+            socketRef.current = null;
+        }
 
-    }, [shouldConnect]); 
-    
-    // Retornamos la instancia actual para que otros hooks la utilicen
-    return socketRef.current;
+    }, [shouldConnect]); 
+    
+    return socketRef.current;
 };
