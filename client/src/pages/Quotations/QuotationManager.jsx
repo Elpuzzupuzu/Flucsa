@@ -1,13 +1,10 @@
-// src/components/QuotationManager.jsx
-
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react'; // 💡 Importar useCallback
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { 
     fetchQuotations, 
     createQuotation, 
     deleteQuotation,
-    // 🚨 startRealtimeSubscription HA SIDO ELIMINADO
 } from '../../features/quotations/quotationSlice'; 
 import QuotationsListPage from './QuotationsListPage'; 
 
@@ -20,32 +17,33 @@ const QuotationManager = () => {
     const { 
         list: quotations, 
         loading, 
-        error 
+        error,
+        // 💡 CAMBIO CLAVE 1: Extraer el objeto de paginación del estado de Redux
+        pagination 
     } = useSelector(state => state.quotations); 
 
     const { notify } = useNotification(); 
     
-    // 1. Cargar datos iniciales (La suscripción Socket.IO se gestiona en un nivel superior)
+    // 💡 SOLUCIÓN CLAVE: Usar useCallback para memoizar handleFetch
+    const handleFetch = useCallback((params = { page: 1, pageSize: 10, search: '' }) => {
+        console.log(`🔄 [Manager] Cargando cotizaciones con parámetros:`, params);
+        dispatch(fetchQuotations(params));
+    }, [dispatch]); // Dependencia: solo dispatch (que es estable).
+
+    // 1. Cargar datos iniciales
     useEffect(() => {
-        
-        // 🚨 LOG DE MONTAJE
         console.log("🔄 [Manager] Montando componente y cargando datos iniciales.");
         
-        dispatch(fetchQuotations());
+        // 💡 CAMBIO CLAVE 2: Llamar a handleFetch
+        handleFetch();
 
-        // 🚨 Eliminada toda la lógica de startRealtimeSubscription y limpieza (cleanupFunction).
-        // 🚨 Ahora, el Custom Hook (useSocketIO) maneja el Realtime en App.jsx.
-
-    }, [dispatch]); 
+    }, [handleFetch]); // 💡 DEPENDENCIA CORREGIDA: Depende de handleFetch memoizado.
 
     // 2. Handler para generar nueva cotización
     const handleCreate = () => {
         dispatch(createQuotation())
             .unwrap()
             .then((newQuotation) => {
-                // NOTA: El nuevo dato se añadirá al estado por dos vías:
-                // 1. Este .then (actualización instantánea)
-                // 2. El evento Socket.IO (confirmación en tiempo real)
                 notify(`Cotización #${newQuotation.id.substring(0, 8)} generada con éxito!`, 'success');
                 navigate(`/cotizaciones/${newQuotation.id}`);
             })
@@ -62,6 +60,8 @@ const QuotationManager = () => {
                 .unwrap()
                 .then(() => {
                     notify(`Cotización ${id.substring(0, 8)} cancelada.`, 'warning');
+                    // Recargar la página actual para rellenar el hueco
+                    handleFetch({ page: pagination.currentPage, pageSize: pagination.pageSize }); 
                 })
                 .catch((err) => {
                     const errorMessage = err.message || err.error || 'No se pudo cancelar la cotización';
@@ -70,12 +70,12 @@ const QuotationManager = () => {
         }
     };
 
-    // 4. Handler para ver detalle (usa react-router-dom)
+    // 4. Handler para ver detalle (usa react-router-dom) - No necesita cambios
     const handleViewDetails = (id) => {
         navigate(`/cotizaciones/${id}`); 
     };
 
-    // 5. Notificación de error
+    // 5. Notificación de error - No necesita cambios
     useEffect(() => {
         if (error) {
             notify(`Error de carga: ${error.message || error}`, 'error');
@@ -87,6 +87,10 @@ const QuotationManager = () => {
         <QuotationsListPage
             quotations={quotations}
             isLoading={loading}
+            // 💡 CAMBIO CLAVE 3: Pasar el objeto de paginación
+            pagination={pagination} 
+            // 💡 CAMBIO CLAVE 4: Pasar el handler memoizado
+            onFetchData={handleFetch} 
             onCreate={handleCreate}
             onDelete={handleDelete}
             onViewDetails={handleViewDetails}

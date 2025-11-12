@@ -64,15 +64,51 @@ async function getQuotationDetails(req, res) {
 // 2B. READ (Listar por Usuario o Admin) <----- ESTE ESE EL IMPORTANTE 
 // ==========================================================
 
+// async function getQuotationsByUser(req, res) {
+//     const usuarioId = req.user.id;
+//     const rolUsuario = req.user.rol;
+    
+//     try {
+//         // El Servicio decide si lista todas (admin) o solo las del usuario (user)
+//         const cotizaciones = await QuotationService.getQuotations(usuarioId, rolUsuario); 
+
+//         res.status(200).json(cotizaciones);
+//     } catch (error) {
+//         console.error("Error en getQuotationsByUser:", error.message);
+//         res.status(500).json({ message: "Error al listar las cotizaciones." });
+//     }
+// }
+
+
+
 async function getQuotationsByUser(req, res) {
     const usuarioId = req.user.id;
     const rolUsuario = req.user.rol;
     
-    try {
-        // El Servicio decide si lista todas (admin) o solo las del usuario (user)
-        const cotizaciones = await QuotationService.getQuotations(usuarioId, rolUsuario); 
+    // 1. Extraer y preparar los parámetros de la Query String
+    const params = {
+        page: parseInt(req.query.page) || 1,
+        pageSize: parseInt(req.query.pageSize) || 5,
+        searchTerm: req.query.search || '',
+        // Aquí puedes añadir más parámetros de filtro si los tienes
+    };
 
-        res.status(200).json(cotizaciones);
+    try {
+        // El Servicio decide qué método usar y recibe los parámetros
+        // Esperamos: { data: cotizaciones[], count: totalRows }
+        const { data: cotizaciones, count: totalRows } = await QuotationService.getQuotations(usuarioId, rolUsuario, params); 
+        
+        // 2. Enviar respuesta con datos de paginación en los headers o en el body
+        res.status(200).json({
+            data: cotizaciones,
+            pagination: {
+                totalItems: totalRows,
+                pageSize: params.pageSize,
+                currentPage: params.page,
+                totalPages: Math.ceil(totalRows / params.pageSize)
+            }
+        });
+        
     } catch (error) {
         console.error("Error en getQuotationsByUser:", error.message);
         res.status(500).json({ message: "Error al listar las cotizaciones." });

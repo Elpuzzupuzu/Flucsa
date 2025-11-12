@@ -6,60 +6,6 @@ import { CarritoRepository } from '../repositories/cartRepository.js';
 // MÉTODOS DE LÓGICA DE NEGOCIO
 // ==========================================================
 
-/**
- * Genera una cotización permanente a partir del carrito activo del usuario.
- */
-// async function generateQuotation(usuarioId) {
-//     try {
-//         const carritoId = await CarritoRepository.getOrCreateActiveCartId(usuarioId);
-//         const carritoItems = await CarritoRepository.getCartItemsByCartId(carritoId);
-
-//         if (!carritoItems || carritoItems.length === 0) {
-//             throw new Error("El carrito activo está vacío. No se puede generar la cotización.");
-//         }
-
-//         let totalCotizado = 0;
-//         const itemsCotizacion = [];
-
-//         for (const item of carritoItems) {
-//             const producto = item.producto;
-            
-//             if (!producto || producto.precio === undefined) {
-//                 throw new Error(`Producto ID ${item.producto_id} no tiene datos de precio válidos.`);
-//             }
-
-//             totalCotizado += producto.precio * item.cantidad;
-
-//             itemsCotizacion.push({
-//                 producto_id: item.producto_id,
-//                 nombre_producto: producto.nombre,     
-//                 precio_unitario: producto.precio,     
-//                 cantidad: item.cantidad,
-//             });
-//         }
-        
-//         const { id: nuevaCotizacionId } = await QuotationRepo.createQuotation(
-//             usuarioId, 
-//             totalCotizado, 
-//             carritoId
-//         );
-        
-//         const itemsConCotizacionId = itemsCotizacion.map(item => ({
-//             ...item,
-//             cotizacion_id: nuevaCotizacionId 
-//         }));
-        
-//         await QuotationRepo.addQuotationItems(itemsConCotizacionId);
-        
-//         return QuotationRepo.getQuotationById(nuevaCotizacionId); 
-
-//     } catch (error) {
-//         console.error("Error en generateQuotation Service:", error);
-//         throw new Error(`Fallo en el proceso de cotización: ${error.message}`);
-//     }
-// }
-
-
 // ==========================================================
 // MÉTODOS CRUD (Delegación + RBAC)
 // ==========================================================
@@ -138,30 +84,40 @@ async function generateQuotation(usuarioId) {
 
 
 
-
-
-
-
-
-
-
-
-
-
 //// end test
 /**
  * Obtiene la lista de cotizaciones, filtrando por usuario a menos que sea admin.
  */
-async function getQuotations(usuarioId, rolUsuario) {
+// async function getQuotations(usuarioId, rolUsuario) {
+//     if (rolUsuario === 'admin') {
+//         // ADMIN: Obtiene TODAS las cotizaciones
+//         return QuotationRepo.getAllQuotations(); 
+//     } else {
+//         // USER: Obtiene SOLO las suyas
+//         return QuotationRepo.getQuotationsByUserId(usuarioId);
+//     }
+// }
+
+
+async function getQuotations(usuarioId, rolUsuario, params) { // <<-- Aceptar params
+    // Definir valores por defecto si no vienen en params
+    const defaultParams = {
+        page: 1,
+        pageSize: 5,
+        searchTerm: '',
+        ...params // Sobreescribir con los valores provistos
+    };
+
     if (rolUsuario === 'admin') {
         // ADMIN: Obtiene TODAS las cotizaciones
-        return QuotationRepo.getAllQuotations(); 
+        // Retorna { data: [...], count: N }
+        return QuotationRepo.getAllQuotations(defaultParams); 
     } else {
         // USER: Obtiene SOLO las suyas
-        return QuotationRepo.getQuotationsByUserId(usuarioId);
+        // Retorna { data: [...], count: N }
+        return QuotationRepo.getQuotationsByUserId(usuarioId, defaultParams);
     }
 }
-
 
 
 async function getQuotationDetails(id) {

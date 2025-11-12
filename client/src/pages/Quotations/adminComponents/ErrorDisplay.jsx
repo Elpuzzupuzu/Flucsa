@@ -4,6 +4,15 @@ import React from 'react';
  * Componente Presentacional: Muestra una interfaz de error a pantalla completa.
  */
 const ErrorDisplay = ({ error }) => {
+    
+    // 💡 SOLUCIÓN: Intentar extraer el mensaje de varias formas.
+    // 1. Si es un objeto, usar error.message.
+    // 2. Si es una cadena, usarlo directamente.
+    // 3. Si no hay mensaje, usar un fallback.
+    const errorMessage = typeof error === 'object' && error !== null
+        ? error.message || JSON.stringify(error) // Si es un objeto, intentar usar .message o serializarlo
+        : String(error) || 'Ocurrió un error desconocido al cargar los datos.'; // Si es string/primitivo, úsalo
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
             <div className="max-w-2xl mx-auto mt-20">
@@ -16,7 +25,8 @@ const ErrorDisplay = ({ error }) => {
                         </div>
                         <div className="ml-4">
                             <h3 className="text-lg font-semibold text-red-800">Error al cargar cotizaciones</h3>
-                            <p className="text-red-700 mt-1">{error}</p>
+                            {/* 🎯 CORRECCIÓN APLICADA: Renderizar la cadena 'errorMessage' */}
+                            <p className="text-red-700 mt-1">{errorMessage}</p>
                         </div>
                     </div>
                 </div>
