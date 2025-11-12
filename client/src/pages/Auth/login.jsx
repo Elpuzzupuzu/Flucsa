@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { LogIn, Mail, Lock } from "lucide-react";
+// Se importan Eye y EyeOff para el toggle de visibilidad
+import { LogIn, Mail, Lock, Eye, EyeOff } from "lucide-react"; 
 import { loginUser } from "../../features/user/usersSlice";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // Nuevo estado para controlar si la contraseña se muestra como texto plano
+  const [showPassword, setShowPassword] = useState(false); 
+  
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -44,6 +48,11 @@ const Login = () => {
     } else {
       console.warn("⚠️ Falta email o contraseña");
     }
+  };
+
+  // Función para alternar la visibilidad de la contraseña
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   // Log del error (si ocurre)
@@ -95,7 +104,7 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Campo Contraseña */}
+          {/* Campo Contraseña - MODIFICADO */}
           <div>
             <label
               htmlFor="password"
@@ -104,20 +113,39 @@ const Login = () => {
               Contraseña
             </label>
             <div className="mt-1 relative rounded-md shadow-sm">
+              {/* Icono de Lock a la izquierda */}
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Lock className="h-5 w-5 text-gray-400" />
               </div>
+
               <input
                 id="password"
                 name="password"
-                type="password"
+                // El tipo cambia dinámicamente: "text" si showPassword es true, "password" si es false
+                type={showPassword ? "text" : "password"} 
                 autoComplete="current-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-[#1C2E82] focus:border-[#1C2E82] sm:text-sm"
+                // Se ajusta el padding a la derecha (pr-10) para el botón de toggle
+                className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-[#1C2E82] focus:border-[#1C2E82] sm:text-sm"
                 disabled={loading}
               />
+
+              {/* Botón para alternar la visibilidad */}
+              <button
+                type="button" // Importante: usar type="button" para no enviar el formulario
+                onClick={togglePasswordVisibility}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center focus:outline-none"
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              >
+                {/* Muestra el icono de ojo abierto o cerrado según el estado */}
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5 text-gray-500 hover:text-gray-700" />
+                ) : (
+                  <Eye className="h-5 w-5 text-gray-500 hover:text-gray-700" />
+                )}
+              </button>
             </div>
           </div>
 

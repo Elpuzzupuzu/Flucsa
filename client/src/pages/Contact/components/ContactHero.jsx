@@ -25,81 +25,87 @@ const containerVariants = {
 };
 
 const headerVariants = {
-    hidden: { opacity: 0, y: 60 },
+    hidden: { opacity: 0, y: 30 }, // Reducimos un poco el desplazamiento
     visible: { 
         opacity: 1, 
         y: 0, 
-        transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] } 
+        transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] } 
     },
 };
 
 const ContactHero = () => (
-    <section className="relative bg-gradient-to-br from-slate-50 via-white to-blue-50/30 py-24 px-6 overflow-hidden">
-        {/* Elementos decorativos animados (Framer Motion) */}
+    // 🎨 Fondo: Blanco nítido con un sutil degradado a Gris Claro (más limpio)
+    <section className="relative bg-white py-32 px-6 overflow-hidden">
+        
+        {/* Elementos decorativos animados: Tonalidades de acento muy tenues (Gris muy claro) */}
         <div className="absolute inset-0 overflow-hidden">
             <motion.div 
-                className="absolute top-20 right-10 w-80 h-80 bg-gradient-to-r from-[#1C2E82]/20 to-[#2d4bc7]/20 rounded-full blur-3xl"
+                // 🔹 Gris muy claro, opacidad mínima
+                className="absolute top-20 right-10 w-80 h-80 bg-gray-200/5 rounded-full blur-3xl"
                 variants={floatingVariants}
                 animate="animate"
             />
             <motion.div 
-                className="absolute bottom-20 left-10 w-64 h-64 bg-gradient-to-r from-[#ED0000]/20 to-[#ff4444]/20 rounded-full blur-3xl"
+                // ◻️ Azul Marino tenue y sutil
+                className="absolute bottom-20 left-10 w-64 h-64 bg-[#1E3A8A]/5 rounded-full blur-3xl"
                 variants={floatingVariants}
                 animate="animate"
                 style={{ animationDelay: '2s' }}
             />
-            <motion.div 
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-purple-300/10 to-pink-300/10 rounded-full blur-3xl"
-                variants={floatingVariants}
-                animate="animate"
-                style={{ animationDelay: '4s' }}
-            />
         </div>
 
-        {/* Patrón decorativo */}
-        <div className="absolute inset-0 opacity-5">
-            <div className="w-full h-full" style={{
-                backgroundImage: 'radial-gradient(circle, #1C2E82 1px, transparent 1px)',
-                backgroundSize: '40px 40px'
-            }}></div>
-        </div>
+        {/* Patrón decorativo: Se eliminan los puntos para una superficie totalmente limpia */}
 
-        <div className="max-w-7xl mx-auto relative z-10">
+        <div className="max-w-6xl mx-auto relative z-10">
             <motion.div
                 className="text-center"
                 initial="hidden"
                 animate="visible"
                 variants={containerVariants}
             >
+                {/* Ícono Principal: Fondo Gris Carbón (más neutro y corporativo) */}
                 <motion.div 
-                    className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#ED0000] via-[#ff4444] to-[#ff6b6b] rounded-3xl mb-8 shadow-2xl ring-4 ring-white/50" 
+                    // 🔘 Fondo Gris Carbón/Azul Oscuro casi negro
+                    className="inline-flex items-center justify-center w-16 h-16 bg-gray-800 rounded-xl mb-6 shadow-md ring-4 ring-gray-100" 
                     variants={headerVariants}
-                    whileHover={{ scale: 1.1, rotate: 5, transition: { duration: 0.3 } }}
+                    whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
                 >
-                    <Mail className="w-10 h-10 text-white drop-shadow-lg" />
+                    <Mail className="w-8 h-8 text-white" />
                 </motion.div>
 
+                {/* Título (H1): Fuente más pequeña, peso 'bold' y color Gris Carbón/Azul Oscuro */}
                 <motion.h1 
-                    className="text-5xl md:text-7xl font-black bg-gradient-to-r from-[#1C2E82] via-[#2d4bc7] to-[#4361ee] bg-clip-text text-transparent mb-6 tracking-tight leading-tight" 
+                    // ✍️ Fuentes: Reducimos tamaño (6xl), usamos font-bold, color más oscuro y serio
+                    className="text-5xl md:text-6xl font-bold text-gray-900 mb-4 tracking-tight leading-tight" 
                     variants={headerVariants}
                 >
-                    Contáctanos
+                    Conectemos.
                 </motion.h1>
-
-                <motion.div 
-                    className="flex items-center justify-center mb-8" 
+                
+                {/* Párrafo Principal: Texto en Gris Oscuro, peso 'normal' para facilitar la lectura */}
+                <motion.p 
+                    className="text-gray-700 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed font-normal" 
                     variants={headerVariants}
                 >
-                    <div className="w-20 h-1.5 bg-gradient-to-r from-[#ED0000] to-[#ff4444] rounded-full"></div>
-                    <div className="w-4 h-4 bg-gradient-to-r from-[#ED0000] to-[#ff4444] rounded-full mx-4 shadow-lg"></div>
-                    <div className="w-20 h-1.5 bg-gradient-to-r from-[#ED0000] to-[#ff4444] rounded-full"></div>
+                    Estamos aquí para ayudarte. **Si tienes alguna pregunta** sobre nuestros servicios o productos, no dudes en contactarnos.
+                </motion.p>
+
+
+                {/* Separador: Más minimalista en un tono de Azul Marino sutil */}
+                <motion.div 
+                    className="flex items-center justify-center mt-6 mb-8" 
+                    variants={headerVariants}
+                >
+                    {/* ➖ Línea fina en Azul Marino Corporativo */}
+                    <div className="w-12 h-0.5 bg-[#1E3A8A]/50 rounded-full"></div>
                 </motion.div>
 
+                {/* Texto de apoyo opcional: Gris más claro, fuente 'light', sin cursivas */}
                 <motion.p 
-                    className="text-slate-700 text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed font-medium" 
+                    className="text-gray-500 text-sm md:text-base max-w-3xl mx-auto leading-normal font-light" 
                     variants={headerVariants}
                 >
-                    Estamos aquí para ayudarte. Si tienes alguna pregunta sobre nuestros servicios o productos, no dudes en contactarnos.
+                    Nuestro equipo se pondrá en contacto contigo en un plazo de 24 horas laborables.
                 </motion.p>
             </motion.div>
         </div>

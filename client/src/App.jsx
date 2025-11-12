@@ -17,6 +17,7 @@ import ShoppingCart from './pages/Products/ShoppingCart/ShoppingCart';
 import ToastNotification from './components/ToastComponent/ToastNotification';
 import ReduxToast from './components/ReduxToast/ReduxToast';
 import AppRoutes from './AppRoutes/appRoutes'; 
+import SessionLoader from './components/LoadingScreen/sesionLoader';
 
 function App() {
   // === Lógica Central ===
@@ -41,9 +42,8 @@ function App() {
   // Render loader mientras se verifica la sesión
   if (!reduxAuthChecked) {
     return (
-      <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 text-gray-600">
-        <p className="text-xl text-indigo-500">Verificando sesión...</p>
-      </div>
+      <SessionLoader/>
+     
     );
   }
 

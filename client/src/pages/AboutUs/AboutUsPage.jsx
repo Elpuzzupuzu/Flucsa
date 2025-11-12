@@ -48,7 +48,8 @@ const AboutUsPage = () => {
     };
 
     return (
-        <main className="overflow-hidden">
+        // Aplicamos un fondo blanco base para máxima limpieza y profesionalismo
+        <main className="overflow-hidden bg-white">
             <CSSStyles />
 
             {/* 2. PASAR LA IMAGEN IMPORTADA teamPhoto COMO PROP 'teamImage' */}

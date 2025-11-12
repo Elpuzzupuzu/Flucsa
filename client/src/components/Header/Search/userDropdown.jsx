@@ -9,28 +9,25 @@ const getInitials = (name) => {
 
   if (parts.length > 0) initials += parts[0].charAt(0).toUpperCase();
   if (parts.length > 1) initials += parts[1].charAt(0).toUpperCase();
-  else if (initials.length === 1 && name.length > 1) initials += name.charAt(1).toUpperCase();
+  else if (initials.length === 1 && name.length > 1)
+    initials += name.charAt(1).toUpperCase();
 
   return initials.substring(0, 2);
 };
 
-// Se consumen las props con sus nombres originales de Redux
-const UserDropdown = ({ userName: reduxUserName, isLoggedIn: reduxLoggedIn, onLogout, rol, profilePicture: reduxProfilePicture }) => {
+const UserDropdown = ({
+  userName: reduxUserName,
+  isLoggedIn: reduxLoggedIn,
+  onLogout,
+  rol,
+  profilePicture: reduxProfilePicture,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // 1. ELIMINACIÓN: Quitamos los estados locales de sincronización.
-  // const [userName, setUserName] = useState(reduxUserName || "Usuario");
-  // const [profilePicture, setProfilePicture] = useState(reduxProfilePicture || undefined);
-  // const [isLoggedIn, setIsLoggedIn] = useState(reduxLoggedIn);
-
-  // 2. ELIMINACIÓN: Quitamos el useEffect que los sincronizaba.
-  // useEffect(() => { ... }, [reduxUserName, reduxProfilePicture, reduxLoggedIn]);
-  
-  // 3. CAMBIO CLAVE: Usamos las props recibidas directamente, asegurando fallbacks.
   const userName = reduxUserName || "Usuario";
   const profilePicture = reduxProfilePicture;
   const isLoggedIn = reduxLoggedIn;
-  
+
   const userInitials = useMemo(() => getInitials(userName), [userName]);
 
   const handleMouseEnter = () => setIsOpen(true);
@@ -52,7 +49,7 @@ const UserDropdown = ({ userName: reduxUserName, isLoggedIn: reduxLoggedIn, onLo
               className="w-8 h-8 rounded-full object-cover border-2 border-white shadow-md"
               onError={(e) => {
                 console.error("Error cargando imagen de perfil:", profilePicture);
-                e.target.style.display = 'none';
+                e.target.style.display = "none";
               }}
             />
           ) : (
@@ -64,7 +61,7 @@ const UserDropdown = ({ userName: reduxUserName, isLoggedIn: reduxLoggedIn, onLo
       )}
       <div className="flex flex-col leading-none">
         <span className="text-xs text-white/70">
-          Hola, {isLoggedIn ? userName.split(' ')[0] : "visitante"}
+          Hola, {isLoggedIn ? userName.split(" ")[0] : "visitante"}
         </span>
         <span className="text-sm font-bold text-white whitespace-nowrap">
           {isLoggedIn ? "Tu Cuenta" : "Identifícate"}
@@ -81,15 +78,26 @@ const UserDropdown = ({ userName: reduxUserName, isLoggedIn: reduxLoggedIn, onLo
     >
       <div
         className={`p-2 rounded-md transition-all cursor-pointer ${
-          isOpen ? "bg-white/20 border-white/20" : "border border-transparent hover:border-white/20"
+          isOpen
+            ? "bg-white/20 border-white/20"
+            : "border border-transparent hover:border-white/20"
         }`}
       >
         <TriggerContent />
       </div>
 
       {isOpen && (
-        <div className={`absolute top-[calc(100%+5px)] right-0 bg-white shadow-2xl border border-gray-100 p-4 z-40 transform origin-top-right ${isLoggedIn ? 'w-[450px] rounded-xl' : 'w-[400px] rounded-lg'}`}>
-          <div className={`absolute -top-2 right-6 w-4 h-4 bg-white transform rotate-45 border-t border-l ${isLoggedIn ? 'border-gray-100 right-8' : 'border-gray-200 right-4'}`}></div>
+        <div
+          className={`absolute top-[calc(100%-5px)] right-0 bg-white shadow-2xl border border-gray-100 p-4 z-40 transform origin-top-right ${
+            isLoggedIn ? "w-[450px] rounded-xl" : "w-[400px] rounded-lg"
+          }`}
+        >
+          {/* Flecha decorativa del dropdown */}
+          <div
+            className={`absolute -top-3 right-6 w-4 h-4 bg-white transform rotate-45 border-t border-l ${
+              isLoggedIn ? "border-gray-100 right-8" : "border-gray-200 right-4"
+            }`}
+          ></div>
 
           {!isLoggedIn ? (
             <div className="flex flex-col items-center p-2">
@@ -116,7 +124,7 @@ const UserDropdown = ({ userName: reduxUserName, isLoggedIn: reduxLoggedIn, onLo
           ) : (
             <>
               <h3 className="text-lg font-extrabold text-[#131921] mb-4 border-b pb-2">
-                ¡Bienvenido, {userName.split(' ')[0]}!
+                ¡Bienvenido, {userName.split(" ")[0]}!
               </h3>
               <div className="flex justify-between gap-8">
                 <div className="flex-1 min-w-0">

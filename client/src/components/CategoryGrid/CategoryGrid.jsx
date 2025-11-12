@@ -1,11 +1,12 @@
 import React from 'react';
 import { Truck, Wrench, ShoppingBag } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 
 // Imágenes de ejemplo - reemplaza con tus imports reales
 import domesticoImg from '../../assets/imgs/domestico.jpg';
 import piscinaImg from '../../assets/imgs/piscina-playa.jpg';
 import ferreteriaImg from '../../assets/imgs/ferreteria.jpg';
-import industrialImg from  '../../assets/imgs/industrial.jpg';
+import industrialImg from '../../assets/imgs/industrial.jpg';
 
 // CategoryCard simulado - mantén tu componente original
 const CategoryCard = ({ title, image }) => {
@@ -30,6 +31,9 @@ const CategoryCard = ({ title, image }) => {
 
 // CategoryGrid con diseño profesional
 function CategoryGrid() {
+  // 1. Inicializa el hook de navegación
+  const navigate = useNavigate(); 
+  
   const categories = [
     {
       title: 'Doméstico',
@@ -49,9 +53,10 @@ function CategoryGrid() {
     },
   ];
 
+  // 2. Función que llama a navigate()
   const handleViewProducts = () => {
-    // navigate("/productos");
-    console.log('Navegar a productos');
+    // Redirige a la ruta "/productos"
+    navigate("/productos");
   };
 
   return (
@@ -81,6 +86,9 @@ function CategoryGrid() {
               key={index}
               title={category.title}
               image={category.image}
+              
+
+              
             />
           ))}
         </div>
@@ -88,7 +96,8 @@ function CategoryGrid() {
         {/* Botón CTA */}
         <div className="text-center mb-16">
           <button 
-            onClick={handleViewProducts}  
+            // 3. Asigna la función de navegación al evento onClick
+            onClick={handleViewProducts}  
             className="px-8 py-3 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-colors duration-200"
           >
             Ver Todos los Productos
@@ -101,7 +110,7 @@ function CategoryGrid() {
             <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
               <Truck className="w-6 h-6 text-blue-600" />
             </div>
-            <h4 className="font-semibold text-gray-900 mb-2">Envío / Procurement</h4>
+            <h4 className="font-semibold text-gray-900 mb-2">Envío</h4>
             <p className="text-gray-600 text-sm">Servicio de entrega nacional</p>
           </div>
 

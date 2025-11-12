@@ -2,19 +2,24 @@ import React from 'react';
 import TestimonialCard from './TestimonialCard';
 
 const TestimonialsSection = ({ testimonials, getAnimationClass }) => (
-    <section className="bg-slate-100 py-20 px-6">
+    // Fondo limpio y profesional (gris muy claro)
+    <section className="bg-gray-50 py-20 px-6 border-t border-gray-100">
         <div className="max-w-6xl mx-auto">
             <div 
                 className={`text-center mb-16 ${getAnimationClass('testimonials')}`}
                 data-animate
                 id="testimonials"
             >
-                <h2 className="text-4xl md:text-5xl font-black mb-4 tracking-tight">
-                    <span className="gradient-text">Lo que Dicen</span> Nuestros Clientes
+                {/* Título: Usamos Gris Carbón 900 para la base, y Azul Marino para el acento. */}
+                <h2 className="text-4xl md:text-5xl font-black mb-4 tracking-tight text-gray-900">
+                    <span className="text-gray-900">Lo que Dicen</span> <span className="text-[#1E3A8A]">Nuestros Clientes</span>
                 </h2>
-                <div className="w-20 h-1 bg-gradient-to-r from-[#1C2E82] to-[#2d4bc7] mx-auto mb-6 rounded-full"></div>
-                <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-                    Historias reales de éxito que demuestran nuestro compromiso con la excelencia
+                {/* Separador sólido en Azul Marino */}
+                <div className="w-20 h-1 bg-[#1E3A8A] mx-auto mb-6 rounded-full"></div>
+                
+                {/* Párrafo en Gris Oscuro 700 para excelente legibilidad y seriedad */}
+                <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+                    Historias reales de éxito que demuestran nuestro compromiso con la excelencia.
                 </p>
             </div>
 

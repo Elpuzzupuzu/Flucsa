@@ -1,9 +1,4 @@
 
-
-
-
-
-
 const ExpertiseCard = ({ 
   title, 
   description, 
