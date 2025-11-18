@@ -65,7 +65,7 @@ const FilterSidebar = ({ filters, onFilterChange, isOpen, onToggle }) => {
         limit: 14, 
         mainCategoryId: filters.mainCategoryId, // Conservar filtro de categoría
         searchQuery: filters.searchQuery || undefined,
-        // 🎯 Campos para la implementación futura de rango de precio en el backend
+        //  Campos para la implementación futura de rango de precio en el backend
         minPrice: minPrice, 
         maxPrice: maxPrice, 
     };

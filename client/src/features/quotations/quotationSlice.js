@@ -38,7 +38,7 @@ export const createQuotation = createAsyncThunk(
  */
 export const fetchQuotations = createAsyncThunk(
     "quotation/fetchQuotations",
-    // 💡 CAMBIO CLAVE: Acepta un objeto de parámetros (page, pageSize, search)
+    //  CAMBIO CLAVE: Acepta un objeto de parámetros (page, pageSize, search)
     async (params = {}, thunkAPI) => {
         try {
             // Construir la Query String (ej: ?page=1&pageSize=10&search=pendiente)

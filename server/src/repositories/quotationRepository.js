@@ -4,7 +4,7 @@ import { supabase } from '../config/supabaseClient.js';
 const TABLA_COTIZACIONES = 'cotizaciones';
 const TABLA_COTIZACION_ITEMS = 'cotizaciones_items';
 const ESTADOS_VALIDOS = ['GENERADA', 'ACEPTADA', 'RECHAZADA', 'COMPLETADA', 'CANCELADA'];
-const TABLA_USUARIOS = 'usuarios';
+const TABLA_PRODUCTOS = 'productos';
 /**
  * Crea la cabecera de la cotización.
  */
@@ -40,111 +40,69 @@ async function addQuotationItems(items) {
     }
 }
 
-/**
- * Obtiene una cotización específica con todos sus ítems.
- */
+
+
 async function getQuotationById(id) {
-    const { data, error } = await supabase
+    // 1. OBTENER LA COTIZACIÓN Y LOS ÍTEMS
+    const { data: quotation, error: quotationError } = await supabase
         .from(TABLA_COTIZACIONES)
         .select(`
             *,
             ${TABLA_COTIZACION_ITEMS} (*)
-        `)
+        `) // Mantenemos la selección simple de ítems
         .eq('id', id)
         .single();
 
-    if (error && error.code !== 'PGRST116') {
-        console.error('Error en getQuotationById:', error);
-        throw new Error(`Error al leer la cotización: ${error.message}`);
+    if (quotationError && quotationError.code !== 'PGRST116') {
+        console.error('Error al leer la cotización:', quotationError);
+        throw new Error(`Error al leer la cotización: ${quotationError.message}`);
     }
-    return data;
+    
+    if (!quotation) {
+        return null; // Cotización no encontrada
+    }
+
+    const items = quotation[TABLA_COTIZACION_ITEMS];
+
+    // 2. EXTRAER IDs DE PRODUCTOS
+    const productIds = items
+        .map(item => item.producto_id)
+        .filter((value, index, self) => self.indexOf(value) === index); // Obtener IDs únicos
+
+    if (productIds.length === 0) {
+        return quotation; // No hay ítems, retornar la cotización tal cual
+    }
+
+    // 3. OBTENER LAS IMÁGENES DE LOS PRODUCTOS
+    const { data: products, error: productError } = await supabase
+        .from(TABLA_PRODUCTOS)
+        .select('id, imagen') // Solo necesitamos el ID y la imagen
+        .in('id', productIds); // Usamos .in() para buscar múltiples IDs
+
+    if (productError) {
+        console.error('Error al leer productos:', productError);
+        // Podrías lanzar un error o simplemente continuar sin las imágenes
+    }
+
+    // Crear un mapa (diccionario) para acceso rápido {id: imagen}
+    const productMap = (products || []).reduce((map, product) => {
+        map[product.id] = product.imagen;
+        return map;
+    }, {});
+
+    // 4. FUSIONAR DATOS (Merge)
+    const mergedItems = items.map(item => ({
+        ...item,
+        // Añadir la imagen directamente al ítem de la cotización
+        imagen_producto: productMap[item.producto_id] || null 
+    }));
+
+    // Reemplazar los ítems antiguos con los ítems fusionados
+    quotation[TABLA_COTIZACION_ITEMS] = mergedItems;
+    
+    return quotation;
 }
-
-
-
-
-// async function getQuotationsByUserId(usuarioId, params) {
-//     // 💡 CAMBIO: Añadir 'status' a la desestructuración
-//     const { page, pageSize, searchTerm, status } = params;
-    
-//     // 1. Calcular OFFSET (Cuántas filas saltar)
-//     const offset = (page - 1) * pageSize; 
-    
-//     // 2. Definir la consulta base (filtrada por usuario)
-//     let query = supabase
-//         .from(TABLA_COTIZACIONES)
-//         .select(`
-//             *,
-//             ${TABLA_COTIZACION_ITEMS} (*)
-//         `, { count: 'exact' }) 
-//         .eq('usuario_id', usuarioId); // Filtrado obligatorio por el ID del usuario
-
-//     // 3. Aplicar Filtro de Estado (Nuevo)
-//     if (status && status !== 'ALL') {
-//         query = query.eq('estado_cotizacion', status);
-//     }
-    
-//     // 4. Aplicar Filtro de Búsqueda
-//     if (searchTerm) {
-//         // La búsqueda aquí es más simple (por estado o total), pero sigue la lógica de OR.
-//         // Nos aseguramos de NO pasar el segundo argumento de opciones para evitar problemas.
-//         const isNumber = !isNaN(searchTerm);
-        
-//         query = query.or(
-//             `estado_cotizacion.ilike.%${searchTerm}%,total_cotizado.eq.${isNumber ? parseFloat(searchTerm) : -1}` 
-//         );
-//         // Nota: Si solo buscas por estado o total, no necesitas el foreignTable.
-//     }
-    
-//     // 5. Aplicar Orden, Paginación (RANGE) y Ejecutar
-//     const { data, error, count } = await query
-//         .order('fecha_creacion', { ascending: false })
-//         .range(offset, offset + pageSize - 1);
-
-//     if (error) {
-//         console.error('Error en getQuotationsByUserId:', error);
-//         throw new Error(`Error al listar cotizaciones: ${error.message}`);
-//     }
-    
-//     return { data: data || [], count }; 
-// }
-
-// async function getAllQuotations(params) {
-//     const { page, pageSize, searchTerm } = params;
-//     const offset = (page - 1) * pageSize;
-    
-//     let query = supabase
-//         .from(TABLA_COTIZACIONES)
-//         .select(`
-//             *,
-//             ${TABLA_COTIZACION_ITEMS} (*),
-//             usuario_id (nombre, apellido, correo)
-//         `, { count: 'exact' }); // <<-- IMPORTANTE: Usar count: 'exact'
-    
-//     // Aplicar Filtro de Búsqueda
-//     if (searchTerm) {
-//         const isNumber = !isNaN(searchTerm);
-
-//         // Ejemplo: Buscar por estado O por nombre/apellido del usuario
-//         query = query.or(
-//             `estado_cotizacion.ilike.%${searchTerm}%,usuario_id.nombre.ilike.%${searchTerm}%,usuario_id.apellido.ilike.%${searchTerm}%`,
-//             { foreignTable: TABLA_COTIZACIONES }
-//         );
-//     }
-
-//     // Aplicar Orden, Paginación (RANGE) y Ejecutar
-//     const { data, error, count } = await query
-//         .order('fecha_creacion', { ascending: false })
-//         .range(offset, offset + pageSize - 1);
-
-//     if (error) {
-//         console.error('Error en getAllQuotations:', error);
-//         throw new Error(`Error al listar todas las cotizaciones: ${error.message}`);
-//     }
-    
-//     // Devolver los datos y el total de registros
-//     return { data: data || [], count };
-// }
+/////testing
 
 
 async function getQuotationsByUserId(usuarioId, params) {
@@ -209,36 +167,36 @@ async function getQuotationsByUserId(usuarioId, params) {
     return { data: data || [], count }; 
 }
 
-
-
+////////////////////////////////////////////////////////////////////////
 // async function getAllQuotations(params) {
-//     // 💡 CAMBIO: Añadir 'status' a la desestructuración
 //     const { page, pageSize, searchTerm, status } = params;
 //     const offset = (page - 1) * pageSize;
-    
+
 //     let query = supabase
 //         .from(TABLA_COTIZACIONES)
 //         .select(`
 //             *,
 //             ${TABLA_COTIZACION_ITEMS} (*),
 //             usuario_id (nombre, apellido, correo)
-//         `, { count: 'exact' }); 
-    
-//     // 1. Aplicar Filtro de Estado (Nuevo)
+//         `, { count: 'exact' });
+
+//     // 1. Aplicar Filtro de Estado
 //     if (status && status !== 'ALL') {
 //         query = query.eq('estado_cotizacion', status);
 //     }
-    
+
 //     // 2. Aplicar Filtro de Búsqueda (Texto, ID, Nombre/Apellido)
-//     if (searchTerm) {
-//         // CORRECCIÓN CLAVE: 
-//         // 1. Nos aseguramos de que la cadena OR esté bien formateada.
-//         // 2. Eliminamos el segundo argumento `{ foreignTable: ... }` del .or() que causaba el error de sintaxis.
+//     if (searchTerm && searchTerm.trim() !== '') {
 //         const searchTerms = searchTerm.toLowerCase();
 
-//         query = query.or(
-//             `estado_cotizacion.ilike.%${searchTerms}%,usuario_id.nombre.ilike.%${searchTerms}%,usuario_id.apellido.ilike.%${searchTerms}%`
-//         );
+//         // 🔑 CORRECCIÓN CLAVE: Dividir la cláusula OR para manejar la tabla foránea.
+
+//         // Filtro OR para la tabla principal (estado_cotizacion)
+//         query = query.or(`estado_cotizacion.ilike.%${searchTerms}%`);
+
+//         // Filtro OR para la relación del usuario, usando el parámetro foreignTable
+//         const userFilter = `nombre.ilike.%${searchTerms}%,apellido.ilike.%${searchTerms}%`;
+//         query = query.or(userFilter, { foreignTable: 'usuario_id' });
 //     }
 
 //     // 3. Aplicar Orden, Paginación (RANGE) y Ejecutar
@@ -250,7 +208,7 @@ async function getQuotationsByUserId(usuarioId, params) {
 //         console.error('Error en getAllQuotations:', error);
 //         throw new Error(`Error al listar todas las cotizaciones: ${error.message}`);
 //     }
-    
+
 //     return { data: data || [], count };
 // }
 async function getAllQuotations(params) {
@@ -265,36 +223,73 @@ async function getAllQuotations(params) {
             usuario_id (nombre, apellido, correo)
         `, { count: 'exact' });
 
-    // 1. Aplicar Filtro de Estado
+    // 1. Filtro por Estado
     if (status && status !== 'ALL') {
         query = query.eq('estado_cotizacion', status);
     }
 
-    // 2. Aplicar Filtro de Búsqueda (Texto, ID, Nombre/Apellido)
+    // 2. Filtro de Búsqueda
     if (searchTerm && searchTerm.trim() !== '') {
         const searchTerms = searchTerm.toLowerCase();
 
-        // 🔑 CORRECCIÓN CLAVE: Dividir la cláusula OR para manejar la tabla foránea.
-
-        // Filtro OR para la tabla principal (estado_cotizacion)
         query = query.or(`estado_cotizacion.ilike.%${searchTerms}%`);
 
-        // Filtro OR para la relación del usuario, usando el parámetro foreignTable
         const userFilter = `nombre.ilike.%${searchTerms}%,apellido.ilike.%${searchTerms}%`;
         query = query.or(userFilter, { foreignTable: 'usuario_id' });
     }
 
-    // 3. Aplicar Orden, Paginación (RANGE) y Ejecutar
+    // 3. Ejecutar consulta con orden y paginación
     const { data, error, count } = await query
         .order('fecha_creacion', { ascending: false })
         .range(offset, offset + pageSize - 1);
 
     if (error) {
         console.error('Error en getAllQuotations:', error);
-        throw new Error(`Error al listar todas las cotizaciones: ${error.message}`);
+        throw new Error(`Error al listar cotizaciones: ${error.message}`);
     }
 
-    return { data: data || [], count };
+    const quotations = data || [];
+
+    // =============================
+    // 🔥 4. EXTRAER TODOS LOS PRODUCT IDs
+    // =============================
+    const allItems = quotations.flatMap(q => q[TABLA_COTIZACION_ITEMS] || []);
+    const productIds = [...new Set(allItems.map(item => item.producto_id))];
+
+    if (productIds.length === 0) {
+        return { data: quotations, count };
+    }
+
+    // =============================
+    // 🔥 5. OBTENER TODAS LAS IMÁGENES
+    // =============================
+    const { data: products, error: prodError } = await supabase
+        .from(TABLA_PRODUCTOS)
+        .select('id, imagen')
+        .in('id', productIds);
+
+    if (prodError) {
+        console.error('Error al leer productos:', prodError);
+    }
+
+    // Diccionario: { product_id: imagen }
+    const productMap = (products || []).reduce((acc, p) => {
+        acc[p.id] = p.imagen;
+        return acc;
+    }, {});
+
+    // =============================
+    // 🔥 6. FUSIONAR: añadir imagen a cada ítem
+    // =============================
+    const mergedQuotations = quotations.map(q => ({
+        ...q,
+        [TABLA_COTIZACION_ITEMS]: q[TABLA_COTIZACION_ITEMS].map(item => ({
+            ...item,
+            imagen_producto: productMap[item.producto_id] || null
+        }))
+    }));
+
+    return { data: mergedQuotations, count };
 }
 
 

@@ -117,7 +117,7 @@ async function getQuotations(usuarioId, rolUsuario, params) { // <<-- Aceptar pa
         // Retorna { data: [...], count: N }
         return QuotationRepo.getQuotationsByUserId(usuarioId, defaultParams);
     }
-}
+}  //<----------------------------------------------
 
 
 async function getQuotationDetails(id) {

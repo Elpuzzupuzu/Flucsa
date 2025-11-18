@@ -58,9 +58,15 @@ const AdminQuotationManager = () => {
             params.search = search;
         }
 
-        console.log(`🔄 [Manager] Cargando cotizaciones con parámetros:`, params);
+        // console.log(`🔄 [Manager] Cargando cotizaciones con parámetros:`, params);
         dispatch(fetchQuotations(params));
     }, [dispatch, pagination.pageSize]); 
+
+        // useEffect(() => {
+        //     console.log("pruebas de la cotizacion:", quotations);
+        // }, [quotations]);
+
+                
 
     // 3. Efecto de Carga Inicial
     useEffect(() => {

@@ -60,26 +60,6 @@ async function getQuotationDetails(req, res) {
     }
 }
 
-// ==========================================================
-// 2B. READ (Listar por Usuario o Admin) <----- ESTE ESE EL IMPORTANTE 
-// ==========================================================
-
-// async function getQuotationsByUser(req, res) {
-//     const usuarioId = req.user.id;
-//     const rolUsuario = req.user.rol;
-    
-//     try {
-//         // El Servicio decide si lista todas (admin) o solo las del usuario (user)
-//         const cotizaciones = await QuotationService.getQuotations(usuarioId, rolUsuario); 
-
-//         res.status(200).json(cotizaciones);
-//     } catch (error) {
-//         console.error("Error en getQuotationsByUser:", error.message);
-//         res.status(500).json({ message: "Error al listar las cotizaciones." });
-//     }
-// }
-
-
 
 async function getQuotationsByUser(req, res) {
     const usuarioId = req.user.id;
