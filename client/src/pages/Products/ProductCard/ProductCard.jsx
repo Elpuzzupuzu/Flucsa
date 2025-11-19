@@ -52,9 +52,7 @@ const ProductCard = ({ product, viewMode = 'grid', onAddToCart }) => {
     return [...Array(5)].map((_, i) => (
       <Star
         key={i}
-        className={`w-3 h-3 ${
-          i < tempStars ? 'text-amber-400 fill-amber-400' : 'text-gray-300'
-        }`}
+        className={`w-3 h-3 ${i < tempStars ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`}
       />
     ));
   };
@@ -72,9 +70,7 @@ const ProductCard = ({ product, viewMode = 'grid', onAddToCart }) => {
                 src={product.image}
                 alt={product.name}
                 onLoad={() => setImageLoaded(true)}
-                className={`w-full h-full object-contain transition-all duration-300 ${
-                  imageLoaded ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
-                } group-hover:scale-105`}
+                className={`w-full h-full object-contain transition-all duration-300 ${imageLoaded ? 'scale-100 opacity-100' : 'scale-95 opacity-0'} group-hover:scale-105`}
               />
             </div>
 
@@ -87,11 +83,7 @@ const ProductCard = ({ product, viewMode = 'grid', onAddToCart }) => {
             <button
               aria-label="Agregar a favoritos"
               onClick={handleToggleLike}
-              className={`absolute top-2 right-2 p-1.5 rounded-full backdrop-blur-sm transition-all duration-200 ${
-                isLiked
-                  ? 'bg-red-500 text-white'
-                  : 'bg-white/80 text-gray-600 hover:bg-white hover:text-red-500'
-              }`}
+              className={`absolute top-2 right-2 p-1.5 rounded-full backdrop-blur-sm transition-all duration-200 ${isLiked ? 'bg-red-500 text-white' : 'bg-white/80 text-gray-600 hover:bg-white hover:text-red-500'}`}
             >
               <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-current' : ''}`} />
             </button>
@@ -127,26 +119,18 @@ const ProductCard = ({ product, viewMode = 'grid', onAddToCart }) => {
     );
   }
 
-  // Vista lista - MEJORADA PARA MÓVILES
   if (viewMode === 'list') {
     return (
       <div className="bg-white rounded-lg border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden">
-        {/* LAYOUT RESPONSIVE: Columna en móvil, fila en desktop */}
         <div className="p-3 sm:p-4 flex flex-col sm:flex-row gap-3 sm:gap-4 items-start">
-          
-          {/* IMAGEN - Ajustada para móviles */}
           <Link to={`/productos/${product.id}`} className="relative flex-shrink-0 w-full sm:w-auto">
             <div className="overflow-hidden bg-white rounded-md w-full h-48 sm:w-32 sm:h-32 flex items-center justify-center border border-gray-100">
-              {!imageLoaded && (
-                <div className="absolute inset-0 bg-gray-50 animate-pulse" />
-              )}
+              {!imageLoaded && <div className="absolute inset-0 bg-gray-50 animate-pulse" />}
               <img
                 src={product.image}
                 alt={product.name}
                 onLoad={() => setImageLoaded(true)}
-                className={`w-full h-full object-contain transition-all duration-300 ${
-                  imageLoaded ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
-                }`}
+                className={`w-full h-full object-contain transition-all duration-300 ${imageLoaded ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
               />
             </div>
 
@@ -156,21 +140,15 @@ const ProductCard = ({ product, viewMode = 'grid', onAddToCart }) => {
               </div>
             )}
 
-            {/* Botón de favoritos en móvil (sobre la imagen) */}
             <button
               aria-label="Agregar a favoritos"
               onClick={handleToggleLike}
-              className={`sm:hidden absolute top-2 right-2 p-2 rounded-full backdrop-blur-sm transition-all duration-200 shadow-md ${
-                isLiked
-                  ? 'bg-red-500 text-white'
-                  : 'bg-white/90 text-gray-600 hover:bg-white hover:text-red-500'
-              }`}
+              className={`sm:hidden absolute top-2 right-2 p-2 rounded-full backdrop-blur-sm transition-all duration-200 shadow-md ${isLiked ? 'bg-red-500 text-white' : 'bg-white/90 text-gray-600 hover:bg-white hover:text-red-500'}`}
             >
               <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
             </button>
           </Link>
 
-          {/* CONTENIDO PRINCIPAL */}
           <div className="flex-grow min-w-0 w-full sm:w-auto">
             <Link to={`/productos/${product.id}`}>
               <h3 className="text-sm sm:text-base font-medium text-gray-900 mb-1 sm:mb-2 hover:text-blue-600 transition-colors line-clamp-2">
@@ -178,15 +156,12 @@ const ProductCard = ({ product, viewMode = 'grid', onAddToCart }) => {
               </h3>
             </Link>
 
-            {/* Rating */}
             <div className="flex items-center gap-1.5 mb-2">
               <div className="flex items-center gap-0.5">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className={`w-3 sm:w-3.5 h-3 sm:h-3.5 ${
-                      i < tempStars ? 'text-amber-400 fill-amber-400' : 'text-gray-300'
-                    }`}
+                    className={`w-3 sm:w-3.5 h-3 sm:h-3.5 ${i < tempStars ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`}
                   />
                 ))}
               </div>
@@ -194,6 +169,8 @@ const ProductCard = ({ product, viewMode = 'grid', onAddToCart }) => {
               <span className="text-xs text-gray-400">({reviews})</span>
             </div>
 
+            {/* --- PRECIOS OCULTOS --- */}
+            {/*
             <div className="mb-2">
               <div className="flex items-baseline gap-2">
                 <span className="text-xs text-gray-600">MXN</span>
@@ -211,18 +188,14 @@ const ProductCard = ({ product, viewMode = 'grid', onAddToCart }) => {
                 <span className="text-xs text-gray-600">• Envío DISPONIBLE</span>
               </div>
             </div>
+            */}
           </div>
 
-          {/* BOTONES - Desktop solamente */}
           <div className="hidden sm:flex flex-shrink-0 flex-col items-end gap-2">
             <button
               aria-label="Agregar a favoritos"
               onClick={handleToggleLike}
-              className={`p-2 rounded-full transition-all duration-200 ${
-                isLiked
-                  ? 'bg-red-500 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-red-500'
-              }`}
+              className={`p-2 rounded-full transition-all duration-200 ${isLiked ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-red-500'}`}
             >
               <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
             </button>
@@ -237,7 +210,6 @@ const ProductCard = ({ product, viewMode = 'grid', onAddToCart }) => {
             </button>
           </div>
 
-          {/* BOTÓN DE AGREGAR - Móvil solamente (ancho completo) */}
           <button
             aria-label="Agregar al carrito"
             onClick={handleAddToCartClick}

@@ -202,7 +202,7 @@ const ProductDetails = ({ onAddToCart }) => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              {/* <button
+              <button
                 onClick={handleAddToCart}
                 disabled={addingToCart}
                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-full font-semibold text-white transition-all duration-300 shadow-sm ${
@@ -222,7 +222,7 @@ const ProductDetails = ({ onAddToCart }) => {
                     Agregar al carrito
                   </>
                 )}
-              </button> */}
+              </button>
 
               <button className="flex-1 px-4 py-3 bg-white border border-gray-300 text-gray-800 rounded-full font-semibold text-sm hover:bg-gray-50 hover:border-gray-400 hover:shadow-md transition-all duration-200">
                 Contactar para más información

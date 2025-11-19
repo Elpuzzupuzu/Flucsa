@@ -6,22 +6,14 @@ import { updateCartItemQuantity, removeCartItem } from '../../../../features/car
 const CartItem = ({ item, index, isNewItem, formatPrice }) => {
   const dispatch = useDispatch();
 
-  // Extraer información desde item.producto.
-  // Esto es seguro porque el backend garantiza que item.producto existe.
   const product = item.producto || {};
-
-  // Se usa la propiedad precio del producto anidado.
-  // Se mantiene la lógica de limpieza de string si el precio viene como string con símbolos.
   const priceString = product.precio ? product.precio.toString() : '0';
   const priceValue = parseFloat(priceString.replace(/[^0-9.]/g, '')) || 0;
 
-  // item.cantidad viene directamente de la tabla carrito_items
   const quantity = item.cantidad || 1;
   const itemTotal = priceValue * quantity;
 
   const handleQuantityChange = (newQuantity) => {
-    // Si la nueva cantidad es 0 o menor, se delega la lógica de eliminación al servicio/controlador
-    // La API se encarga de determinar si es eliminación (cant <= 0) o actualización (cant > 0).
     dispatch(updateCartItemQuantity({ itemId: item.id, cantidad: newQuantity }));
   };
 
@@ -67,6 +59,8 @@ const CartItem = ({ item, index, isNewItem, formatPrice }) => {
             {product.nombre || 'Producto sin nombre'}
           </h4>
 
+          {/* Comentado el display de precio y total */}
+          {/*
           <div className="flex items-center justify-between mb-2">
             <span
               className={`text-sm font-semibold ${
@@ -83,6 +77,7 @@ const CartItem = ({ item, index, isNewItem, formatPrice }) => {
               Total: ${itemTotal.toFixed(2)}
             </span>
           </div>
+          */}
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
