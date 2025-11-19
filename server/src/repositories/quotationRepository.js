@@ -5,6 +5,7 @@ const TABLA_COTIZACIONES = 'cotizaciones';
 const TABLA_COTIZACION_ITEMS = 'cotizaciones_items';
 const ESTADOS_VALIDOS = ['GENERADA', 'ACEPTADA', 'RECHAZADA', 'COMPLETADA', 'CANCELADA'];
 const TABLA_PRODUCTOS = 'productos';
+const TABLA_USUARIOS = 'usuarios'
 /**
  * Crea la cabecera de la cotización.
  */
@@ -42,6 +43,69 @@ async function addQuotationItems(items) {
 
 
 
+
+//     // 1. OBTENER LA COTIZACIÓN Y LOS ÍTEMS
+//     const { data: quotation, error: quotationError } = await supabase
+//         .from(TABLA_COTIZACIONES)
+//         .select(`
+//             *,
+//             ${TABLA_COTIZACION_ITEMS} (*)
+//         `) // Mantenemos la selección simple de ítems
+//         .eq('id', id)
+//         .single();
+
+//     if (quotationError && quotationError.code !== 'PGRST116') {
+//         console.error('Error al leer la cotización:', quotationError);
+//         throw new Error(`Error al leer la cotización: ${quotationError.message}`);
+//     }
+    
+//     if (!quotation) {
+//         return null; // Cotización no encontrada
+//     }
+
+//     const items = quotation[TABLA_COTIZACION_ITEMS];
+
+//     // 2. EXTRAER IDs DE PRODUCTOS
+//     const productIds = items
+//         .map(item => item.producto_id)
+//         .filter((value, index, self) => self.indexOf(value) === index); // Obtener IDs únicos
+
+//     if (productIds.length === 0) {
+//         return quotation; // No hay ítems, retornar la cotización tal cual
+//     }
+
+//     // 3. OBTENER LAS IMÁGENES DE LOS PRODUCTOS
+//     const { data: products, error: productError } = await supabase
+//         .from(TABLA_PRODUCTOS)
+//         .select('id, imagen') // Solo necesitamos el ID y la imagen
+//         .in('id', productIds); // Usamos .in() para buscar múltiples IDs
+
+//     if (productError) {
+//         console.error('Error al leer productos:', productError);
+//         // Podrías lanzar un error o simplemente continuar sin las imágenes
+//     }
+
+//     // Crear un mapa (diccionario) para acceso rápido {id: imagen}
+//     const productMap = (products || []).reduce((map, product) => {
+//         map[product.id] = product.imagen;
+//         return map;
+//     }, {});
+
+//     // 4. FUSIONAR DATOS (Merge)
+//     const mergedItems = items.map(item => ({
+//         ...item,
+//         // Añadir la imagen directamente al ítem de la cotización
+//         imagen_producto: productMap[item.producto_id] || null 
+//     }));
+
+//     // Reemplazar los ítems antiguos con los ítems fusionados
+//     quotation[TABLA_COTIZACION_ITEMS] = mergedItems;
+    
+//     return quotation;
+// }
+///testing
+/// BUSCAR UNA COTIZACION POR ID ESPECIFICA 
+
 async function getQuotationById(id) {
     // 1. OBTENER LA COTIZACIÓN Y LOS ÍTEMS
     const { data: quotation, error: quotationError } = await supabase
@@ -49,7 +113,7 @@ async function getQuotationById(id) {
         .select(`
             *,
             ${TABLA_COTIZACION_ITEMS} (*)
-        `) // Mantenemos la selección simple de ítems
+        `)
         .eq('id', id)
         .single();
 
@@ -62,38 +126,70 @@ async function getQuotationById(id) {
         return null; // Cotización no encontrada
     }
 
+    // 2. EXTRAER ID DEL USUARIO Y OBTENER SUS DATOS (NOMBRE Y CORREO)
+    const userId = quotation.usuario_id;
+
+    if (userId) {
+        const { data: userData, error: userError } = await supabase
+            .from(TABLA_USUARIOS)
+            .select('nombre, correo')
+            .eq('id', userId)
+            .single();
+
+        if (userError) {
+            console.error('Error al leer datos del usuario:', userError);
+            // Si hay un error, aún podemos continuar con la cotización
+        }
+        
+        // FUSIONAR DATOS DEL USUARIO
+        if (userData) {
+            // Se anida la información del usuario en la clave 'usuario'
+            quotation.usuario = {
+                nombre: userData.nombre || 'N/A',
+                correo: userData.correo || 'N/A',
+            };
+        } else {
+            // Si no se encuentra, se añade un objeto vacío para evitar errores en el frontend
+             quotation.usuario = { nombre: 'Desconocido', correo: 'N/A' };
+        }
+    } else {
+        // Caso en que ni siquiera hay un usuario_id
+        quotation.usuario = { nombre: 'N/A', correo: 'N/A' };
+    }
+    
+    // 3. PROCESAR ÍTEMS DE PRODUCTOS
     const items = quotation[TABLA_COTIZACION_ITEMS];
 
-    // 2. EXTRAER IDs DE PRODUCTOS
+    // Extraer IDs de productos
     const productIds = items
         .map(item => item.producto_id)
         .filter((value, index, self) => self.indexOf(value) === index); // Obtener IDs únicos
 
     if (productIds.length === 0) {
-        return quotation; // No hay ítems, retornar la cotización tal cual
+        // Retorna la cotización con los datos de usuario recién fusionados
+        return quotation;
     }
 
-    // 3. OBTENER LAS IMÁGENES DE LOS PRODUCTOS
+    // 4. OBTENER LAS IMÁGENES DE LOS PRODUCTOS
     const { data: products, error: productError } = await supabase
         .from(TABLA_PRODUCTOS)
         .select('id, imagen') // Solo necesitamos el ID y la imagen
-        .in('id', productIds); // Usamos .in() para buscar múltiples IDs
+        .in('id', productIds);
 
     if (productError) {
         console.error('Error al leer productos:', productError);
-        // Podrías lanzar un error o simplemente continuar sin las imágenes
     }
 
-    // Crear un mapa (diccionario) para acceso rápido {id: imagen}
+    // Crear un mapa para acceso rápido {id: imagen}
     const productMap = (products || []).reduce((map, product) => {
         map[product.id] = product.imagen;
         return map;
     }, {});
 
-    // 4. FUSIONAR DATOS (Merge)
+    // 5. FUSIONAR DATOS DE PRODUCTOS
     const mergedItems = items.map(item => ({
         ...item,
-        // Añadir la imagen directamente al ítem de la cotización
+        // Añadir la imagen al ítem de la cotización
         imagen_producto: productMap[item.producto_id] || null 
     }));
 
@@ -102,8 +198,8 @@ async function getQuotationById(id) {
     
     return quotation;
 }
-/////testing
 
+///// METODO PARA RETORNAR SOLO LAS DEL USAURIO 
 
 async function getQuotationsByUserId(usuarioId, params) {
     const { page, pageSize, searchTerm, status } = params;
@@ -167,50 +263,7 @@ async function getQuotationsByUserId(usuarioId, params) {
     return { data: data || [], count }; 
 }
 
-////////////////////////////////////////////////////////////////////////
-// async function getAllQuotations(params) {
-//     const { page, pageSize, searchTerm, status } = params;
-//     const offset = (page - 1) * pageSize;
-
-//     let query = supabase
-//         .from(TABLA_COTIZACIONES)
-//         .select(`
-//             *,
-//             ${TABLA_COTIZACION_ITEMS} (*),
-//             usuario_id (nombre, apellido, correo)
-//         `, { count: 'exact' });
-
-//     // 1. Aplicar Filtro de Estado
-//     if (status && status !== 'ALL') {
-//         query = query.eq('estado_cotizacion', status);
-//     }
-
-//     // 2. Aplicar Filtro de Búsqueda (Texto, ID, Nombre/Apellido)
-//     if (searchTerm && searchTerm.trim() !== '') {
-//         const searchTerms = searchTerm.toLowerCase();
-
-//         // 🔑 CORRECCIÓN CLAVE: Dividir la cláusula OR para manejar la tabla foránea.
-
-//         // Filtro OR para la tabla principal (estado_cotizacion)
-//         query = query.or(`estado_cotizacion.ilike.%${searchTerms}%`);
-
-//         // Filtro OR para la relación del usuario, usando el parámetro foreignTable
-//         const userFilter = `nombre.ilike.%${searchTerms}%,apellido.ilike.%${searchTerms}%`;
-//         query = query.or(userFilter, { foreignTable: 'usuario_id' });
-//     }
-
-//     // 3. Aplicar Orden, Paginación (RANGE) y Ejecutar
-//     const { data, error, count } = await query
-//         .order('fecha_creacion', { ascending: false })
-//         .range(offset, offset + pageSize - 1);
-
-//     if (error) {
-//         console.error('Error en getAllQuotations:', error);
-//         throw new Error(`Error al listar todas las cotizaciones: ${error.message}`);
-//     }
-
-//     return { data: data || [], count };
-// }
+/// METODO PARA OBTENER TODAS LAS COTIZACIONES (ADMIN)
 async function getAllQuotations(params) {
     const { page, pageSize, searchTerm, status } = params;
     const offset = (page - 1) * pageSize;

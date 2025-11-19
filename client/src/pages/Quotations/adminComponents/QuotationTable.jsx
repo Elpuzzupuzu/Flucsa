@@ -1,22 +1,17 @@
 import React from 'react';
-import { FileText, ChevronLeft, ChevronRight } from 'lucide-react'; // Importar iconos para paginación
+import { FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-/**
- * Componente Presentacional: Muestra la tabla de cotizaciones y sus filas.
- * Acepta las nuevas props de paginación del AdminQuotationManager.
- */
 const QuotationTable = ({ 
-    loading, 
-    // 💡 CAMBIOS EN PROPS
-    quotations, // Ahora es la lista paginada
-    pagination, // { currentPage, totalPages, totalItems, pageSize }
-    onPageChange, // Handler para cambiar la página
-    
-    onViewDetails, 
-    onUpdateStatus 
+    loading,
+    quotations,
+    pagination,
+    onPageChange,
+    onUpdateStatus
 }) => {
-    
-    // Función de utilidad extraída
+
+    const navigate = useNavigate();
+
     const getStatusColor = (status) => {
         const colors = {
             GENERADA: 'bg-amber-100 text-amber-800 border-amber-200',
@@ -28,7 +23,6 @@ const QuotationTable = ({
         return colors[status] || 'bg-gray-100 text-gray-800';
     };
 
-    // Función de utilidad para formatear la fecha
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
         return new Date(dateString).toLocaleDateString('es-ES', { 
@@ -38,20 +32,18 @@ const QuotationTable = ({
         });
     };
 
-    // Función de utilidad para formatear el total
     const formatCurrency = (amount) => {
         if (amount === null || amount === undefined) return 'N/A';
         return new Intl.NumberFormat('es-MX', {
             style: 'currency',
-            currency: 'MXN', 
+            currency: 'MXN',
             minimumFractionDigits: 2
         }).format(amount);
     };
 
     return (
         <div className="bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden">
-            
-            {/* Table Container */}
+
             <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
@@ -65,6 +57,7 @@ const QuotationTable = ({
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
+
                         {loading ? (
                             <tr>
                                 <td colSpan="6" className="px-6 py-12 text-center">
@@ -84,7 +77,7 @@ const QuotationTable = ({
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className="font-mono text-sm font-medium text-gray-900">{quotation.id.substring(0, 8) || 'N/A'}</span>
                                         </td>
-                                        
+
                                         <td className="px-6 py-4">
                                             <div>
                                                 <div className="text-sm font-medium text-gray-900">{fullName}</div>
@@ -93,7 +86,7 @@ const QuotationTable = ({
                                         </td>
 
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                            {formatDate(quotation.fecha_creacion)} 
+                                            {formatDate(quotation.fecha_creacion)}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className="text-sm font-semibold text-gray-900">
@@ -107,11 +100,12 @@ const QuotationTable = ({
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <button
-                                                onClick={() => onViewDetails(quotation.id)}
+                                                onClick={() => navigate(`/cotizaciones/${quotation.id}`)}
                                                 className="text-blue-600 hover:text-blue-800 font-medium mr-4 transition-colors"
                                             >
                                                 Ver detalles
                                             </button>
+
                                             <select
                                                 onChange={(e) => onUpdateStatus(quotation.id, e.target.value)}
                                                 className="inline-flex items-center px-3 py-1 border border-gray-300 rounded-lg text-xs font-medium bg-white hover:bg-gray-50 transition-colors"
@@ -141,22 +135,17 @@ const QuotationTable = ({
                 </table>
             </div>
 
-            {/* Paginación y Resumen de Resultados */}
             <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between bg-gray-50">
-                {/* Resumen de Resultados */}
                 <div className="text-sm text-gray-600">
                     {pagination.totalItems > 0 ? (
                         <span>
-                            Mostrando **{quotations.length}** resultados en la página. **{pagination.totalItems}** cotizaciones en total.
+                            Mostrando {quotations.length} resultados en esta página. {pagination.totalItems} cotizaciones en total.
                         </span>
                     ) : (
-                        <span>
-                            No hay cotizaciones para mostrar.
-                        </span>
+                        <span>No hay cotizaciones para mostrar.</span>
                     )}
                 </div>
 
-                {/* Controles de Paginación */}
                 {pagination.totalPages > 1 && (
                     <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                         <button
@@ -164,8 +153,7 @@ const QuotationTable = ({
                             disabled={pagination.currentPage === 1 || loading}
                             className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-100 disabled:opacity-50"
                         >
-                            <span className="sr-only">Anterior</span>
-                            <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                            <ChevronLeft className="h-5 w-5" />
                         </button>
 
                         <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-semibold text-gray-700">
@@ -177,8 +165,7 @@ const QuotationTable = ({
                             disabled={pagination.currentPage >= pagination.totalPages || loading}
                             className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-100 disabled:opacity-50"
                         >
-                            <span className="sr-only">Siguiente</span>
-                            <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                            <ChevronRight className="h-5 w-5" />
                         </button>
                     </nav>
                 )}

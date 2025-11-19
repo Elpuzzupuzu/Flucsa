@@ -16,8 +16,6 @@ const formatCurrency = (amount) => {
 };
 
 const QuotationDetailsCard = ({ quotation, onGoBack }) => {
-
-    // ⛑️ Si quotation aún NO está listo (caso F5)
     if (!quotation) {
         return (
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-yellow-800">
@@ -26,46 +24,41 @@ const QuotationDetailsCard = ({ quotation, onGoBack }) => {
         );
     }
 
-    // Evitar undefined
     const items = quotation.cotizaciones_items ?? [];
-
-    // Evitar undefined en usuario
-    const user = quotation.usuario_id ?? {};
-
+    const user = quotation.usuario ?? {};
     const fullName =
         user.nombre && user.apellido
             ? `${user.nombre} ${user.apellido}`
-            : "Usuario Desconocido";
+            : user.nombre || "Usuario Desconocido";
+    const userEmail = user.correo || "N/A";
 
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            
             {/* Header */}
             <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
                 <h3 className="text-white text-xl font-semibold">
-                    Detalles de la Cotización #
-                    {quotation.id ? quotation.id.substring(0, 10) : "—"}
+                    Detalles de la Cotización #{quotation.id?.substring(0, 10) || "—"}
                 </h3>
             </div>
 
             <div className="p-6">
-
-                {/* Info del cliente */}
+                {/* Info Cliente */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                     <div>
                         <p className="text-sm text-gray-500 mb-1">ID Origen Carrito</p>
                         <p className="text-gray-900 font-medium">
-                            {quotation.carrito_id_origen
-                                ? quotation.carrito_id_origen.substring(0, 10) + "..."
-                                : "N/A"}
+                            {quotation.carrito_id_origen?.substring(0, 10) + "..." || "N/A"}
                         </p>
                     </div>
 
                     <div>
                         <p className="text-sm text-gray-500 mb-1">Fecha de Creación</p>
-                        <p className="text-gray-900 font-medium">
-                            {formatDate(quotation.fecha_creacion)}
-                        </p>
+                        <p className="text-gray-900 font-medium">{formatDate(quotation.fecha_creacion)}</p>
+                    </div>
+
+                    <div>
+                        <p className="text-sm text-gray-500 mb-1">ID Cliente</p>
+                        <p className="text-gray-900 font-medium">{quotation.usuario_id?.substring(0, 10) + "..." || "N/A"}</p>
                     </div>
 
                     <div>
@@ -75,9 +68,7 @@ const QuotationDetailsCard = ({ quotation, onGoBack }) => {
 
                     <div>
                         <p className="text-sm text-gray-500 mb-1">Correo</p>
-                        <p className="text-gray-900 font-medium">
-                            {user.correo || "N/A"}
-                        </p>
+                        <p className="text-gray-900 font-medium">{userEmail}</p>
                     </div>
                 </div>
 
@@ -105,13 +96,10 @@ const QuotationDetailsCard = ({ quotation, onGoBack }) => {
                                     <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700">Subtotal</th>
                                 </tr>
                             </thead>
-
                             <tbody>
                                 {items.map((item, index) => (
                                     <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                                         <td className="py-3 px-4 text-gray-900 flex items-center gap-3">
-
-                                            {/* Imagen */}
                                             {item.imagen_producto ? (
                                                 <img 
                                                     src={item.imagen_producto}
@@ -123,18 +111,11 @@ const QuotationDetailsCard = ({ quotation, onGoBack }) => {
                                                     N/A
                                                 </div>
                                             )}
-
                                             <span>{item.nombre_producto || "Producto sin nombre"}</span>
                                         </td>
 
-                                        <td className="py-3 px-4 text-right text-gray-700">
-                                            {formatCurrency(item.precio_unitario)}
-                                        </td>
-
-                                        <td className="py-3 px-4 text-right text-gray-700">
-                                            {item.cantidad || 0}
-                                        </td>
-
+                                        <td className="py-3 px-4 text-right text-gray-700">{formatCurrency(item.precio_unitario)}</td>
+                                        <td className="py-3 px-4 text-right text-gray-700">{item.cantidad || 0}</td>
                                         <td className="py-3 px-4 text-right text-gray-900 font-medium">
                                             {formatCurrency((item.precio_unitario || 0) * (item.cantidad || 0))}
                                         </td>
@@ -156,7 +137,6 @@ const QuotationDetailsCard = ({ quotation, onGoBack }) => {
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     );
