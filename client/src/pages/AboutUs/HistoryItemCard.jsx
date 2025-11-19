@@ -2,22 +2,24 @@ import React from 'react';
 
 const HistoryItemCard = ({ icon: Icon, title, description, gradient, animationClass, id, style }) => (
     <div 
-        // Usa glass-card (transparente, blur) y hover-lift (sombra azul sutil), definidos en CSSStyles
-        className={`glass-card rounded-3xl p-8 shadow-xl hover-lift ${animationClass}`}
+        className={`bg-white border border-gray-200 rounded-lg p-6 hover:border-blue-900 hover:shadow-lg transition-all duration-300 ${animationClass}`}
         data-animate
         id={id}
         style={style}
     >
-        <div className="flex items-start space-x-4">
-            {/* Ícono: Usa el degradado azul corporativo (definido por 'gradient' prop) y el efecto sparkle */}
-            <div className={`w-14 h-14 bg-gradient-to-br ${gradient} rounded-2xl flex items-center justify-center flex-shrink-0 sparkle`}>
-                <Icon className="w-7 h-7 text-white" />
+        <div className="flex items-start space-x-5">
+            {/* Ícono corporativo minimalista */}
+            <div className="w-12 h-12 bg-blue-900 rounded flex items-center justify-center flex-shrink-0">
+                <Icon className="w-6 h-6 text-white" />
             </div>
-            <div>
-                {/* Título: Usando Gris Carbón Oscuro para máxima seriedad y legibilidad */}
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">{title}</h3>
-                {/* Descripción: Gris Oscuro estándar para consistencia */}
-                <p className="text-gray-700 leading-relaxed">{description}</p>
+            
+            <div className="flex-1">
+                {/* Título con separador */}
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
+                <div className="w-10 h-0.5 bg-blue-600 mb-3"></div>
+                
+                {/* Descripción */}
+                <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
             </div>
         </div>
     </div>

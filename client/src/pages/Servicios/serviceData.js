@@ -100,7 +100,7 @@ export const services = [
 ];
 
 export const whyChooseUs = [
-  { icon: Award, title: "15 Años de Experiencia", description: "Más de una década perfeccionando nuestros servicios con innovación y calidad." },
+  { icon: Award, title: "10 Años de Experiencia", description: "Más de una década perfeccionando nuestros servicios con innovación y calidad." },
   { icon: Users, title: "Satisfacción al cliente", description: "Una comunidad creciente que confía en nuestro compromiso y profesionalismo." },
   { icon: Clock, title: "Servicio eficiente", description: "Disponibles cuando más nos necesitas, atención rápida y confiable." },
   { icon: CheckCircle, title: "Garantía", description: "Respaldamos cada trabajo para ofrecer seguridad y confianza a nuestros clientes." }

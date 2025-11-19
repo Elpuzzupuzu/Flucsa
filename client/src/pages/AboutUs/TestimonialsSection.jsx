@@ -2,28 +2,31 @@ import React from 'react';
 import TestimonialCard from './TestimonialCard';
 
 const TestimonialsSection = ({ testimonials, getAnimationClass }) => (
-    // Fondo limpio y profesional (gris muy claro)
-    <section className="bg-gray-50 py-20 px-6 border-t border-gray-100">
-        <div className="max-w-6xl mx-auto">
+    <section className="bg-gradient-to-b from-gray-50 to-white py-24 px-6 relative">
+        
+        {/* Línea decorativa superior */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+        
+        <div className="max-w-7xl mx-auto">
+            
             <div 
-                className={`text-center mb-16 ${getAnimationClass('testimonials')}`}
+                className={`text-center mb-20 ${getAnimationClass('testimonials')}`}
                 data-animate
                 id="testimonials"
             >
-                {/* Título: Usamos Gris Carbón 900 para la base, y Azul Marino para el acento. */}
-                <h2 className="text-4xl md:text-5xl font-black mb-4 tracking-tight text-gray-900">
-                    <span className="text-gray-900">Lo que Dicen</span> <span className="text-[#1E3A8A]">Nuestros Clientes</span>
+                {/* Título minimalista */}
+                <h2 className="text-4xl md:text-5xl font-semibold mb-4 tracking-tight text-gray-900">
+                    Lo que Dicen Nuestros Clientes
                 </h2>
-                {/* Separador sólido en Azul Marino */}
-                <div className="w-20 h-1 bg-[#1E3A8A] mx-auto mb-6 rounded-full"></div>
+                <div className="w-16 h-0.5 bg-blue-900 mx-auto mb-6"></div>
                 
-                {/* Párrafo en Gris Oscuro 700 para excelente legibilidad y seriedad */}
-                <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
-                    Historias reales de éxito que demuestran nuestro compromiso con la excelencia.
+                {/* Descripción */}
+                <p className="text-lg text-gray-600 max-w-2xl mx-auto font-light leading-relaxed">
+                    Historias reales de éxito que demuestran nuestro compromiso con la excelencia
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {testimonials.map((testimonial, index) => (
                     <div 
                         key={index}
@@ -36,7 +39,16 @@ const TestimonialsSection = ({ testimonials, getAnimationClass }) => (
                     </div>
                 ))}
             </div>
+
+            {/* Sección de confianza corporativa */}
+            <div className="mt-16 pt-16 border-t border-gray-200">
+                <div className="text-center">            
+                </div>
+            </div>
         </div>
+        
+        {/* Línea decorativa inferior */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
     </section>
 );
 

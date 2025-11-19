@@ -36,7 +36,7 @@ const ServicesPage = () => {
       <HeroSection isVisible={isVisible} />
       <ServicesGrid services={services} isVisible={isVisible} />
       <WhyChooseUs whyChooseUs={whyChooseUs} isVisible={isVisible} />
-      <CTASection isVisible={isVisible} />
+      {/* <CTASection isVisible={isVisible} /> */}
     </>
   );
 };
