@@ -7,7 +7,7 @@ const floatingVariants = {
     animate: {
         y: [0, -20, 0],
         rotate: [0, 5, -5, 0],
-        transition: { duration: 6, repeat: Infinity, ease: "easeInOut" }
+        transition: { duration: 3, repeat: Infinity, ease: "easeInOut" }
     }
 };
 
@@ -16,7 +16,7 @@ const containerVariants = {
     visible: {
         opacity: 1,
         transition: {
-            duration: 0.6,
+            duration: 0.3,
             ease: "easeOut",
             when: "beforeChildren",
             staggerChildren: 0.15
@@ -29,7 +29,7 @@ const headerVariants = {
     visible: { 
         opacity: 1, 
         y: 0, 
-        transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] } 
+        transition: { duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] } 
     },
 };
 
@@ -87,7 +87,7 @@ const ContactHero = () => (
                     className="text-gray-700 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed font-normal" 
                     variants={headerVariants}
                 >
-                    Estamos aquí para ayudarte. **Si tienes alguna pregunta** sobre nuestros servicios o productos, no dudes en contactarnos.
+                    Estamos aquí para ayudarte. Si tienes alguna pregunta sobre nuestros servicios o productos, no dudes en contactarnos.
                 </motion.p>
 
 

@@ -59,7 +59,7 @@ const Header = ({ onCartToggle }) => {
 
             {/* Logo */}
             <Link to="/" className="flex-shrink-0 group cursor-pointer">
-              <div className="relative overflow-hidden rounded-lg bg-white/5 p-2 backdrop-blur-md border border-white/15 transition-all duration-300 hover:border-white/25 hover:bg-white/10">
+              <div >
                 <img
                   src={LogoCompleto}
                   alt="FLUCSA"

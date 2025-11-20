@@ -21,7 +21,7 @@ const ShoppingCart = ({ isOpen, onClose, onProceedToCheckout }) => {
     }
   }, [isOpen, user, dispatch]);
 
-  // ✅ Cálculo del total
+  //  Cálculo del total
   const calculateTotal = () =>
     cartItems.reduce((sum, item) => {
       const { precio = 0 } = item.producto || {};

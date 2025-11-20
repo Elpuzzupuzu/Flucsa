@@ -18,6 +18,7 @@ import pdfRoutes from "./routes/pdfRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import quotationRoutes from "./routes/quotationRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import contactRoutes from './routes/contactRoutes.js';
 
 // =======================================================
 // 🔧 CONFIGURACIÓN INICIAL
@@ -101,7 +102,7 @@ app.use("/api/carrito", cartRoutes);
 app.use("/api/pdfs", pdfRoutes);
 app.use("/api/quotations", quotationRoutes);
 app.use("/api/orders", orderRoutes);
-
+app.use('/api/contact', contactRoutes); // Monta las rutas de contacto
 // =======================================================
 // 🧱 SERVIR FRONTEND (PRODUCCIÓN O LOCAL TEST DE BUILD)
 // =======================================================

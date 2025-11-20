@@ -1,61 +1,27 @@
-// src/pages/ContactPage.jsx (Contenedor principal)
+// src/pages/ContactPage.jsx (Contenedor principal actualizado)
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Send, CheckCircle, AlertCircle } from 'lucide-react'; // Solo los íconos necesarios para el estado
+import React from 'react';
+// La mayoría de los imports de React y estados ya no son necesarios aquí
+import { motion } from 'framer-motion'; // Se mantiene si usas animaciones en el layout
+import { Send, CheckCircle, AlertCircle } from 'lucide-react'; // Puedes quitar estos si solo se usan en ContactForm
 
 // Importar componentes modulares
 import ContactHero from './components/ContactHero';
 import ContactInfoSection from './components/ContactInfoSection';
 import ContactForm from './components/ContactForm';
 
+// Importar el hook con toda la lógica del formulario
+import useContactForm from './components/useContactForm'; // Asegúrate de ajustar la ruta
+
 const ContactPage = () => {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        message: '',
-    });
-
-    const [submissionStatus, setSubmissionStatus] = useState(null); // 'loading', 'success', 'error'
-    const [loading, setLoading] = useState(false); // Nuevo estado para el loading (más explícito)
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true); // Activa el loading
-        setSubmissionStatus('loading');
-        
-        console.log('Datos del formulario:', formData);
-        
-        // Simulación de una llamada a la API
-        try {
-            await new Promise((resolve, reject) => setTimeout(() => {
-                // Simula éxito o error (ej. 80% éxito, 20% error)
-                if (Math.random() < 0.8) {
-                    resolve(); 
-                } else {
-                    reject(new Error("Error de servidor simulado"));
-                }
-            }, 2000));
-
-            setSubmissionStatus('success');
-            setFormData({ name: '', email: '', message: '' }); // Limpia el formulario
-        } catch (error) {
-            setSubmissionStatus('error');
-            console.error('Error al enviar el formulario:', error);
-        } finally {
-            setLoading(false); // Desactiva el loading
-            // Opcional: limpiar el estado de éxito/error después de unos segundos
-            setTimeout(() => setSubmissionStatus(null), 5000); 
-        }
-    };
+    // 1. Llama al hook para obtener la lógica
+    const { 
+        formData, 
+        submissionStatus, 
+        loading, 
+        handleChange, 
+        handleSubmit 
+    } = useContactForm();
 
     return (
         <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/30">
@@ -70,7 +36,7 @@ const ContactPage = () => {
                         {/* 2a. Información de Contacto */}
                         <ContactInfoSection />
 
-                        {/* 2b. Formulario de Contacto */}
+                        {/* 2b. Formulario de Contacto (Paso de props limpios) */}
                         <ContactForm
                             formData={formData}
                             submissionStatus={submissionStatus}

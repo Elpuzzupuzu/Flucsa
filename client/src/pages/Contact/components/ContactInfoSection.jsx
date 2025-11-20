@@ -69,7 +69,7 @@ const ContactInfoSection = () => (
                 title="Teléfono"
                 value="(+52) 9993632630"
                 href="tel:+529993632630"
-                // ❌ Eliminamos iconBg. El color del ícono es fijo en ContactInfoCard.jsx
+                //  Eliminamos iconBg. El color del ícono es fijo en ContactInfoCard.jsx
                 itemDelay={0.15}
             />
             <ContactInfoCard
