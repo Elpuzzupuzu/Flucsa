@@ -66,6 +66,7 @@ const useContactForm = () => {
             return; // Detiene el envío
         }
 
+        ////TEST
         setLoading(true);
         setSubmissionStatus('loading');
         setFormErrors({}); // Limpiar errores de validación si pasaron
