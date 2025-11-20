@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 // Define el camino al endpoint, constante para todos los entornos
-const CONTACT_PATH = '/api/contact/submit';
+const CONTACT_PATH = '/contact/submit';
 
 // Función de validación (separada para mantener limpio el handleSubmit)
 const validateForm = (data) => {
@@ -73,7 +73,7 @@ const useContactForm = () => {
         // --- 2. CONFIGURACIÓN DEL ENDPOINT ---
         // Usa la variable de entorno para la URL base (p.ej. https://flucsa-backend.onrender.com)
         // El operador || es un fallback para desarrollo local si la variable no está definida.
-        const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+        const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api';
         const API_ENDPOINT = `${BASE_URL}${CONTACT_PATH}`;
         
         try {
