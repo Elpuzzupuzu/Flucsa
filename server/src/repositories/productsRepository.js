@@ -57,7 +57,7 @@ async searchProducts(query) {
 
   if (error) throw new Error(error.message);
   return { products: data || [] };
-}
+} ///<---------------------------->>
 ,
 
 /// Search By Filter

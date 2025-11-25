@@ -105,20 +105,104 @@ export const fetchProductById = createAsyncThunk(
 // ===============================
 // Agregar nuevo producto (Sin cambios)
 // ===============================
+// export const addProduct = createAsyncThunk(
+//   "products/addProduct",
+//   async ({ data, file }, thunkAPI) => {
+//     try {
+//       const formData = new FormData();
+
+//       // Añadimos los campos del producto
+//       Object.keys(data).forEach(key => {
+//         if (data[key] !== undefined && data[key] !== null) {
+//           formData.append(key, data[key]);
+//         }
+//       });
+
+//       // Añadimos archivo si existe
+//       if (file) {
+//         formData.append("imagen", file);
+//       }
+
+//       const response = await api.post("/products", formData, {
+//         headers: {
+//           "Content-Type": "multipart/form-data",
+//         },
+//       });
+
+//       return response.data;
+//     } catch (error) {
+//       return thunkAPI.rejectWithValue(
+//         error.response?.data || "Error al agregar producto"
+//       );
+//     }
+//   }
+// );
+
 export const addProduct = createAsyncThunk(
   "products/addProduct",
-  async (newProduct, thunkAPI) => {
+  async ({ data, file }, thunkAPI) => {
     try {
-      const response = await api.post("/products", newProduct);
-      return response.data;
+      const formData = new FormData();
+
+      // Objeto de Mapeo: [Nombre en React Form] -> [Nombre esperado por la API/DB]
+      const fieldMap = {
+        name: "nombre",
+        description: "descripcion",
+        price: "precio",
+        mainCategory: "categoria_principal_id", // Nuevo
+        subCategory: "subcategoria_id",         // Nuevo
+        location: "ubicacion_id",               // Nuevo
+        code: "codigo",                         // Nuevo
+        brand: "marca",                         // Nuevo
+        stock: "existencias",                   // Nuevo
+        available: "disponible",                // Nuevo
+        annualSales: "ventas_anuales",          // Nuevo
+        // El campo 'image' se maneja por separado con 'file'
+      };
+
+      // Recorremos los datos del formulario (data)
+      Object.keys(data).forEach(key => {
+        // Obtenemos el nombre de la propiedad en el backend. 
+        // Si no está en el mapa, usamos el nombre de la clave original (key).
+        const dbKey = fieldMap[key] || key;
+        const value = data[key];
+
+        if (value !== undefined && value !== null) {
+          // Si el campo es 'disponible' (available) y es un booleano, lo convertimos a 1/0 si es necesario,
+          // o lo dejamos como booleano si la API lo acepta. 
+          // Aquí lo convertimos explícitamente a string (true/false) para FormData, 
+          // aunque el backend puede preferir 1/0 o 'true'/'false'
+          if (key === 'available') {
+            formData.append(dbKey, value ? 'true' : 'false'); // O '1' : '0' si tu DB espera números
+          } else {
+            // Para el resto de los campos
+            formData.append(dbKey, value); 
+          }
+        }
+      });
+
+      // Añadimos el archivo de imagen
+      if (file) {
+        formData.append("imagen", file); // Usa "imagen" como nombre de campo
+      }
+      
+      // Llamada a la API
+      const response = await api.post("/products", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", 
+        },
+      });
+
+      // Retorna el producto recién creado
+      return response.data; 
     } catch (error) {
+      // Manejo de errores
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Error al agregar producto"
+        error.response?.data?.message || "Error al agregar producto"
       );
     }
   }
 );
-
 // ===============================
 // Actualizar producto 
 // ===============================

@@ -2,33 +2,6 @@ import { ProductsService } from "../services/productsService.js";
 
 export const ProductsController = {
 
-// async getAllProducts(req, res, next) {
-//   try {
-//     const { page = 1, limit = 10 } = req.query;
-
-//     console.log("📄 Parámetros de paginación:", { page, limit }); // 👈 Log útil
-
-//     const products = await ProductsService.getAllProducts(Number(page), Number(limit));
-
-//     if (!products || products.products.length === 0) {
-//       return res.status(404).json({ message: "No se encontraron productos" });
-//     }
-
-//     res.status(200).json(products);
-//   } catch (error) {
-//     console.error("❌ Error detallado al obtener productos:", error); // 👈 muestra el error real
-
-//     next({
-//       message: error.message || "Ocurrió un error al obtener productos",
-//       status: 500,
-//       stack: error.stack, // 👈 esto ayuda a depurar
-//     });
-//   }
-// },
-
-
-
-
 
 // Buscar productos por nombre
 
@@ -43,7 +16,7 @@ async getAllProducts(req, res, next) {
             searchQuery // 👈 Nuevo: Término de búsqueda
         } = req.query;
 
-        console.log("📄 Parámetros de consulta:", { page, limit, mainCategoryId, subCategoryId, searchQuery });
+        // console.log("📄 Parámetros de consulta:", { page, limit, mainCategoryId, subCategoryId, searchQuery });
 
         // Pasar el nuevo parámetro al Servicio
         const products = await ProductsService.getAllProducts(
@@ -123,14 +96,24 @@ async filterProducts(req, res, next) {
   },
 
   // Crear un nuevo producto
-  async createProduct(req, res, next) {
-    try {
-      const newProduct = await ProductsService.createProduct(req.body);
-      res.status(201).json(newProduct);
-    } catch (error) {
-      next(error);
-    }
-  },
+ async createProduct(req, res, next) {
+  try {
+    console.log("📥 controller Data recibida:", req.body);
+
+    const newProduct = await ProductsService.createProduct(req.body);
+    res.status(201).json(newProduct);
+
+  } catch (error) {
+    console.error("❌ Error en createProduct:", error);
+
+    res.status(500).json({
+      message: "Error creating product",
+      receivedData: req.body,  // 👈 muestra qué llegó
+      error: error.message
+    });
+  }
+}
+,
 
   // Actualizar un producto
   async updateProduct(req, res, next) {

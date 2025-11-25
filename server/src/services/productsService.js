@@ -21,9 +21,6 @@ async getAllProducts(page = 1, limit = 10, mainCategoryId, subCategoryId, search
 
 
 
-
-
-
 // find by id
   async getProductById(id) {
     const product = await ProductsRepository.getProductById(id);
@@ -43,13 +40,25 @@ async getAllProducts(page = 1, limit = 10, mainCategoryId, subCategoryId, search
     return await ProductsRepository.filterProducts(filters);
   },
 
+////7 CREAR PRODUCTO
+  // async createProduct(productData) {
+  //   if (!productData.nombre || !productData.categoria_principal_id || !productData.subcategoria_id || !productData.ubicacion_id) {
+  //     throw new Error("Faltan campos obligatorios para crear el producto");
+  //   }
+  //   return await ProductsRepository.createProduct(productData);
+  // },
 
   async createProduct(productData) {
-    if (!productData.nombre || !productData.categoria_principal_id || !productData.subcategoria_id || !productData.ubicacion_id) {
-      throw new Error("Faltan campos obligatorios para crear el producto");
-    }
-    return await ProductsRepository.createProduct(productData);
-  },
+  // Mostrar qué llegó desde el front
+  console.log("Datos recibidos desde el front:", productData);
+
+  if (!productData.nombre || !productData.categoria_principal_id || !productData.subcategoria_id || !productData.ubicacion_id) {
+    throw new Error("Faltan campos obligatorios para crear el producto");
+  }
+
+  return await ProductsRepository.createProduct(productData);
+}
+,
 
   async updateProduct(id, updates) {
     const existing = await ProductsRepository.getProductById(id);

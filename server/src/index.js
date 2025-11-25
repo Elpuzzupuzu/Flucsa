@@ -2,11 +2,11 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import "express-async-errors"; // Manejo de errores async
+import "express-async-errors";
 import path from "path";
 import { fileURLToPath } from "url";
-import http from "http"; // Módulo HTTP nativo
-import { Server } from "socket.io"; // Socket.IO Server
+import http from "http";
+import { Server } from "socket.io";
 
 // Rutas
 import productsRoutes from "./routes/productsRoutes.js";
@@ -18,7 +18,10 @@ import pdfRoutes from "./routes/pdfRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import quotationRoutes from "./routes/quotationRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
-import contactRoutes from './routes/contactRoutes.js';
+import contactRoutes from "./routes/contactRoutes.js";
+import mainCategoryRoutes from "./routes/categoriaPrincipalRoutes.js";
+import subCategoryRoutes from "./routes/subCategoriaRoutes.js";
+import ubicacionRoutes from "./routes/ubicacionRoutes.js";
 
 // =======================================================
 // 🔧 CONFIGURACIÓN INICIAL
@@ -43,16 +46,13 @@ const SOCKET_ALLOWED_ORIGINS = [
 const allowedOrigins = SOCKET_ALLOWED_ORIGINS;
 
 const io = new Server(server, {
-  cors: {
-    origin: allowedOrigins,
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-  //  OPCIONES DE ESTABILIDAD 
-  // Aumentado el tiempo que el servidor espera un pong (de 20s a 40s)
-  pingTimeout: 40000, 
-  // Reducimos el tiempo entre pings (de 25s a 20s) para mantener viva la conexión
-  pingInterval: 20000, 
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+  pingTimeout: 40000,
+  pingInterval: 20000,
 });
 
 // Middleware para adjuntar io
@@ -64,6 +64,7 @@ app.use((req, res, next) => {
 // Eventos de Socket.IO
 io.on("connection", (socket) => {
   console.log(`✅ Socket conectado: ${socket.id}`);
+
   socket.on("disconnect", () => {
     console.log(`❌ Socket desconectado: ${socket.id}`);
   });
@@ -73,6 +74,7 @@ io.on("connection", (socket) => {
 // 🌐 CONFIG CORS / COOKIES / EXPRESS
 // =======================================================
 app.set("trust proxy", 1);
+
 app.use(
   cors({
     origin: allowedOrigins,
@@ -80,6 +82,7 @@ app.use(
     optionsSuccessStatus: 200,
   })
 );
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -95,6 +98,9 @@ app.get("/", (req, res) => {
 // =======================================================
 app.use("/api/products", productsRoutes);
 app.use("/api/products", imageRoutes);
+app.use("/api/mainCategory", mainCategoryRoutes);
+app.use("/api/subCategory", subCategoryRoutes);
+app.use("/api/location", ubicacionRoutes);
 app.use("/api/admin", adminRouter);
 app.use("/api/users", userRoutes);
 app.use("/api/wishlist", whishListRoutes);
@@ -102,7 +108,8 @@ app.use("/api/carrito", cartRoutes);
 app.use("/api/pdfs", pdfRoutes);
 app.use("/api/quotations", quotationRoutes);
 app.use("/api/orders", orderRoutes);
-app.use('/api/contact', contactRoutes); // Monta las rutas de contacto
+app.use("/api/contact", contactRoutes);
+
 // =======================================================
 // 🧱 SERVIR FRONTEND (PRODUCCIÓN O LOCAL TEST DE BUILD)
 // =======================================================
@@ -110,10 +117,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const clientDistPath = path.join(__dirname, "../../client/dist");
 
-// Servir archivos estáticos del frontend
 app.use(express.static(clientDistPath));
 
-// Redirigir TODAS las rutas no-API a React (index.html)
+// Redirigir rutas NO-API al frontend
 app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(path.join(clientDistPath, "index.html"));
 });

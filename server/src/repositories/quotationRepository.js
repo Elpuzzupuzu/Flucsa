@@ -235,14 +235,6 @@ async function getQuotationsByUserId(usuarioId, params) {
                 `total_cotizado.gte.${numericValue}, estado_cotizacion.ilike.%${searchTerms}%`
             );
             
-            // 💡 Alternativa para buscar un RANGO (entre X-10% y X+10% del valor)
-            /*
-            const low = numericValue * 0.9;
-            const high = numericValue * 1.1;
-            query = query.or(
-                `total_cotizado.gte.${low},total_cotizado.lte.${high},estado_cotizacion.ilike.%${searchTerms}%`
-            );
-            */
             
         } else {
             // Si es texto, busca por 'estado_cotizacion' (búsqueda parcial)

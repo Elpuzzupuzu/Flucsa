@@ -68,6 +68,63 @@ export const updateProduct = createAsyncThunk(
 );
 
 // ===============================
+// 🆕 CREATE producto (con soporte de imagen)
+// ===============================
+
+export const createProduct = createAsyncThunk(
+  "products/createProduct",
+  async (productData, thunkAPI) => {
+    try {
+      let imageUrl = productData.imagen || null;
+      const file = productData.file;
+
+      // Subir imagen si hay archivo
+      if (file) {
+        const formData = new FormData();
+        formData.append("imagen", file);
+        const uploadResponse = await api.post("/products/upload-image", formData);
+        imageUrl = uploadResponse.data.imageUrl;
+        console.log("✅ Imagen subida a Cloudinary:", imageUrl);
+      }
+
+      // Preparar payload
+      const payloadToSend = { ...productData, imagen: imageUrl };
+      delete payloadToSend.file; // remover file antes de enviar al backend
+      console.log("🚀 Payload enviado al backend:", payloadToSend);
+
+      const response = await api.post("/products", payloadToSend);
+      console.log("🟢 Respuesta del backend:", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("💥 Error al crear producto:", error.response?.data || error.message);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message || "Error al crear producto"
+      );
+    }
+  }
+);
+
+
+// ===============================
+// 🆕 DELETE producto por ID
+// ===============================
+export const deleteProduct = createAsyncThunk(
+  "products/deleteProduct",
+  async (id, thunkAPI) => {
+    try {
+      // Usamos DELETE para eliminar
+      await api.delete(`/products/${id}`);
+      return id; // Devolvemos el ID para saber qué eliminar del estado
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Error al eliminar producto"
+      );
+    }
+  }
+);
+
+// ===============================
 // SLICE
 // ===============================
 const productsSlice = createSlice({
@@ -143,6 +200,44 @@ const productsSlice = createSlice({
       .addCase(updateProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Error desconocido";
+      })
+
+      // 🆕 createProduct
+      .addCase(createProduct.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createProduct.fulfilled, (state, action) => {
+        state.loading = false;
+        // Agregamos el nuevo producto al inicio del array de items
+        state.items.unshift(action.payload);
+        // Incrementamos el total de productos
+        state.total += 1;
+      })
+      .addCase(createProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Error al crear producto";
+      })
+      
+      // 🆕 deleteProduct
+      .addCase(deleteProduct.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteProduct.fulfilled, (state, action) => {
+        state.loading = false;
+        const deletedId = action.payload;
+        // Filtramos el producto eliminado del estado
+        state.items = state.items.filter((p) => p.id !== deletedId);
+        state.total -= 1;
+        // Si el producto eliminado era el seleccionado, lo limpiamos
+        if (state.selectedProduct?.id === deletedId) {
+          state.selectedProduct = null;
+        }
+      })
+      .addCase(deleteProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Error al eliminar producto";
       });
   },
 });
