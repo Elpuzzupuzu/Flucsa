@@ -1,45 +1,26 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Droplet, Gauge, Wrench } from "lucide-react";
-
-import bannerOne from "../../assets/images/pvc.jpg";
-import bannerTwo from "../../assets/images/pipes.jpg";
-import bannerThree from "../../assets/images/bombapool.jpg";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const slidesData = [
   {
     id: 1,
-    image: bannerOne,
-    category: "Sistemas de Flujo Premium",
+    image: "https://images.unsplash.com/photo-1581094271901-8022df4466f9?w=1600&h=900&fit=crop",
     title: "Válvulas y Bombas",
     subtitle: "de Alto Rendimiento",
-    description:
-      "Componentes hidráulicos de precisión para un control y caudal óptimos en cualquier aplicación.",
-    cta: "Ver Hidráulicos",
-    icon: Droplet,
   },
   {
     id: 2,
-    image: bannerTwo,
-    category: "Infraestructura Duradera",
+    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&h=900&fit=crop",
     title: "Tubería PVC y CPVC",
     subtitle: "Industrial y Residencial",
-    description:
-      "Soluciones resistentes a la corrosión, ideales para instalaciones de agua, drenaje y conducción de fluidos.",
-    cta: "Explorar Tubería",
-    icon: Gauge,
   },
   {
     id: 3,
-    image: bannerThree,
-    category: "Conexiones y Herramientas",
+    image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=1600&h=900&fit=crop",
     title: "Todo lo que Necesitas",
     subtitle: "para tu Instalación",
-    description:
-      "Bridas, codos, adaptadores y herramientas profesionales para garantizar un sellado perfecto y seguro.",
-    cta: "Comprar Conexiones",
-    icon: Wrench,
   },
 ];
 
@@ -61,7 +42,6 @@ const HeroSlider = () => {
   }, [isPaused]);
 
   const currentSlideData = slidesData[currentSlide];
-  const IconComponent = currentSlideData.icon;
 
   const handlePrev = () => {
     setCurrentSlide((prev) => (prev - 1 + slidesData.length) % slidesData.length);
@@ -94,7 +74,7 @@ const HeroSlider = () => {
             alt={slide.title}
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-white/30 z-10" />
+          <div className="absolute inset-0 bg-black/40 z-10" />
         </div>
       ))}
 
@@ -106,42 +86,10 @@ const HeroSlider = () => {
               isLoaded ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"
             }`}
           >
-            <div className="mb-8">
-              <span className="text-lime-500 text-xs font-medium tracking-widest uppercase">
-                {currentSlideData.category}
-              </span>
-            </div>
-
-            <h1 className="text-6xl md:text-7xl lg:text-8xl font-light leading-none tracking-tight mb-4">
-              <span className="text-gray-900 font-semibold block">{currentSlideData.title}</span>
-              <span className="text-gray-900 font-extralight block">{currentSlideData.subtitle}</span>
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-light leading-none tracking-tight">
+              <span className="text-white font-semibold block">{currentSlideData.title}</span>
+              <span className="text-white font-extralight block">{currentSlideData.subtitle}</span>
             </h1>
-
-            <div className="space-y-1 mb-8">
-              <div className="h-px w-24 bg-lime-500"></div>
-              <div className="h-px w-20 bg-gray-300"></div>
-            </div>
-
-            <p className="text-lg text-gray-600 leading-relaxed font-light mb-12 max-w-xl">
-              {currentSlideData.description}
-            </p>
-
-            <div className="flex items-center gap-6 mb-12">
-              <div className="w-16 h-16 border border-gray-900 flex items-center justify-center group 
-                                hover:border-lime-500 transition-all duration-500">
-                <IconComponent className="w-8 h-8 text-lime-500" />
-              </div>
-            </div>
-
-            {/* CTA SIN REDIRECCIÓN */}
-            <button
-              className="px-12 py-4 border border-gray-900 text-gray-900 font-light text-base
-                         hover:bg-gray-900 hover:text-white transition-all duration-500
-                         tracking-wide inline-flex items-center group"
-            >
-              {currentSlideData.cta}
-              <ChevronRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform duration-500" />
-            </button>
           </div>
         </div>
       </div>
@@ -150,9 +98,10 @@ const HeroSlider = () => {
       <button
         onClick={handlePrev}
         className="absolute left-6 top-1/2 -translate-y-1/2 z-30 w-12 h-12 
-                   border border-gray-900 bg-white/90 backdrop-blur-sm
-                   hover:bg-gray-900 hover:border-lime-500 text-gray-900 hover:text-white
-                   flex items-center justify-center transition-all duration-500"
+                   border border-white/50 bg-black/30 backdrop-blur-sm
+                   hover:bg-white hover:border-white text-white hover:text-black
+                   flex items-center justify-center transition-all duration-300"
+        aria-label="Anterior"
       >
         <ChevronLeft size={20} />
       </button>
@@ -160,9 +109,10 @@ const HeroSlider = () => {
       <button
         onClick={handleNext}
         className="absolute right-6 top-1/2 -translate-y-1/2 z-30 w-12 h-12 
-                   border border-gray-900 bg-white/90 backdrop-blur-sm
-                   hover:bg-gray-900 hover:border-lime-500 text-gray-900 hover:text-white
-                   flex items-center justify-center transition-all duration-500"
+                   border border-white/50 bg-black/30 backdrop-blur-sm
+                   hover:bg-white hover:border-white text-white hover:text-black
+                   flex items-center justify-center transition-all duration-300"
+        aria-label="Siguiente"
       >
         <ChevronRight size={20} />
       </button>
@@ -175,20 +125,12 @@ const HeroSlider = () => {
             onClick={() => setCurrentSlide(index)}
             className={`transition-all duration-500 ${
               index === currentSlide
-                ? "w-12 h-1 bg-lime-500"
-                : "w-8 h-1 bg-gray-300 hover:bg-gray-400"
+                ? "w-12 h-1 bg-blue-800"
+                : "w-8 h-1 bg-white/50 hover:bg-white/80"
             }`}
+            aria-label={`Ir a slide ${index + 1}`}
           />
         ))}
-      </div>
-
-      {/* Counter */}
-      <div className="absolute top-6 right-6 z-30 text-gray-900 text-sm font-light tracking-wider">
-        <span className="font-medium">{String(currentSlide + 1).padStart(2, "0")}</span>
-        <span className="text-gray-400 mx-2">/</span>
-        <span className="text-gray-400">
-          {String(slidesData.length).padStart(2, "0")}
-        </span>
       </div>
     </div>
   );

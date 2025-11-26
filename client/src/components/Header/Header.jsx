@@ -6,7 +6,7 @@ import { logoutUser } from '../../features/user/usersSlice';
 
 import Navigation from '../Navigation/Navigation';
 import Search from './Search/Search';
-import LogoCompleto from '../../assets/images/flucsa2.jpg';
+import LogoCompleto from '../../assets/images/f3.png';
 import UserDropdown from './Search/userDropdown';
 
 const Header = ({ onCartToggle }) => {
