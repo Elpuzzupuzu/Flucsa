@@ -25,12 +25,11 @@ const ProductsGrid = ({ products, viewMode, addToCart }) => {
           >
             <ProductCard
               product={{
-                ...product,
+                id: product.id,
                 name: product.nombre,
-                price: product.precio ? `$${product.precio}` : "N/A",
-                description: product.descripcion || "Sin descripción",
-                image: product.imagen || "https://via.placeholder.com/200",
-              }}
+                image: product.imagen,
+                price: product.precio
+                  }}
               viewMode={viewMode}
               onAddToCart={addToCart}
             />

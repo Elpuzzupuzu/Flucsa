@@ -255,7 +255,7 @@ export const fetchTopSellingProducts = createAsyncThunk(
         urlParams.append('timestamp', Date.now());
 
         try {
-            // 🎯 USAMOS LA RUTA ESPECÍFICA /products/top-ventas
+            //  USAMOS LA RUTA ESPECÍFICA /products/top-ventas
             const response = await api.get(`/products/top-ventas?${urlParams.toString()}`); 
             
             // El backend devuelve { products, total, totalPages, currentPage, pageSize, ... }
@@ -271,6 +271,36 @@ export const fetchTopSellingProducts = createAsyncThunk(
         }
     }
 );
+
+/// thunk para los productos relacionados 
+export const fetchRelatedProducts = createAsyncThunk(
+  "products/fetchRelatedProducts",
+  async ({ productId, limit = 10, offset = 0, sort = null }, thunkAPI) => {
+    try {
+      const params = new URLSearchParams();
+
+      params.append("limit", limit);
+      params.append("offset", offset);
+
+      if (sort) params.append("sort", sort);
+
+      const res = await api.get(
+        `/products/${productId}/relacionados?${params.toString()}`
+      );
+
+      return {
+        items: res.data.data,
+        count: res.data.count,
+        offset,
+      };
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Error al obtener productos relacionados"
+      );
+    }
+  }
+);
+
 
 
 
@@ -294,6 +324,14 @@ const productsSlice = createSlice({
     filteredItems: [],
     filterLoading: false,
     filterError: null,
+
+      related: {
+      items: [],
+      loading: false,
+      hasMore: true,
+      offset: 0,
+      limit: 10
+    },
 
     ///
     topSellingItems: [],
@@ -324,7 +362,7 @@ const productsSlice = createSlice({
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
-        // 🎯 AJUSTE: La respuesta del backend ya trae 'products' y 'total'.
+        // AJUSTE: La respuesta del backend ya trae 'products' y 'total'.
         state.items = action.payload.products;
         state.total = action.payload.total;
         state.page = action.payload.page;
@@ -430,7 +468,34 @@ const productsSlice = createSlice({
             state.topSellingLoading = false;
             state.topSellingError = action.payload;
             state.topSellingItems = [];
-        });
+         /// relacionados   
+        }).addCase(fetchRelatedProducts.pending, (state) => {
+      state.related.loading = true;
+      state.related.error = null;
+    })
+    .addCase(fetchRelatedProducts.fulfilled, (state, action) => {
+      const { items, count, offset } = action.payload;
+
+      // Si offset = 0 significa que es la primera página → limpiamos
+      if (offset === 0) {
+        state.related.items = items;
+      } else {
+        // Agregar nuevos sin duplicar
+        const existingIds = new Set(state.related.items.map((p) => p.id));
+        const filtered = items.filter((p) => !existingIds.has(p.id));
+        state.related.items.push(...filtered);
+      }
+
+      state.related.total = count;
+      state.related.offset = offset;
+      state.related.hasMore = items.length > 0;
+      state.related.loading = false;
+    })
+    .addCase(fetchRelatedProducts.rejected, (state, action) => {
+      state.related.error = action.payload;
+      state.related.loading = false;
+    });;
+
   },
 });
 

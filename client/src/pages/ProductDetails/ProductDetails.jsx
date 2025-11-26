@@ -5,6 +5,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { ShoppingCart, ChevronRight, Heart, Share2, Star } from "lucide-react";
 import { fetchProductById } from "../../features/products/productsSlice";
 
+// IMPORTAMOS EL SLIDER
+import RelatedProductsSlider from "../relatedProducts/RelatedProductsSlider";
+
 const ProductDetails = ({ onAddToCart }) => {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -106,6 +109,7 @@ const ProductDetails = ({ onAddToCart }) => {
   return (
     <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 min-h-screen py-6 px-3 md:px-6">
       <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-500 p-6">
+        
         {/* Breadcrumb */}
         <div className="flex items-center gap-1 text-xs text-gray-500 mb-6">
           <Link to="/" className="hover:text-blue-600 hover:underline transition-all">
@@ -116,47 +120,20 @@ const ProductDetails = ({ onAddToCart }) => {
             Productos
           </Link>
           <ChevronRight className="w-3 h-3 text-gray-400" />
-          <span className="text-blue-600 font-medium">{product.nombre || product.name}</span>
+          <span className="text-blue-600 font-medium">
+            {product.name || product.nombre}
+          </span>
         </div>
 
         <div className="lg:flex lg:gap-8 lg:items-start">
+          
           {/* Imagen principal */}
           <div className="lg:w-1/2 mb-6 lg:mb-0 relative group">
-            {product.badge && (
-              <div
-                className={`absolute top-3 left-3 bg-gradient-to-r ${
-                  product.badge === "Oferta"
-                    ? "from-pink-500 to-rose-600"
-                    : product.badge === "Nuevo"
-                    ? "from-emerald-400 to-cyan-500"
-                    : "from-blue-600 to-indigo-700"
-                } text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md flex items-center gap-1 animate-fadeIn`}
-              >
-                {product.badge}
-              </div>
-            )}
-
-            <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-500">
-              <button
-                onClick={toggleFavorite}
-                className={`p-2 rounded-full backdrop-blur-md shadow-md transition-all duration-200 ${
-                  isFavorite
-                    ? "bg-red-500 text-white scale-110"
-                    : "bg-white/90 text-gray-700 hover:bg-red-50 hover:text-red-500 hover:scale-110"
-                }`}
-              >
-                <Heart className={`w-4 h-4 ${isFavorite ? "fill-current" : ""}`} />
-              </button>
-              <button className="p-2 rounded-full bg-white/90 text-gray-700 hover:text-blue-600 hover:bg-blue-50 hover:scale-110 transition-all duration-200 shadow-md">
-                <Share2 className="w-4 h-4" />
-              </button>
-            </div>
-
             <div className="overflow-hidden rounded-xl bg-gray-50 border border-gray-100 shadow-inner">
               {!imageLoaded && <div className="absolute inset-0 bg-gray-100 animate-pulse rounded-xl"></div>}
               <img
-                src={product.imagen || product.image}
-                alt={product.nombre || product.name}
+                src={product.image || product.imagen}
+                alt={product.name || product.nombre}
                 onLoad={() => setImageLoaded(true)}
                 className={`w-full h-80 object-contain transition-transform duration-500 ${
                   imageLoaded ? "scale-100 opacity-100" : "scale-95 opacity-0"
@@ -169,9 +146,9 @@ const ProductDetails = ({ onAddToCart }) => {
           <div className="lg:w-1/2 space-y-6">
             <div>
               <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 leading-tight mb-1">
-                {product.nombre || product.name}
+                {product.name || product.nombre}
               </h1>
-              <p className="text-sm text-gray-500 mb-3">{product.categoria || "Categoría general"}</p>
+              <p className="text-sm text-gray-500 mb-3">{product.category || product.categoria || "General"}</p>
 
               <div className="flex items-center gap-2 mb-2">
                 {renderStars(product.rating)}
@@ -180,25 +157,14 @@ const ProductDetails = ({ onAddToCart }) => {
                 </span>
               </div>
 
-              <div className="flex items-baseline gap-2">
-                {/* <p className="text-3xl font-bold text-gray-900">
-                  {product.precio
-                    ? new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(product.precio)
-                    : "Precio no disponible"}
-                </p> */}
-                {product.precioOriginal && (
-                  <span className="text-sm line-through text-gray-400">
-                    {new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(product.precioOriginal)}
-                  </span>
-                )}
-              </div>
-
               <p className="text-xs text-green-600 font-medium mt-1">✓ disponible</p>
             </div>
 
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-all">
               <h2 className="text-sm font-semibold text-gray-800 mb-1">Descripción del producto</h2>
-              <p className="text-gray-600 text-sm leading-snug">{product.descripcion || product.description}</p>
+              <p className="text-gray-600 text-sm leading-snug">
+                {product.description || product.descripcion}
+              </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
@@ -230,6 +196,16 @@ const ProductDetails = ({ onAddToCart }) => {
             </div>
           </div>
         </div>
+
+        {/* Productos relacionados */}
+        <div className="mt-10">
+          <RelatedProductsSlider
+            productId={product.id}
+            categoriaId={product.categoria_principal_id}
+            onAddToCart={onAddToCart}
+          />
+        </div>
+
       </div>
     </div>
   );

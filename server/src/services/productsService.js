@@ -1,11 +1,6 @@
 import { ProductsRepository } from "../repositories/productsRepository.js";
 
 export const ProductsService = {
-  // Obtener productos paginados
-  // async getAllProducts(page = 1, limit = 10) {
-  //   const { products, total } = await ProductsRepository.getProductsPaginated(page, limit);
-  //   return { products, total };
-  // },
 
 async getAllProducts(page = 1, limit = 10, mainCategoryId, subCategoryId, searchQuery) {
     const { products, total } = await ProductsRepository.getProductsPaginated(
@@ -17,9 +12,6 @@ async getAllProducts(page = 1, limit = 10, mainCategoryId, subCategoryId, search
     );
     return { products, total };
 },
-
-
-
 
 // find by id
   async getProductById(id) {
@@ -39,14 +31,6 @@ async getAllProducts(page = 1, limit = 10, mainCategoryId, subCategoryId, search
   async filterProducts(filters) {
     return await ProductsRepository.filterProducts(filters);
   },
-
-////7 CREAR PRODUCTO
-  // async createProduct(productData) {
-  //   if (!productData.nombre || !productData.categoria_principal_id || !productData.subcategoria_id || !productData.ubicacion_id) {
-  //     throw new Error("Faltan campos obligatorios para crear el producto");
-  //   }
-  //   return await ProductsRepository.createProduct(productData);
-  // },
 
   async createProduct(productData) {
   // Mostrar qué llegó desde el front
@@ -73,9 +57,7 @@ async getAllProducts(page = 1, limit = 10, mainCategoryId, subCategoryId, search
   },
 
 
-  //// NUEVO
-
-
+  //// top ventas
   async getTopSellingProducts(page, pageSize) {
         try {
             // La lógica de negocio aquí es mínima, solo llama al repositorio
@@ -92,4 +74,21 @@ async getAllProducts(page = 1, limit = 10, mainCategoryId, subCategoryId, search
             throw error; 
         }
     },
+
+
+  //Productos relacionados
+
+   async getProductosRelacionados(productoId, limit, offset, sort) {
+        return await ProductsRepository.getProductosRelacionados(
+            productoId,
+            limit,
+            offset,
+            sort
+        );
+    }
+
+//////////////////////////
+
+
+
 };

@@ -22,6 +22,8 @@ router.get("/", ProductsController.getAllProducts);
 
 // 2.2 Obtener un producto por ID (Ruta dinámica)
 router.get("/:id", ProductsController.getProductById);
+// obtener relacionados por id 
+router.get("/:id/relacionados", ProductsController.getProductosRelacionados);
 
 // 2.3 Creación, Actualización y Eliminación
 router.post("/", ProductsController.createProduct);

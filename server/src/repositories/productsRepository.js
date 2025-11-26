@@ -177,6 +177,50 @@ async getTopSellingProducts(page = 1, pageSize = 50) {
         throw new Error("Error en Repositorio (getTopSellingProducts): " + error.message);
     }
 }
+,
+
+
+//// relacionados respecto al ID del producto
+async getProductosRelacionados(productoId, limit, offset, sort) {
+        // 1. Obtener info del producto base
+        const { data: baseProduct, error: baseError } = await supabase
+            .from("productos")
+            .select("categoria_principal_id, subcategoria_id")
+            .eq("id", productoId)
+            .single();
+
+        if (baseError) throw new Error(baseError.message);
+
+        // 2. Query base — solo los campos mínimos
+        let query = supabase
+            .from("productos")
+            .select("id, nombre, imagen, precio, ventas_anuales", { count: "exact" })
+            .neq("id", productoId)
+            .eq("subcategoria_id", baseProduct.subcategoria_id);
+
+        // 3. Aplicar ordenamiento según query param
+        switch (sort) {
+            case "ventas":
+                query.order("ventas_anuales", { ascending: false });
+                break;
+            case "precio":
+                query.order("precio", { ascending: true });
+                break;
+            case "random":
+                query.order("id", { foreignTable: null }); // workaround para Supabase
+                query.order("random()");
+                break;
+        }
+
+        // 4. Obtener resultados con paginación
+        const { data, count, error } = await query.range(offset, offset + limit - 1);
+        if (error) throw new Error(error.message);
+
+        // 5. Flag para indicar si hay más productos
+        const hasMore = offset + data.length < count;
+
+        return { data, count, hasMore };
+    }
 
   
 

@@ -1,25 +1,27 @@
- // Ruta sugerida: src/hooks/Cart/useCartActions.js
+// Ruta  src/hooks/Cart/useCartActions.js
 
 import { useDispatch, useSelector } from 'react-redux';
-// Asegúrate de que estas rutas sean correctas en tu proyecto
 import { 
     addItemToCart, 
     updateCartItemQuantity, 
     removeCartItem 
 } from '../../features/cart/cartSlice';
-import useNotification from '../Notify/useNotification'; // Tu hook de notificación
+import useNotification from '../Notify/useNotification'; 
 
 export function useCartActions() {
     const dispatch = useDispatch();
     const { notify } = useNotification();
-    // Obtener isAuthenticated del estado para la verificación
+
+    // Verificación de autenticación
     const isAuthenticated = !!useSelector((state) => state.user.user); 
 
     /**
      * Agrega un producto al carrito.
-     * @param {object} product - El objeto del producto a agregar (debe tener 'id' y 'nombre').
+     * @param {object} product - El objeto del producto a agregar (debe tener 'id' y 'name').
      */
     const addToCart = (product) => {
+        console.log("📦 addToCart recibió:", product); // <-- DEBUG clave
+
         if (!isAuthenticated) {
             notify('Debes iniciar sesión para agregar productos al carrito. 🛒', 'error');
             return;
@@ -28,18 +30,17 @@ export function useCartActions() {
         dispatch(addItemToCart({ producto_id: product.id, cantidad: 1 }))
             .unwrap()
             .then(() => {
-                notify(`✔️ "${product.nombre}" agregado al carrito`, 'success');
+                notify(`✔️ "${product.name || product.nombre}" agregado al carrito`, 'success');
             })
             .catch((error) => {
                 console.error("Error al agregar al carrito:", error);
                 notify('❌ Error al agregar el producto al carrito', 'error');
             });
+
     };
 
     /**
      * Actualiza la cantidad de un artículo específico en el carrito.
-     * @param {string|number} id - El ID del artículo del carrito.
-     * @param {number} quantity - La nueva cantidad.
      */
     const updateCartQuantity = (id, quantity) => {
         dispatch(updateCartItemQuantity({ itemId: id, cantidad: quantity }));
@@ -47,17 +48,14 @@ export function useCartActions() {
 
     /**
      * Elimina un artículo del carrito.
-     * @param {string|number} id - El ID del artículo del carrito a eliminar.
      */
     const removeFromCart = (id) => {
         dispatch(removeCartItem(id));
-        // Opcional: añadir una notificación de éxito/confirmación.
         // notify('Artículo eliminado del carrito', 'info');
     };
 
-    // Función placeholder para el checkout (la mantienes para la interfaz)
+    // Función placeholder para continuar al checkout
     const handleProceedToCheckout = () => {
-        // Lógica de navegación o inicio del proceso de pago
         console.log("Proceder a la finalización de la compra.");
     };
 

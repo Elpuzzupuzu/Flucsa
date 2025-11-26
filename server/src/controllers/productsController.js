@@ -138,9 +138,9 @@ async filterProducts(req, res, next) {
   }
 ,
 
-  //// NUEVO 
+  
 
-  // NUEVO MÉTODO: Obtiene los productos más vendidos por ventas_anuales y paginados.
+  /// Obtiene los productos más vendidos por ventas_anuales y paginados.
     async getTopSellingProductsController(req, res, next) {
         try {
             // Obtener parámetros de paginación desde la query
@@ -186,5 +186,33 @@ async filterProducts(req, res, next) {
                 stack: error.stack,
             });
         }
+    },
+
+
+    //// PRODUCTOS RELACIONADOS 
+   async getProductosRelacionados(req, res) {
+        try {
+            const { id } = req.params;
+            const { limit = 10, offset = 0, sort = null } = req.query;
+
+            const productos = await ProductsService.getProductosRelacionados(
+                id,
+                parseInt(limit),
+                parseInt(offset),
+                sort
+            );
+
+            res.json({
+                message: "Productos relacionados obtenidos",
+                ...productos // incluye data, count y hasMore
+            });
+
+        } catch (error) {
+            res.status(500).json({ 
+                message: "Error obteniendo productos relacionados", 
+                error: error.message 
+            });
+        }
     }
+
 };
