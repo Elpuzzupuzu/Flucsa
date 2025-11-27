@@ -7,6 +7,8 @@ import { fetchProductById } from "../../features/products/productsSlice";
 
 // IMPORTAMOS EL SLIDER
 import RelatedProductsSlider from "../relatedProducts/RelatedProductsSlider";
+//reviews
+import ProductReviewsList from "../productReviewsList/ProductReviewsList"
 
 const ProductDetails = ({ onAddToCart }) => {
   const { id } = useParams();
@@ -207,6 +209,7 @@ const ProductDetails = ({ onAddToCart }) => {
         </div>
 
       </div>
+      <ProductReviewsList productId={product.id} />
     </div>
   );
 };

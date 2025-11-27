@@ -22,6 +22,8 @@ import contactRoutes from "./routes/contactRoutes.js";
 import mainCategoryRoutes from "./routes/categoriaPrincipalRoutes.js";
 import subCategoryRoutes from "./routes/subCategoriaRoutes.js";
 import ubicacionRoutes from "./routes/ubicacionRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
+
 
 // =======================================================
 // 🔧 CONFIGURACIÓN INICIAL
@@ -109,6 +111,8 @@ app.use("/api/pdfs", pdfRoutes);
 app.use("/api/quotations", quotationRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/reviews", reviewRoutes);
+
 
 // =======================================================
 // 🧱 SERVIR FRONTEND (PRODUCCIÓN O LOCAL TEST DE BUILD)

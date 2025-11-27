@@ -10,10 +10,12 @@ import pdfsReducer from "../features/pdfs/pdfSlice";
 import cartReducer from "../features/cart/cartSlice";
 import quoteReducer from "../features/quotations/quotationSlice";
 
-// Nuevos slices
+//slices
 import mainCategoryReducer from "../features/mainCategory/mainCategorySlice";
 import locationReducer from "../features/location/locationSlice";
 import subCategoryReducer from "../features/subCategory/subCategorySlice";
+import reviewReducer from "../features/reviews/reviewSlice";
+
 
 export const store = configureStore({
   reducer: {
@@ -29,5 +31,8 @@ export const store = configureStore({
     mainCategory: mainCategoryReducer,
     location: locationReducer,
     subCategory: subCategoryReducer,
+
+    /// reviews
+     reviews: reviewReducer,
   },
 });
