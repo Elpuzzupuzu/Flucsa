@@ -1,10 +1,10 @@
 import React from 'react';
 
-const StatCard = ({ icon: Icon, number, label }) => (
+const StatCard = ({ icon: Icon, number = 0, label = '' }) => (
     <div className="text-center group">
         {/* Contenedor del Icono - Minimalista y elegante */}
         <div className="w-16 h-16 mx-auto mb-5 bg-blue-900 rounded flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow duration-300">
-            <Icon className="w-8 h-8 text-white" />
+            {Icon && <Icon className="w-8 h-8 text-white" />}
         </div>
         
         {/* Número - Tipografía destacada pero profesional */}

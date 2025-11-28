@@ -1,34 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AlertCircle, ShoppingBag, Heart } from 'lucide-react';
-import { clearSuccessMessage } from '../../../features/user/usersSlice';
+import { clearSuccessMessage, fetchUserPurchaseHistory } from '../../../features/user/usersSlice';
 
-// Importar los nuevos componentes modulares
 import ProfilePictureSection from './components/ProfilePictureSection';
 import ProfileDetailsForm from './components/ProfileDetailsForm';
 import PasswordChangeForm from './components/PasswordChangeForm';
 import ProfileInfoCards from './components/ProfileInfoCards';
 import ProfileSidebar from '../../Auth/ProfilePage/components/ProfileSidebar';
+import PurchaseHistoryList from './components/PurchaseHistoryList';
+import UserReviewsList from './components/UserReviewsList'; // 🔹 Importar componente de reseñas
 
 const ProfilePage = () => {
     const dispatch = useDispatch();
-    const { user, loading, error, successMessage, authChecked } = useSelector((state) => state.user);
+    const { 
+        user, 
+        loading, 
+        error, 
+        successMessage, 
+        authChecked, 
+        purchaseHistory 
+    } = useSelector((state) => state.user);
+
     const [selectedSection, setSelectedSection] = useState('details');
 
-    // ----------------------------------------------------
-    // LOG: Estado de Redux al inicio del render
-    // ----------------------------------------------------
-    if (process.env.NODE_ENV === 'development') {
-        console.log('[ProfilePage] Redux State on Render:', {
-            authChecked: authChecked,
-            userExists: !!user,
-            userNameAvailable: !!user?.nombre,
-            loading: loading
-        });
-    }
-    // ----------------------------------------------------
-
-    // Efecto para limpiar mensajes de feedback después de un tiempo
     useEffect(() => {
         if (successMessage || error) {
             const timer = setTimeout(() => {
@@ -38,13 +33,13 @@ const ProfilePage = () => {
         }
     }, [successMessage, error, dispatch]);
 
-    // ----------------------------------------------------
-    // Bloqueo 1: Espera de Verificación de Sesión (authChecked)
-    // ----------------------------------------------------
-    if (!authChecked) {
-        if (process.env.NODE_ENV === 'development') {
-            console.log('[ProfilePage] RENDER BLOQUEADO: Esperando authChecked.');
+    useEffect(() => {
+        if (selectedSection === "orders" && user?.id) {
+            dispatch(fetchUserPurchaseHistory(user.id));
         }
+    }, [selectedSection, dispatch, user?.id]);
+
+    if (!authChecked) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <p className="text-gray-500 text-lg">Verificando sesión...</p>
@@ -52,11 +47,7 @@ const ProfilePage = () => {
         );
     }
 
-    // Bloqueo 2: Usuario No Autenticado
     if (!user) {
-        if (process.env.NODE_ENV === 'development') {
-            console.log('[ProfilePage] RENDER BLOQUEADO: Usuario no autenticado.');
-        }
         return (
             <div className="min-h-screen bg-gray-50 py-10 px-4 flex items-center justify-center">
                 <div className="text-center p-8 bg-white rounded-xl shadow-lg max-w-sm w-full">
@@ -68,68 +59,76 @@ const ProfilePage = () => {
         );
     }
 
-    // ----------------------------------------------------
-    // 🚩 Bloqueo 3: Espera de Datos Críticos del Perfil (SOLUCIÓN al Flicker)
-    // ----------------------------------------------------
-    // Si 'user' existe pero la propiedad clave (nombre/apellido) aún no está en el store.
     const isProfileDataReady = !!user.nombre;
-    
+
     if (!isProfileDataReady) {
-        if (process.env.NODE_ENV === 'development') {
-            console.log(`[ProfilePage] RENDER BLOQUEADO: Esperando datos finales (user.nombre es falso)`);
-        }
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <p className="text-gray-500 text-lg">Cargando datos del perfil...</p>
             </div>
         );
     }
-    // ----------------------------------------------------
-    
-    // Bandera para formularios de acción (guardar/cambiar)
+
     const isActionLoading = loading && !error && !successMessage;
-    
-    if (process.env.NODE_ENV === 'development') {
-        console.log(`[ProfilePage] RENDER COMPLETO: Datos listos. (Nombre: ${user.nombre})`);
-    }
 
     const renderContent = () => {
         switch (selectedSection) {
             case 'details':
                 return (
                     <div className="space-y-4 sm:space-y-6">
-                        {/* Pasamos isLoading=false porque los datos están listos aquí */}
-                        <ProfilePictureSection user={user} isLoading={!isProfileDataReady} /> 
-                        
+                        <ProfilePictureSection user={user} isLoading={!isProfileDataReady} />
                         <ProfileInfoCards user={user} />
                         <div className="pt-4 sm:pt-6 border-t border-gray-200">
                             <ProfileDetailsForm 
-                                user={user} 
-                                loading={isActionLoading} // Esta es la carga de formularios (guardar)
+                                user={user}
+                                loading={isActionLoading}
                                 error={error}
                                 successMessage={successMessage}
                             />
                         </div>
                     </div>
                 );
+
             case 'password':
                 return (
-                    <PasswordChangeForm 
-                        loading={isActionLoading} 
+                    <PasswordChangeForm
+                        loading={isActionLoading}
                         error={error}
                         successMessage={successMessage}
                     />
                 );
+
             case 'orders':
                 return (
-                    <div className="p-8 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl text-center border border-indigo-100">
-                        <div className="bg-indigo-600 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <ShoppingBag className="w-7 h-7 text-white" />
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="bg-indigo-600 w-12 h-12 rounded-full flex items-center justify-center">
+                                <ShoppingBag className="w-7 h-7 text-white" />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold text-gray-800">Historial de Compras</h2>
+                                <p className="text-sm text-gray-500">
+                                    Aquí puedes ver todas tus órdenes y los productos que has comprado.
+                                </p>
+                            </div>
                         </div>
-                        <h2 className="text-xl font-bold text-gray-800 mb-1.5">Mis Pedidos</h2>
-                        <p className="text-sm text-gray-600">Esta sección está en construcción. ¡Pronto podrás ver tu historial de compras aquí!</p>
+
+                        <PurchaseHistoryList 
+                            userId={user.id}
+                            history={purchaseHistory}
+                            loading={loading}
+                        />
                     </div>
                 );
+
+            case 'reviews': // 🔹 Nueva sección
+                return (
+                    <div className="space-y-6">
+                        <h2 className="text-xl font-bold text-gray-800 mb-2">Tus Reseñas</h2>
+                        <UserReviewsList userId={user.id} />
+                    </div>
+                );
+
             case 'wishlist':
                 return (
                     <div className="p-8 bg-gradient-to-br from-pink-50 to-red-50 rounded-xl text-center border border-pink-100">
@@ -140,6 +139,7 @@ const ProfilePage = () => {
                         <p className="text-sm text-gray-600">Aquí guardaremos tus productos favoritos.</p>
                     </div>
                 );
+
             default:
                 return null;
         }
@@ -149,16 +149,16 @@ const ProfilePage = () => {
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4 sm:py-6">
             <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
                 <div className="flex flex-col lg:flex-row gap-3 sm:gap-5">
-                    {/* Panel de Navegación Lateral */}
+
                     <ProfileSidebar 
-                        selectedSection={selectedSection} 
-                        setSelectedSection={setSelectedSection} 
+                        selectedSection={selectedSection}
+                        setSelectedSection={setSelectedSection}
                     />
 
-                    {/* Contenido Principal */}
                     <main className="flex-1 bg-white p-4 sm:p-6 rounded-xl shadow-lg border border-gray-100">
                         {renderContent()}
                     </main>
+
                 </div>
             </div>
         </div>

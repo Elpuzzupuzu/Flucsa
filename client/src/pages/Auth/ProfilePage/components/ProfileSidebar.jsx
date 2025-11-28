@@ -1,6 +1,4 @@
-// src/components/profile/ProfileSideBar.jsx
-
-import { User, Lock, ShoppingBag, Heart } from 'lucide-react';
+import { User, Lock, ShoppingBag, Heart, MessageSquare } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { clearSuccessMessage } from '../../../../features/user/usersSlice';
 
@@ -60,6 +58,13 @@ const ProfileSidebar = ({ selectedSection, setSelectedSection }) => {
                         selectedSection={selectedSection}
                         setSelectedSection={setSelectedSection}
                     />
+                    <SidebarLink
+                        Icon={MessageSquare}
+                        title="Mis Reseñas"
+                        sectionName="reviews"
+                        selectedSection={selectedSection}
+                        setSelectedSection={setSelectedSection}
+                    />
                 </div>
             </aside>
 
@@ -92,6 +97,13 @@ const ProfileSidebar = ({ selectedSection, setSelectedSection }) => {
                         Icon={Heart}
                         title="Lista de Deseos"
                         sectionName="wishlist"
+                        selectedSection={selectedSection}
+                        setSelectedSection={setSelectedSection}
+                    />
+                    <SidebarLink
+                        Icon={MessageSquare}
+                        title="Mis Reseñas"
+                        sectionName="reviews"
                         selectedSection={selectedSection}
                         setSelectedSection={setSelectedSection}
                     />

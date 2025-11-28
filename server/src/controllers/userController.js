@@ -4,13 +4,16 @@ import jwt from 'jsonwebtoken';
 const isProduction = process.env.NODE_ENV === 'production';
 console.log("NODE_ENV:", process.env.NODE_ENV, "| isProduction:", isProduction);
 
-const COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 días
+const COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 días en milisegundos
 
-// Configuración dinámica de cookies
+// Configuración de cookies
 const cookieConfig = {
   httpOnly: true,
-  secure: isProduction,               // ⚡ Solo HTTPS en producción
-  sameSite: isProduction ? 'None' : 'Lax', // Cross-origin seguro en prod
+  // En producción (HTTPS) es true, en desarrollo (HTTP) es false.
+  secure: isProduction,
+  // sameSite: 'None' requiere 'secure: true'. Usamos 'Lax' en desarrollo (HTTP)
+  // ya que suele funcionar bien para peticiones GET.
+  sameSite: isProduction ? 'None' : 'Lax',
   path: '/',
 };
 
@@ -28,15 +31,13 @@ export const UserController = {
     }
   },
 
-  // Login
+  // Login (INICIO DE SESIÓN)
   login: async (req, res) => {
     try {
       const { correo, contraseña } = req.body;
       if (!correo || !contraseña) {
         return res.status(400).json({ error: 'Correo y contraseña son obligatorios' });
       }
-      console.log("Cookie config:", { ...cookieConfig, maxAge: COOKIE_MAX_AGE });
-
 
       const { user, accessToken, refreshToken, errorType } =
         await UserService.loginUser(correo, contraseña);
@@ -44,8 +45,14 @@ export const UserController = {
       if (errorType === 'USER_NOT_FOUND') return res.status(404).json({ error: 'Usuario no encontrado' });
       if (errorType === 'INVALID_PASSWORD') return res.status(401).json({ error: 'Contraseña incorrecta' });
 
-      // Guardamos refreshToken en cookie HttpOnly
-      res.cookie('auth_refresh', refreshToken, { ...cookieConfig, maxAge: COOKIE_MAX_AGE });
+      // Opciones de la cookie final, incluyendo la duración de 7 días.
+      const finalCookieOptions = {
+        ...cookieConfig,
+        maxAge: COOKIE_MAX_AGE,
+      };
+
+      // Guardamos refreshToken en cookie HttpOnly con duración
+      res.cookie('auth_refresh', refreshToken, finalCookieOptions);
 
       // Enviamos accessToken en JSON
       res.status(200).json({ user, accessToken });
@@ -69,6 +76,7 @@ export const UserController = {
       res.status(200).json({ accessToken: newAccessToken, user });
     } catch (err) {
       console.error('Refresh token inválido o expirado:', err);
+      // Si falla, borramos la cookie para forzar un nuevo login
       res.clearCookie('auth_refresh', cookieConfig);
       return res.status(403).json({ error: "Refresh token inválido o expirado" });
     }
@@ -76,26 +84,59 @@ export const UserController = {
 
   // Logout
   logout: (req, res) => {
+    // Borramos la cookie usando la configuración base
     res.clearCookie('auth_refresh', cookieConfig);
     res.status(200).json({ message: 'Sesión cerrada exitosamente' });
   },
 
-  // Perfil ligero
+  // Perfil ligero (usando datos de req.user inyectados por el middleware)
   getAuthProfile: (req, res) => {
-    const { id, correo, nombre, apellido, rol } = req.user;
-    res.status(200).json({ id, correo, nombre, apellido, rol });
+    const { id, correo, nombre, apellido, rol, foto_perfil } = req.user;
+
+    // 💡 LOG DE MONITOREO EN BACKEND
+    console.log("✅ [BACKEND LOG] Datos de perfil enviados en /users/auth:", 
+      { id, correo, nombre, apellido, rol, foto_perfil });
+
+    res.status(200).json({ id, correo, nombre, apellido, rol, foto_perfil });
   },
 
   // Perfil completo
+  // getProfile: async (req, res) => {
+  //   try {
+  //     const userId = req.user.id;
+  //     const profile = await UserService.getUserProfile(userId);
+  //     res.status(200).json(profile);
+  //   } catch (error) {
+  //     res.status(404).json({ error: 'Perfil no encontrado' });
+  //   }
+  // },
+
+
   getProfile: async (req, res) => {
-    try {
-      const userId = req.user.id;
-      const profile = await UserService.getUserProfile(userId);
-      res.status(200).json(profile);
-    } catch (error) {
-      res.status(404).json({ error: 'Perfil no encontrado' });
+  try {
+    console.log("🟦 [Controller] getProfile() llamado");
+
+    console.log("➡️ req.user recibido:", req.user);
+
+    const userId = req.user?.id;
+    console.log("🟩 ID extraído de req.user.id:", userId);
+
+    if (!userId) {
+      console.error("🟥 No se recibió user.id en req.user");
+      return res.status(400).json({ error: "ID de usuario no válido" });
     }
-  },
+
+    const profile = await UserService.getUserProfile(userId);
+
+    console.log("🟦 [Controller] getUserProfile RESULT:", profile);
+
+    res.status(200).json(profile);
+  } catch (error) {
+    console.error("🟥 [Controller] ERROR en getProfile:", error);
+    res.status(404).json({ error: 'Perfil no encontrado' });
+  }
+},
+
 
   // Actualizar perfil
   updateProfile: async (req, res) => {
@@ -120,7 +161,7 @@ export const UserController = {
 
       await UserService.updateUserPassword(userId, currentPassword, newPassword);
 
-      // Limpiamos cookie auth_refresh al cambiar contraseña
+      // Limpiamos cookie auth_refresh al cambiar contraseña por seguridad
       res.clearCookie('auth_refresh', cookieConfig);
 
       res.status(200).json({
@@ -133,4 +174,44 @@ export const UserController = {
       res.status(400).json({ error: error.message });
     }
   },
+
+
+  /// compras 
+  getUserPurchaseHistory: async (req, res) => {
+    try {
+      const userId = req.params.userId;
+
+      const history = await UserService.getUserPurchaseHistory(userId);
+
+      return res.status(200).json({
+        ok: true,
+        message: "Historial de compras obtenido correctamente",
+        data: history
+      });
+
+    } catch (err) {
+      return res.status(500).json({
+        ok: false,
+        message: "Error al obtener el historial de compras",
+        error: err.message
+      });
+    }
+  },
+
+  /// reviews 
+   getReviews: async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+      const result = await UserService.getUserReviews(userId);
+      res.status(200).json(result);
+    } catch (err) {
+      res.status(500).json({
+        ok: false,
+        message: err.message || 'Error al obtener las reseñas',
+      });
+    }
+  },
+
+
 };

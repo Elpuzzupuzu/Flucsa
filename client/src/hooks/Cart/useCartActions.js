@@ -20,10 +20,10 @@ export function useCartActions() {
      * @param {object} product - El objeto del producto a agregar (debe tener 'id' y 'name').
      */
     const addToCart = (product) => {
-        console.log("📦 addToCart recibió:", product); // <-- DEBUG clave
+        // console.log("📦 addToCart recibió:", product); // <-- DEBUG clave
 
         if (!isAuthenticated) {
-            notify('Debes iniciar sesión para agregar productos al carrito. 🛒', 'error');
+            // notify('Debes iniciar sesión para agregar productos al carrito. 🛒', 'error');
             return;
         }
 
@@ -33,7 +33,7 @@ export function useCartActions() {
                 notify(`✔️ "${product.name || product.nombre}" agregado al carrito`, 'success');
             })
             .catch((error) => {
-                console.error("Error al agregar al carrito:", error);
+                // console.error("Error al agregar al carrito:", error);
                 notify('❌ Error al agregar el producto al carrito', 'error');
             });
 

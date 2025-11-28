@@ -1,72 +1,48 @@
 // client/src/features/user/usersSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../api/axios"; // Configurado con withCredentials: true
-// ===============================
-// THUNKS
-// ===============================
-
-
 
 // ===============================
 // Helper: Formatear payload completo (CORREGIDO)
 // ===============================
 const formatUserPayload = (apiResponse) => {
+  // 1. Identificar si la respuesta tiene la estructura anidada o plana.
+  // La respuesta del login es: { accessToken, user: { ...datos } }
+  // La respuesta de checkAuth/fetchUserProfile podría ser solo: { ...datos }
+  const userData = apiResponse.user || apiResponse;
 
-    // 1. Identificar si la respuesta tiene la estructura anidada o plana.
+  // Si no hay datos relevantes, retornamos null
+  if (!userData || !userData.id) return null;
 
-    // La respuesta del login es: { accessToken, user: { ...datos } }
+  // 2. Retornar el objeto plano y añadir isAdmin
+  return {
+    // Campos esenciales para tu app
+    id: userData.id,
+    nombre: userData.nombre,
+    apellido: userData.apellido,
+    correo: userData.correo,
 
-    // La respuesta de checkAuth/fetchUserProfile podría ser solo: { ...datos }
+    // Campos de rol y perfil
+    rol: userData.rol,
+    foto_perfil: userData.foto_perfil,
 
-    // Obtenemos los datos esenciales. Si está anidado (login), usamos 'user', si no, el payload completo.
+    // CAMBIO CRUCIAL: Agregar la propiedad isAdmin 🚨
+    isAdmin: userData.rol === "admin",
 
-    const userData = apiResponse.user || apiResponse;
+    // Campos compuestos o de autenticación
+    name:
+      userData.nombre && userData.apellido
+        ? `${userData.nombre} ${userData.apellido}`
+        : undefined,
 
-    // Si no hay datos relevantes, retornamos null
+    // Aseguramos que el accessToken siempre se incluya si existe en el payload principal
+    accessToken: apiResponse.accessToken || null,
+  };
+};
 
-    if (!userData || !userData.id) return null;
-
-
-
-    // 2. Retornar el objeto plano y añadir isAdmin
-
-    return {
-
-        // Campos esenciales para tu app
-
-        id: userData.id,
-
-        nombre: userData.nombre,
-
-        apellido: userData.apellido,
-
-        correo: userData.correo,
-
-        // Campos de rol y perfil
-
-        rol: userData.rol,
-
-        foto_perfil: userData.foto_perfil,
-
-        //  CAMBIO CRUCIAL: Agregar la propiedad isAdmin 🚨
-
-        isAdmin: userData.rol === 'admin',
-        // Campos compuestos o de autenticación
-
-        name:
-
-            userData.nombre && userData.apellido
-
-                ? `${userData.nombre} ${userData.apellido}`
-
-                : undefined,
-        // Aseguramos que el accessToken siempre se incluya si existe en el payload principal
-
-        accessToken: apiResponse.accessToken || null,
-
-    };
-
-}
+// ===============================
+// THUNKS
+// ===============================
 
 // Registro de usuario
 export const registerUser = createAsyncThunk(
@@ -142,6 +118,9 @@ export const fetchUserProfile = createAsyncThunk(
   }
 );
 
+
+
+
 // Actualizar perfil
 export const updateUserProfile = createAsyncThunk(
   "user/updateUserProfile",
@@ -188,6 +167,38 @@ export const refreshAccessToken = createAsyncThunk(
 );
 
 
+// =============================================================
+// 🔹 Obtener el historial de compras del usuario
+// =============================================================
+export const fetchUserPurchaseHistory = createAsyncThunk(
+  "user/fetchUserPurchaseHistory",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const res = await api.get(`/users/purchase-history/${userId}`);
+
+      return res.data.data; // historial completo
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Error al obtener historial"
+      );
+    }
+  }
+);
+
+// 🔹 Obtener reseñas del usuario
+export const fetchUserReviews = createAsyncThunk(
+  "user/fetchUserReviews",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const res = await api.get(`/users/reviews/${userId}`);
+      return res.data.data; // array de reseñas
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Error al obtener reseñas");
+    }
+  }
+);
+
+
 // ===============================
 // SLICE
 // ===============================
@@ -198,9 +209,14 @@ const userSlice = createSlice({
     accessToken: null, // nuevo campo para token en Redux
     loading: false,
     authChecked: false,
+    profileLoaded: false, // 💡 CAMBIO 1: Nueva bandera de estado
     error: null,
     successMessage: null,
     notificationMessage: null,
+    purchaseHistory: [],   // 🟦 agregamos esto
+     reviews: [],
+    
+
   },
   reducers: {
     logoutSuccess: (state) => {
@@ -208,6 +224,7 @@ const userSlice = createSlice({
       state.accessToken = null;
       state.loading = false;
       state.authChecked = true;
+      state.profileLoaded = false; // 💡 CAMBIO 2: Resetear al hacer logout
       state.error = null;
       state.successMessage = null;
       state.notificationMessage = null;
@@ -237,6 +254,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.user = formatUserPayload(action.payload);
         state.authChecked = true;
+        state.profileLoaded = false; // Perfil cargado parcialmente (solo los datos de registro)
         state.successMessage = "Registro exitoso. ¡Bienvenido!";
       })
       .addCase(registerUser.rejected, (state, action) => {
@@ -255,6 +273,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.user = formatUserPayload(action.payload);
         state.authChecked = true;
+        state.profileLoaded = false; // Perfil cargado parcialmente (solo los datos de login)
         state.successMessage = "Inicio de sesión exitoso.";
         state.error = null;
       })
@@ -264,21 +283,23 @@ const userSlice = createSlice({
         state.error = action.payload.error || action.payload;
       })
 
-      // checkAuthStatus
+      // checkAuthStatus (Ruta Ligera)
       .addCase(checkAuthStatus.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(checkAuthStatus.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = formatUserPayload(action.payload);
         state.authChecked = true;
+        state.profileLoaded = false; // Se cargó el perfil ligero, no el completo
         state.error = null;
       })
       .addCase(checkAuthStatus.rejected, (state, action) => {
         state.loading = false;
         state.authChecked = true;
         state.user = null;
+        state.profileLoaded = false; // Resetear
         state.error = action.payload?.expected ? null : action.payload?.error || "Error de conexión/servidor";
       })
 
@@ -288,6 +309,7 @@ const userSlice = createSlice({
         state.accessToken = null;
         state.loading = false;
         state.authChecked = true;
+        state.profileLoaded = false; // Resetear
         state.error = null;
         state.successMessage = "Sesión cerrada correctamente.";
       })
@@ -296,10 +318,11 @@ const userSlice = createSlice({
         state.accessToken = null;
         state.loading = false;
         state.authChecked = true;
+        state.profileLoaded = false; // Resetear
         state.error = "Error al cerrar sesión, se limpió el estado local.";
       })
 
-      // fetchUserProfile
+      // fetchUserProfile (Ruta Completa)
       .addCase(fetchUserProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -307,9 +330,11 @@ const userSlice = createSlice({
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.loading = false;
         state.user = formatUserPayload(action.payload);
+        state.profileLoaded = true; // 💡 CAMBIO 3: Marcar como cargado
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.loading = false;
+        state.profileLoaded = false;
         state.error = action.payload.error || action.payload;
       })
 
@@ -322,6 +347,7 @@ const userSlice = createSlice({
       .addCase(updateUserProfile.fulfilled, (state, action) => {
         state.loading = false;
         state.user = formatUserPayload(action.payload);
+        state.profileLoaded = true; // El perfil actualizado se considera completo
         state.successMessage = "¡Perfil actualizado exitosamente!";
       })
       .addCase(updateUserProfile.rejected, (state, action) => {
@@ -340,6 +366,7 @@ const userSlice = createSlice({
         state.successMessage = "Contraseña cambiada exitosamente. Por seguridad, vuelve a iniciar sesión.";
         state.user = null;
         state.accessToken = null;
+        state.profileLoaded = false; // Resetear
       })
       .addCase(updateUserPassword.rejected, (state, action) => {
         state.loading = false;
@@ -358,7 +385,32 @@ const userSlice = createSlice({
         state.loading = false;
         state.user = null;
         state.accessToken = null;
+        state.profileLoaded = false; // Resetear
         state.error = action.payload.error || action.payload;
+      }).addCase(fetchUserPurchaseHistory.pending, (state) => {
+    state.loading = true;
+    state.error = null;
+      })
+      .addCase(fetchUserPurchaseHistory.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.purchaseHistory = action.payload || [];
+      })
+      .addCase(fetchUserPurchaseHistory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.purchaseHistory = [];
+      }).addCase(fetchUserReviews.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserReviews.fulfilled, (state, action) => {
+        state.loading = false;
+        state.reviews = action.payload;
+      })
+      .addCase(fetchUserReviews.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

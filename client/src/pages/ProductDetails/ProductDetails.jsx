@@ -2,37 +2,46 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { ShoppingCart, ChevronRight, Heart, Share2, Star } from "lucide-react";
+import { ShoppingCart, ChevronRight, Star } from "lucide-react";
 import { fetchProductById } from "../../features/products/productsSlice";
 
-// IMPORTAMOS EL SLIDER
+// IMPORTAMOS RELACIONADOS
 import RelatedProductsSlider from "../relatedProducts/RelatedProductsSlider";
-//reviews
-import ProductReviewsList from "../productReviewsList/ProductReviewsList"
+
+// REVIEWS
+import ProductReviewsList from "../productReviewsList/ProductReviewsList";
+import AddReviewForm from "../productReviewsList/AddReviewForm";
 
 const ProductDetails = ({ onAddToCart }) => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const products = useSelector((state) => state.adminProducts.items) || [];
-  
+
+  // USUARIO LOGUEADO — SEGURO
+  const user = useSelector((state) => state.user);
+  const userId = user?.user?.id ?? null; // 👈 PREVENCIÓN DE ERRORES
+
   const [product, setProduct] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [error, setError] = useState(null);
 
+  // Cargar producto
   useEffect(() => {
     if (!products) return;
 
     const foundProduct = products.find((p) => p.id === id);
+
     if (foundProduct) {
       setProduct(foundProduct);
     } else {
       dispatch(fetchProductById(id))
         .unwrap()
-        .then((fetchedProduct) => setProduct(fetchedProduct))
-        .catch((err) => {
-          console.error("Producto no encontrado:", err);
+        .then((fetchedProduct) => {
+          setProduct(fetchedProduct);
+        })
+        .catch(() => {
           setError("Producto no encontrado.");
         });
     }
@@ -46,16 +55,20 @@ const ProductDetails = ({ onAddToCart }) => {
     setAddingToCart(false);
   };
 
-  const toggleFavorite = () => setIsFavorite(!isFavorite);
-
+  // Render estrellas
   const renderStars = (rating = 4.6) => {
+    rating = Number(rating) || 0;
+
     const stars = [];
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 !== 0;
 
     for (let i = 0; i < fullStars; i++) {
-      stars.push(<Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />);
+      stars.push(
+        <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
+      );
     }
+
     if (hasHalfStar) {
       stars.push(
         <div key="half" className="relative">
@@ -66,13 +79,18 @@ const ProductDetails = ({ onAddToCart }) => {
         </div>
       );
     }
+
     const remainingStars = 5 - Math.ceil(rating);
     for (let i = 0; i < remainingStars; i++) {
-      stars.push(<Star key={`empty-${i}`} className="w-4 h-4 text-gray-300" />);
+      stars.push(
+        <Star key={`empty-${i}`} className="w-4 h-4 text-gray-300" />
+      );
     }
+
     return stars;
   };
 
+  // ERROR: producto no encontrado
   if (error) {
     return (
       <div className="bg-white min-h-screen flex items-center justify-center">
@@ -89,6 +107,7 @@ const ProductDetails = ({ onAddToCart }) => {
     );
   }
 
+  // LOADING STATE
   if (!product) {
     return (
       <div className="bg-white min-h-screen flex items-center justify-center">
@@ -111,7 +130,7 @@ const ProductDetails = ({ onAddToCart }) => {
   return (
     <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 min-h-screen py-6 px-3 md:px-6">
       <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-500 p-6">
-        
+
         {/* Breadcrumb */}
         <div className="flex items-center gap-1 text-xs text-gray-500 mb-6">
           <Link to="/" className="hover:text-blue-600 hover:underline transition-all">
@@ -128,11 +147,13 @@ const ProductDetails = ({ onAddToCart }) => {
         </div>
 
         <div className="lg:flex lg:gap-8 lg:items-start">
-          
-          {/* Imagen principal */}
+
+          {/* Imagen */}
           <div className="lg:w-1/2 mb-6 lg:mb-0 relative group">
             <div className="overflow-hidden rounded-xl bg-gray-50 border border-gray-100 shadow-inner">
-              {!imageLoaded && <div className="absolute inset-0 bg-gray-100 animate-pulse rounded-xl"></div>}
+              {!imageLoaded && (
+                <div className="absolute inset-0 bg-gray-100 animate-pulse rounded-xl"></div>
+              )}
               <img
                 src={product.image || product.imagen}
                 alt={product.name || product.nombre}
@@ -150,7 +171,9 @@ const ProductDetails = ({ onAddToCart }) => {
               <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 leading-tight mb-1">
                 {product.name || product.nombre}
               </h1>
-              <p className="text-sm text-gray-500 mb-3">{product.category || product.categoria || "General"}</p>
+              <p className="text-sm text-gray-500 mb-3">
+                {product.category || product.categoria || "General"}
+              </p>
 
               <div className="flex items-center gap-2 mb-2">
                 {renderStars(product.rating)}
@@ -159,11 +182,15 @@ const ProductDetails = ({ onAddToCart }) => {
                 </span>
               </div>
 
-              <p className="text-xs text-green-600 font-medium mt-1">✓ disponible</p>
+              <p className="text-xs text-green-600 font-medium mt-1">
+                ✓ disponible
+              </p>
             </div>
 
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-all">
-              <h2 className="text-sm font-semibold text-gray-800 mb-1">Descripción del producto</h2>
+              <h2 className="text-sm font-semibold text-gray-800 mb-1">
+                Descripción del producto
+              </h2>
               <p className="text-gray-600 text-sm leading-snug">
                 {product.description || product.descripcion}
               </p>
@@ -208,8 +235,17 @@ const ProductDetails = ({ onAddToCart }) => {
           />
         </div>
 
+        {/* Reseñas dentro del card */}
+        <div className="mt-12">
+
+          <ProductReviewsList productId={product.id} />
+
+          {/* FORMULARIO SOLO SI EL USER EXISTE */}
+          {userId && (
+            <AddReviewForm productId={product.id} userId={userId} />
+          )}
+        </div>
       </div>
-      <ProductReviewsList productId={product.id} />
     </div>
   );
 };

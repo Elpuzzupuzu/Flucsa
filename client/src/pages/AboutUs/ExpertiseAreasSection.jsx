@@ -1,3 +1,4 @@
+import React from 'react';
 
 const ExpertiseCard = ({ 
   title, 
@@ -42,7 +43,6 @@ const ExpertiseCard = ({
 );
 
 const ExpertiseAreasSection = ({ expertiseAreas = [], getAnimationClass = (key, fallback = 'fade-in') => fallback }) => {
-  // Datos de ejemplo si no se proporcionan
   const defaultExpertiseAreas = [
     {
       title: "Instalación Hidráulica",
@@ -100,7 +100,7 @@ const ExpertiseAreasSection = ({ expertiseAreas = [], getAnimationClass = (key, 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {areas.map((area, index) => (
             <ExpertiseCard 
-              key={index} 
+              key={area.title} // ✅ Usar title como key único
               {...area} 
               animationClass={getAnimationClass(`area-${index}`, 'scale-in')}
               id={`area-${index}`}

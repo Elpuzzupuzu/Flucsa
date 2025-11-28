@@ -1,9 +1,9 @@
 // src/components/profile/ProfileDetailsForm.jsx
-
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { updateUserProfile } from '../../../../features/user/usersSlice';
+import { useUserProfileImage } from '../../../../hooks/userProfile/useUserProfileImage';
 
 const ProfileDetailsForm = ({ user, loading, error, successMessage }) => {
     const dispatch = useDispatch();
@@ -14,6 +14,19 @@ const ProfileDetailsForm = ({ user, loading, error, successMessage }) => {
         apellido: '',
         correo: '',
     });
+
+    // Hook para manejo de imagen
+    const {
+        file,
+        imagePreview,
+        uploading,
+        uploadError,
+        handleFileChange,
+        handleDrag,
+        handleDrop,
+        uploadImage,
+        resetImage,
+    } = useUserProfileImage();
 
     // ⚡ Sincronizar formData cada vez que `user` cambie
     useEffect(() => {
@@ -30,9 +43,21 @@ const ProfileDetailsForm = ({ user, loading, error, successMessage }) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        dispatch(updateUserProfile(formData));
+
+        let imageUrl = user?.foto_perfil || "";
+
+        // Subir imagen si hay archivo seleccionado
+        if (file) {
+            const uploadedUrl = await uploadImage(user.id);
+            if (uploadedUrl) {
+                imageUrl = uploadedUrl;
+            }
+        }
+
+        // Dispatch para actualizar perfil incluyendo la foto
+        dispatch(updateUserProfile({ ...formData, foto_perfil: imageUrl }));
     };
 
     return (
@@ -54,6 +79,43 @@ const ProfileDetailsForm = ({ user, loading, error, successMessage }) => {
                     <span>{error}</span>
                 </div>
             )}
+
+            {/* Sección de foto de perfil */}
+            <div className="flex flex-col items-center gap-2">
+                <label className="block text-xs sm:text-sm font-semibold text-gray-700">
+                    Foto de Perfil
+                </label>
+                <div
+                    onDragEnter={handleDrag}
+                    onDragOver={handleDrag}
+                    onDrop={handleDrop}
+                    className="w-32 h-32 border border-gray-300 rounded-full overflow-hidden flex items-center justify-center cursor-pointer relative"
+                >
+                    {imagePreview || user?.foto_perfil ? (
+                        <img
+                            src={imagePreview || user.foto_perfil}
+                            alt="Foto de perfil"
+                            className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        <span className="text-gray-400 text-sm">Arrastra o selecciona</span>
+                    )}
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    />
+                </div>
+                {uploading && (
+                    <div className="text-indigo-600 text-xs flex items-center gap-1">
+                        <Loader2 className="w-4 h-4 animate-spin" /> Subiendo...
+                    </div>
+                )}
+                {uploadError && (
+                    <p className="text-red-600 text-xs">{uploadError}</p>
+                )}
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {/* Nombre */}
@@ -120,14 +182,14 @@ const ProfileDetailsForm = ({ user, loading, error, successMessage }) => {
             {/* Botón Guardar */}
             <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || uploading}
                 className={`w-full flex justify-center items-center gap-2 py-2 sm:py-2.5 px-4 border border-transparent rounded-lg shadow-md text-xs sm:text-sm font-semibold text-white ${
-                    loading
+                    loading || uploading
                         ? 'bg-indigo-400 cursor-not-allowed'
                         : 'bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800'
                 } transition-all duration-200 transform hover:scale-[1.02]`}
             >
-                {loading ? (
+                {loading || uploading ? (
                     <>
                         <Loader2 className="w-4 h-4 animate-spin" />
                         <span>Guardando...</span>

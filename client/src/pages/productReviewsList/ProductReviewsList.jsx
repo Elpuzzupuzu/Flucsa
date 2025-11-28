@@ -1,6 +1,7 @@
+// ProductReviewsList.jsx
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Star } from "lucide-react";
+import { Star, User } from "lucide-react";
 import {
   fetchReviewsByProduct,
   fetchProductRating,
@@ -9,136 +10,209 @@ import {
 export default function ProductReviewsList({ productId }) {
   const dispatch = useDispatch();
 
-  // 📝 NUEVO LOG: Muestra el ID de producto recibido como prop al inicio del render
-  console.log("🚀 PRODUCT ID RECIBIDO EN PROP:", productId);
-  // -----------------------------------------------------------------------------
+  const reviewState = useSelector((state) => state.reviews) || {};
 
-  // 📝 LOG: Ver el estado de Redux al renderizar
-  const reviewState = useSelector((state) => state.reviews);
-  console.log("➡️ Estado de Redux (reviews):", reviewState);
-
-  // 🔄 CAMBIO CLAVE: Renombrando propiedades para que coincidan con el slice
   const {
-    items: reviews, // Renombra 'items' del slice a 'reviews' para usarlo en el componente
-    productRating: ratingAverage, // Renombra 'productRating' a 'ratingAverage'
-    totalReviews, // Propiedad existente ahora en el slice
-    loadingReviews, // Propiedad de carga específica
-    loadingRating, // Propiedad de carga específica
-    error,
+    items: reviews = [],
+    productRating: ratingAverage = 0,
+    totalReviews = 0,
+    loadingReviews = false,
+    loadingRating = false,
+    error = null,
   } = reviewState;
 
+  // --- 1. CALCULAR DISTRIBUCIÓN DE CALIFICACIONES ---
+  const calculateRatingDistribution = (reviewsList, total) => {
+    if (!reviewsList || total === 0) {
+      return { 5: { count: 0, percentage: 0 }, 4: { count: 0, percentage: 0 }, 3: { count: 0, percentage: 0 }, 2: { count: 0, percentage: 0 }, 1: { count: 0, percentage: 0 } };
+    }
+
+    const counts = reviewsList.reduce((acc, review) => {
+      const rating = parseInt(review?.calificacion ?? 0);
+      if (rating >= 1 && rating <= 5) acc[rating] = (acc[rating] || 0) + 1;
+      return acc;
+    }, {});
+
+    const distribution = {};
+    for (let i = 5; i >= 1; i--) {
+      const count = counts[i] || 0;
+      const percentage = total > 0 ? (count / total) * 100 : 0;
+      distribution[i] = { count, percentage: Math.round(percentage) };
+    }
+    return distribution;
+  };
+
+  const ratingDistribution = calculateRatingDistribution(reviews, totalReviews);
+
+  // --- 2. FETCH RESEÑAS Y RATING ---
   useEffect(() => {
-    // 📝 LOG: Ver el valor de productId al inicio del useEffect (ya existía)
-    console.log("➡️ useEffect disparado. productId recibido:", productId);
-
     if (productId) {
-      // 📝 LOG: La acción se va a disparar (ya existía)
-      console.log("🔥 Disparando fetchReviewsByProduct con productId:", productId);
       dispatch(fetchReviewsByProduct(productId));
-
-      console.log("🔥 Disparando fetchProductRating con productId:", productId);
       dispatch(fetchProductRating(productId));
-    } else {
-      // 📝 LOG: productId es undefined o null/vacío (ya existía)
-      console.log("⚠️ productId no es válido, no se disparan las acciones.", { productId });
     }
   }, [dispatch, productId]);
 
-  /** Renderizar estrellas */
+  // --- 3. RENDER ESTRELLAS ---
   const renderStars = (count) => {
+    const filledStars = Math.round(count ?? 0);
     return [...Array(5)].map((_, i) => (
       <Star
         key={i}
-        size={18}
-        className={i < count ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}
+        size={20}
+        className={i < filledStars ? "fill-yellow-400 text-yellow-400" : "text-gray-200"}
       />
     ));
   };
 
   return (
-    <div className="mt-10">
-      {/* Título */}
-      <h2 className="text-2xl font-semibold mb-4">Reseñas sobre este producto</h2>
+    <div className="max-w-6xl mx-auto px-4 py-12">
+      {/* HEADER */}
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">Reseñas de Clientes</h2>
+        <p className="text-gray-600">Opiniones verificadas de compradores reales</p>
+      </div>
 
-      {/* Loading global */}
+      {/* LOADING */}
       {(loadingReviews || loadingRating) && (
-        <p className="text-gray-500">Cargando reseñas...</p>
+        <div className="flex flex-col items-center justify-center py-16">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+          <p className="text-gray-600">Cargando reseñas...</p>
+        </div>
       )}
 
-      {/* Error */}
+      {/* ERROR */}
       {error && (
-        <p className="text-red-500 font-medium">Error al cargar: {error}</p>
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <div className="flex items-start">
+            <svg className="w-5 h-5 text-red-600 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
+            <div>
+              <h3 className="text-red-800 font-medium">Error al cargar las reseñas</h3>
+              <p className="text-red-700 text-sm mt-1">{error?.message || String(error)}</p>
+            </div>
+          </div>
+        </div>
       )}
 
-      {/* PROMEDIO GENERAL */}
+      {/* RATING SUMMARY */}
       {!loadingRating && totalReviews > 0 && (
-        <div className="mb-6 p-4 border rounded-xl bg-gray-50">
-          <div className="flex items-center gap-2">
-            {/* Se usa ratingAverage, que ahora tiene el valor de productRating */}
-            {renderStars(Math.round(ratingAverage))}
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-8 mb-8 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="bg-white rounded-xl p-4 shadow-sm">
+                <div className="text-5xl font-bold text-gray-900">{ratingAverage?.toFixed(1) ?? '0.0'}</div>
+                <div className="flex mt-2 justify-center">{renderStars(ratingAverage)}</div>
+              </div>
+              <div>
+                <p className="text-2xl font-semibold text-gray-900">Excelente</p>
+                <p className="text-gray-600 mt-1">
+                  Basado en <span className="font-semibold">{totalReviews}</span> {totalReviews === 1 ? 'reseña' : 'reseñas'}
+                </p>
+              </div>
+            </div>
 
-            <span className="text-lg font-semibold">
-              {/* Se usa ratingAverage, que ahora tiene el valor de productRating */}
-              {ratingAverage.toFixed(1)}
-            </span>
-
-            <span className="text-gray-500 text-sm">
-              {/* totalReviews se actualiza en el slice */}
-              ({totalReviews} reviews)
-            </span>
+            {/* DISTRIBUCIÓN DE ESTRELLAS */}
+            <div className="flex-1 max-w-md">
+              <div className="space-y-2">
+                {[5, 4, 3, 2, 1].map((star) => (
+                  <div key={star} className="flex items-center gap-3">
+                    <span className="text-sm text-gray-600 w-12 flex-shrink-0">{star} estrellas</span>
+                    <div className="flex-1 bg-gray-200 rounded-full h-2">
+                      <div
+                        className="bg-yellow-400 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${ratingDistribution[star]?.percentage ?? 0}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-sm text-gray-600 w-6 text-right flex-shrink-0">
+                      ({ratingDistribution[star]?.count ?? 0})
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
 
       {/* LISTA DE RESEÑAS */}
-      <div className="space-y-4">
-        {reviews?.map((review) => (
-          <div
-            key={review.id}
-            className="p-4 border rounded-xl bg-white shadow-sm"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold">{review.titulo_reseña}</h3>
-              <div className="flex">{renderStars(review.calificacion)}</div>
-            </div>
+      <div className="space-y-6">
+        {reviews?.map((review) => {
+          if (!review) return null;
 
-            {/* 🔥 CAMBIOS APLICADOS: AVATAR Y DATOS DEL USUARIO */}
-            {review.usuarios && (
-              <div className="flex items-center gap-3 mb-3">
-                
-                {/* 🖼️ AVATAR */}
-                {review.usuarios.foto_perfil ? (
-                    <img
-                        src={review.usuarios.foto_perfil}
-                        alt={`Foto de perfil de ${review.usuarios.nombre}`}
-                        className="w-10 h-10 object-cover rounded-full border border-gray-200"
-                    />
-                ) : (
-                    // Opcional: Renderizar un ícono de usuario por defecto si no hay foto
-                    <div className="w-10 h-10 flex items-center justify-center bg-gray-200 rounded-full border border-gray-300">
-                        <svg className="w-6 h-6 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                        </svg>
-                    </div>
-                )}
-                
-                {/* 👤 NOMBRE Y APELLIDO */}
-                <p className="text-base font-semibold text-gray-800">
-                    Por: {review.usuarios.nombre} {review.usuarios.apellido}
-                </p>
+          const userInfo = review.usuarios ?? {};
+          return (
+            <div
+              key={review.id ?? Math.random()}
+              className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-shadow duration-300"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    {renderStars(review.calificacion ?? 0)}
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {review.titulo_reseña ?? "Sin título"}
+                  </h3>
+                </div>
               </div>
-            )}
-            
-            <p className="text-gray-600 mb-2">{review.contenido_reseña}</p>
 
-            <p className="text-xs text-gray-400 mt-2">
-              {new Date(review.fecha_reseña).toLocaleDateString()}
-            </p>
-          </div>
-        ))}
+              {/* User Info */}
+              {userInfo && (
+                <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
+                  {userInfo.foto_perfil ? (
+                    <img
+                      src={userInfo.foto_perfil}
+                      alt={`${userInfo.nombre ?? ""} ${userInfo.apellido ?? ""}`}
+                      className="w-12 h-12 object-cover rounded-full border-2 border-gray-200"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full">
+                      <User className="w-6 h-6 text-white" />
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-semibold text-gray-900">
+                      {userInfo.nombre ?? "Usuario"} {userInfo.apellido ?? ""}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {review.fecha_reseña
+                        ? new Date(review.fecha_reseña).toLocaleDateString("es-ES", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })
+                        : ""}
+                    </p>
+                  </div>
+                </div>
+              )}
 
+              <p className="text-gray-700 leading-relaxed">
+                {review.contenido_reseña ?? "Sin contenido"}
+              </p>
+
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <span className="inline-flex items-center gap-1.5 text-sm text-green-700 bg-green-50 px-3 py-1 rounded-full">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  Compra verificada
+                </span>
+              </div>
+            </div>
+          );
+        })}
+
+        {/* EMPTY STATE */}
         {!loadingReviews && reviews?.length === 0 && totalReviews === 0 && (
-          <p className="text-gray-500">Sé el primero en dejar una reseña.</p>
+          <div className="text-center py-16">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+              <Star className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Aún no hay reseñas</h3>
+            <p className="text-gray-600">Sé el primero en compartir tu opinión sobre este producto</p>
+          </div>
         )}
       </div>
     </div>

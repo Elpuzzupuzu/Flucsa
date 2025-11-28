@@ -8,15 +8,15 @@ const ProfilePictureSection = ({ user, isLoading }) => {
     
     // Log para depuración
     if (process.env.NODE_ENV === 'development') {
-        console.log(
-            '[ProfilePictureSection] Estado de render:', 
-            {
-                isLoading: isLoading,
-                userExists: !!user,
-                userNameAvailable: !!user?.nombre,
-                renderMode: (isLoading || !user || !user.nombre) ? 'SKELETON/LOADING' : 'DATA_READY'
-            }
-        );
+        // console.log(
+        //     '[ProfilePictureSection] Estado de render:', 
+        //     {
+        //         isLoading: isLoading,
+        //         userExists: !!user,
+        //         userNameAvailable: !!user?.nombre,
+        //         renderMode: (isLoading || !user || !user.nombre) ? 'SKELETON/LOADING' : 'DATA_READY'
+        //     }
+        // );
     }
 
     // -----------------------------------------------------

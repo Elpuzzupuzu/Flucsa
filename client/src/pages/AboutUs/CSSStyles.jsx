@@ -1,9 +1,9 @@
-
 import React from 'react';
 
 const CSSStyles = () => (
-    <style jsx>{`
-        /* Animaciones de entrada optimizadas (Sin cambios, son funcionales) */
+    <style>
+        {`
+        /* Animaciones de entrada optimizadas */
         .animate-fade-in-up {
             opacity: 0;
             transform: translateY(40px);
@@ -28,9 +28,9 @@ const CSSStyles = () => (
             transform: scale(1);
         }
         
-        /* Gradiente de texto premium (Ajustado al AZUL MARINO corporativo) */
+        /* Gradiente de texto premium */
         .gradient-text {
-            background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); /* Usando Azul Marino y Azul Corporativo */
+            background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -43,16 +43,16 @@ const CSSStyles = () => (
             50% { background-position: 100% 50%; }
         }
         
-        /* Glass morphism mejorado (Mantenido limpio, solo ajuste de sombra) */
+        /* Glass morphism */
         .glass-card {
             background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(16px) saturate(180%);
             -webkit-backdrop-filter: blur(16px) saturate(180%);
             border: 1px solid rgba(255, 255, 255, 0.25);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08); /* Sombra azul/gris sutil */
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
         }
         
-        /* Hover lift premium con sombra suave (Sombra ajustada al AZUL MARINO) */
+        /* Hover lift */
         .hover-lift {
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
                         box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -61,10 +61,10 @@ const CSSStyles = () => (
         .hover-lift:hover {
             transform: translateY(-12px);
             box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.12),
-                        0 12px 24px -8px rgba(30, 58, 138, 0.08); /* Sombra sutil con el color primario (#1E3A8A) */
+                        0 12px 24px -8px rgba(30, 58, 138, 0.08);
         }
         
-        /* Formas flotantes con blur moderno (Ajustado a la paleta) */
+        /* Floating shapes */
         .floating-shapes {
             position: relative;
             overflow: hidden;
@@ -77,7 +77,7 @@ const CSSStyles = () => (
             right: 8%;
             width: 140px;
             height: 140px;
-            background: linear-gradient(135deg, #1E3A8A, #3B82F6); /* Azul principal */
+            background: linear-gradient(135deg, #1E3A8A, #3B82F6);
             border-radius: 50%;
             opacity: 0.08;
             filter: blur(40px);
@@ -91,26 +91,20 @@ const CSSStyles = () => (
             left: 5%;
             width: 100px;
             height: 100px;
-            background: #374151; /* Gris Carbón para contraste serio/neutro */
+            background: #374151;
             border-radius: 50%;
-            opacity: 0.06; /* Opacidad reducida para limpieza */
+            opacity: 0.06;
             filter: blur(40px);
             animation: float 6s ease-in-out infinite reverse;
         }
         
         @keyframes float {
-            0%, 100% { 
-                transform: translateY(0px) translateX(0px) rotate(0deg); 
-            }
-            33% {
-                transform: translateY(-25px) translateX(10px) rotate(120deg);
-            }
-            66% {
-                transform: translateY(-15px) translateX(-10px) rotate(240deg);
-            }
+            0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+            33% { transform: translateY(-25px) translateX(10px) rotate(120deg); }
+            66% { transform: translateY(-15px) translateX(-10px) rotate(240deg); }
         }
         
-        /* Efecto sparkle mejorado (Sin cambios, ya que usa blanco transparente) */
+        /* Sparkle effect */
         .sparkle {
             position: relative;
             overflow: hidden;
@@ -123,12 +117,7 @@ const CSSStyles = () => (
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(
-                120deg,
-                transparent 30%,
-                rgba(255, 255, 255, 0.3) 50%,
-                transparent 70%
-            );
+            background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
             transform: translateX(-100%) translateY(-100%) rotate(45deg);
             transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -137,7 +126,7 @@ const CSSStyles = () => (
             transform: translateX(100%) translateY(100%) rotate(45deg);
         }
         
-        /* Efecto glow suave para elementos interactivos (Ajustado al AZUL) */
+        /* Glow hover */
         .glow-on-hover {
             position: relative;
             transition: all 0.3s ease;
@@ -147,7 +136,7 @@ const CSSStyles = () => (
             content: '';
             position: absolute;
             inset: -2px;
-            background: linear-gradient(135deg, #1E3A8A, #3B82F6); /* Degradado solo en tonos azules */
+            background: linear-gradient(135deg, #1E3A8A, #3B82F6);
             border-radius: inherit;
             opacity: 0;
             z-index: -1;
@@ -159,12 +148,12 @@ const CSSStyles = () => (
             opacity: 0.3;
         }
         
-        /* Smooth scroll para toda la página (Sin cambios) */
+        /* Smooth scroll */
         html {
             scroll-behavior: smooth;
         }
         
-        /* Optimización de rendimiento (Sin cambios) */
+        /* Performance optimization */
         .animate-fade-in-up,
         .animate-scale-in,
         .hover-lift,
@@ -176,7 +165,8 @@ const CSSStyles = () => (
         .animate-scale-in.visible {
             will-change: auto;
         }
-    `}</style>
+        `}
+    </style>
 );
 
 export default CSSStyles;

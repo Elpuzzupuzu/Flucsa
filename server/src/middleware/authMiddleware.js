@@ -1,3 +1,4 @@
+// authMiddleware.js (CORREGIDO)
 import dotenv from "dotenv";
 dotenv.config(); // 🔹 Carga variables de entorno
 
@@ -21,6 +22,12 @@ const cookieOptions = (maxAge) => ({
   maxAge,
 });
 
+// Helper para extraer datos seguros del usuario
+const getSafeUser = (user) => {
+  const { contraseña, ...safeUser } = user; 
+  return safeUser;
+};
+
 // Middleware principal
 export const authMiddleware = async (req, res, next) => {
   try {
@@ -32,9 +39,11 @@ export const authMiddleware = async (req, res, next) => {
       try {
         const decoded = jwt.verify(accessToken, ACCESS_SECRET);
         const user = await UserRepository.getUserById(decoded.id);
+
         if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
 
-        req.user = { id: user.id, rol: user.rol };
+        // ✅ Asignar el objeto completo (y seguro) a req.user
+        req.user = getSafeUser(user);
         return next();
       } catch (err) {
         if (err.name !== "TokenExpiredError") throw err;
@@ -47,19 +56,21 @@ export const authMiddleware = async (req, res, next) => {
       try {
         const decodedRefresh = jwt.verify(refreshToken, REFRESH_SECRET);
         const user = await UserRepository.getUserById(decodedRefresh.id);
+
         if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
 
-        // Generar nuevo accessToken
+        // Generar nuevo accessToken (usa id y rol)
         const newAccessToken = jwt.sign(
           { id: user.id, rol: user.rol },
           ACCESS_SECRET,
           { expiresIn: ACCESS_TOKEN_EXPIRATION }
         );
 
-        // Enviar nuevo accessToken en JSON para mobile / web
-        res.setHeader("x-access-token", newAccessToken); // opcional, también se puede devolver en JSON
+        // Enviar nuevo accessToken en header
+        res.setHeader("x-access-token", newAccessToken);
 
-        req.user = { id: user.id, rol: user.rol };
+        // ✅ Asignar el objeto completo (y seguro) a req.user
+        req.user = getSafeUser(user);
         return next();
       } catch {
         // refreshToken inválido o expirado
@@ -70,6 +81,7 @@ export const authMiddleware = async (req, res, next) => {
     }
 
     return res.status(401).json({ error: "No autorizado" });
+
   } catch (error) {
     console.error("authMiddleware error:", error);
     return res.status(500).json({ error: "Error interno del servidor" });

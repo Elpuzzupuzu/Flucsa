@@ -93,20 +93,29 @@ export const UserService = {
     }
   },
 
-  // ===============================
-  // Obtener perfil completo
-  // ===============================
-  getUserProfile: async (userId) => {
-    const user = await UserRepository.getUserById(userId);
-    if (!user) throw new Error("Usuario no encontrado");
 
-    const { contraseña, ...userSafe } = user;
-    const wishlist = await UserRepository.getWishlist(userId);
-    const history = await UserRepository.getPurchaseHistory(userId);
-    const reviews = await UserRepository.getReviews(userId);
+///// retorna solo los campos esenciales : id,nombre , correo 
+getUserProfile: async (userId) => {
+  console.log("🟦 [Service] getUserProfile() con userId:", userId);
 
-    return { ...userSafe, wishlist, history, reviews };
-  },
+  const user = await UserRepository.getUserById(userId);
+
+  console.log("🟨 [Service] Resultado de getUserById:", user);
+
+  if (!user) {
+    console.error("🟥 [Service] Usuario no encontrado en tabla usuarios");
+    throw new Error("Usuario no encontrado");
+  }
+
+  // Quitar contraseña del objeto
+  const { contraseña, ...userSafe } = user;
+
+  // console.log("🟩 [Service] Perfil generado (sin wishlist, historial ni reviews)");
+
+  return userSafe;
+},
+
+
 
   // ===============================
   // Actualizar perfil
@@ -144,4 +153,38 @@ export const UserService = {
 
     return await UserRepository.updateUserPassword(userId, newHashedPassword);
   },
+
+
+
+  //// DATOS DE COMPRAS 
+
+
+  getUserPurchaseHistory: async (userId) => {
+    if (!userId) {
+      throw new Error("User ID is required");
+    }
+
+    const history = await UserRepository.getUserPurchaseHistory(userId);
+    return history;
+  },
+
+  /// reviews:
+  getUserReviews: async (userId) => {
+    try {
+      // 🔹 Llamamos al repositorio
+      const reviews = await UserRepository.getReviews(userId);
+
+      // 🔹 Retornamos un objeto uniforme
+      return {
+        ok: true,
+        message: 'Reseñas obtenidas correctamente',
+        data: reviews || [],
+      };
+    } catch (err) {
+      console.error('❌ [UserService] Error en getUserReviews:', err);
+      throw err;
+    }
+  },
+
+
 };
