@@ -186,5 +186,25 @@ getUserProfile: async (userId) => {
     }
   },
 
+  //// wishlist
+getWishlist: async (userId) => {
+  try {
+    // 🔹 Llamamos al repositorio
+    const wishlist = await UserRepository.getWishlist(userId);
+
+    // 🔹 Retornamos un objeto uniforme
+    return {
+      ok: true,
+      message: 'Wishlist obtenida correctamente',
+      data: wishlist || [],
+    };
+  } catch (err) {
+    console.error('❌ [UserService] Error en getWishlist:', err);
+    throw err;
+  }
+},
+
+
+
 
 };

@@ -12,10 +12,10 @@ export const fetchWishlist = createAsyncThunk(
   async (userId, thunkAPI) => {
     try {
       const response = await api.get(`/wishlist/${userId}`);
-      return response.data;
+      return response.data; // { ok, message, data }
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Error al obtener lista de deseos"
+        error.response?.data || { message: "Error al obtener lista de deseos" }
       );
     }
   }
@@ -27,10 +27,10 @@ export const addProductToWishlist = createAsyncThunk(
   async ({ userId, productId }, thunkAPI) => {
     try {
       const response = await api.post("/wishlist/add", { userId, productId });
-      return response.data;
+      return response.data; // { ok, message, data }
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Error al agregar producto a wishlist"
+        error.response?.data || { message: "Error al agregar producto" }
       );
     }
   }
@@ -47,7 +47,7 @@ export const removeProductFromWishlist = createAsyncThunk(
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Error al eliminar producto de wishlist"
+        error.response?.data || { message: "Error al eliminar producto" }
       );
     }
   }
@@ -56,13 +56,17 @@ export const removeProductFromWishlist = createAsyncThunk(
 // Marcar/desmarcar producto como deseado
 export const toggleWishlistProduct = createAsyncThunk(
   "wishlist/toggleProduct",
-  async ({ userId, productId }, thunkAPI) => {
+  async ({ userId, productId, deseado }, thunkAPI) => {
     try {
-      const response = await api.patch("/wishlist/toggle", { userId, productId });
+      const response = await api.patch("/wishlist/toggle", {
+        userId,
+        productId,
+        deseado,
+      });
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Error al actualizar producto de wishlist"
+        error.response?.data || { message: "Error al actualizar producto" }
       );
     }
   }
@@ -71,63 +75,75 @@ export const toggleWishlistProduct = createAsyncThunk(
 // ===============================
 // Slice
 // ===============================
+
 const wishlistSlice = createSlice({
   name: "wishlist",
   initialState: {
     items: [],
-    loading: false,
+    loading: true, // ⬅️ ARREGLO CRÍTICO: inicia en true después de recargar
     error: null,
   },
   reducers: {
     clearWishlist: (state) => {
       state.items = [];
       state.error = null;
+      state.loading = true; // ⬅️ Esto evita errores al hacer logout → login
     },
   },
   extraReducers: (builder) => {
     builder
+      // ===============================
       // fetchWishlist
+      // ===============================
       .addCase(fetchWishlist.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchWishlist.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload;
+        state.items = action.payload.data;
       })
       .addCase(fetchWishlist.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload.error || action.payload;
+        state.error = action.payload.message || action.payload;
       })
+
+      // ===============================
       // addProductToWishlist
+      // ===============================
       .addCase(addProductToWishlist.fulfilled, (state, action) => {
-        state.items.push(action.payload);
+        state.items.push(action.payload.data);
       })
       .addCase(addProductToWishlist.rejected, (state, action) => {
-        state.error = action.payload.error || action.payload;
+        state.error = action.payload.message || action.payload;
       })
+
+      // ===============================
       // removeProductFromWishlist
+      // ===============================
       .addCase(removeProductFromWishlist.fulfilled, (state, action) => {
-        state.items = state.items.filter(
-          (item) => item.producto_id !== action.payload.producto_id
-        );
+        const removedId = action.payload.data.producto_id;
+        state.items = state.items.filter(item => item.producto_id !== removedId);
       })
       .addCase(removeProductFromWishlist.rejected, (state, action) => {
-        state.error = action.payload.error || action.payload;
+        state.error = action.payload.message || action.payload;
       })
+
+      // ===============================
       // toggleWishlistProduct
+      // ===============================
       .addCase(toggleWishlistProduct.fulfilled, (state, action) => {
-        const index = state.items.findIndex(
-          (item) => item.producto_id === action.payload.producto_id
-        );
+        const newItem = action.payload.data;
+        const index = state.items.findIndex(i => i.producto_id === newItem.producto_id);
+
         if (index !== -1) {
-          state.items[index] = action.payload;
+          state.items[index] = newItem;
         } else {
-          state.items.push(action.payload);
+          state.items.push(newItem);
         }
       })
       .addCase(toggleWishlistProduct.rejected, (state, action) => {
-        state.error = action.payload.error || action.payload;
+        state.error = action.payload.message || action.payload;
       });
   },
 });

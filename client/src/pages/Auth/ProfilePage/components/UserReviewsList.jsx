@@ -11,7 +11,7 @@ const UserReviewsList = ({ userId }) => {
   // 🔹 Cargar reseñas al montar
   useEffect(() => {
     if (userId) {
-      console.log("[UserReviewsList] Cargando reseñas para userId:", userId);
+      // console.log("[UserReviewsList] Cargando reseñas para userId:", userId);
       dispatch(fetchUserReviews(userId));
     }
   }, [userId, dispatch]);
@@ -55,7 +55,7 @@ const UserReviewsList = ({ userId }) => {
         // Aseguramos rango 1-5
         const rating = Math.min(Math.max(review.calificacion || 0, 0), 5);
 
-        console.log("[UserReviewsList] Renderizando review:", review);
+        // console.log("[UserReviewsList] Renderizando review:", review);
 
         return (
           <div

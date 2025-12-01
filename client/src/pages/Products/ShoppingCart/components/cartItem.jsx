@@ -3,8 +3,12 @@ import { useDispatch } from 'react-redux';
 import { Plus, Minus, Trash2 } from 'lucide-react';
 import { updateCartItemQuantity, removeCartItem } from '../../../../features/cart/cartSlice';
 
+// ⬅️ Importamos tu hook de notificaciones
+import useNotification from '../../../../hooks/Notify/useNotification';
+
 const CartItem = ({ item, index, isNewItem, formatPrice }) => {
   const dispatch = useDispatch();
+  const { notify } = useNotification(); //  listo para usar
 
   const product = item.producto || {};
   const priceString = product.precio ? product.precio.toString() : '0';
@@ -14,11 +18,36 @@ const CartItem = ({ item, index, isNewItem, formatPrice }) => {
   const itemTotal = priceValue * quantity;
 
   const handleQuantityChange = (newQuantity) => {
-    dispatch(updateCartItemQuantity({ itemId: item.id, cantidad: newQuantity }));
+    if (newQuantity < 1) {
+      notify("La cantidad no puede ser menor a 1", "warning");
+      return;
+    }
+
+    dispatch(updateCartItemQuantity({ itemId: item.id, cantidad: newQuantity }))
+      .unwrap()
+      .then(() => {
+        notify(
+          `"${product.nombre}" actualizado a ${newQuantity} unidades`,
+          "cart_quantity" // 🔊 sonido especial si lo agregas en soundMap
+        );
+      })
+      .catch(() => {
+        notify("No se pudo actualizar la cantidad", "error");
+      });
   };
 
   const handleRemove = () => {
-    dispatch(removeCartItem(item.id));
+    dispatch(removeCartItem(item.id))
+      .unwrap()
+      .then(() => {
+        notify(
+          `"${product.nombre}" eliminado del carrito`,
+          "cart_removed" // 🔊 sonido especial
+        );
+      })
+      .catch(() => {
+        notify("No se pudo eliminar el producto", "error");
+      });
   };
 
   return (
@@ -58,26 +87,6 @@ const CartItem = ({ item, index, isNewItem, formatPrice }) => {
           >
             {product.nombre || 'Producto sin nombre'}
           </h4>
-
-          {/* Comentado el display de precio y total */}
-          {/*
-          <div className="flex items-center justify-between mb-2">
-            <span
-              className={`text-sm font-semibold ${
-                isNewItem ? 'text-green-600' : 'text-blue-600'
-              }`}
-            >
-              {formatPrice ? formatPrice(priceValue) : `$${priceValue.toFixed(2)}`}
-            </span>
-            <span
-              className={`text-xs ${
-                isNewItem ? 'text-green-600 font-semibold' : 'text-gray-500'
-              }`}
-            >
-              Total: ${itemTotal.toFixed(2)}
-            </span>
-          </div>
-          */}
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">

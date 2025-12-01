@@ -1,68 +1,72 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { 
     createQuotation, 
     clearQuotationError,
     resetQuotationUI 
 } from '../../../../features/quotations/quotationSlice'; 
+
 import { fetchCart } from '../../../../features/cart/cartSlice'; 
+
+// 🟦 Importamos tu hook de notificaciones
+import useNotification from '../../../../hooks/Notify/useNotification';
 
 const CartFooter = ({ total }) => {
     const dispatch = useDispatch();
-    
+    const { notify } = useNotification(); // <<— Aquí
+
     const { loading: quotationLoading, error, list } = useSelector((state) => state.quotations); 
     const { loading: cartLoading } = useSelector((state) => state.cart); 
     
     const currentQuotation = list.length > 0 ? list[0] : null;
+
     const isLoading = quotationLoading || cartLoading; 
-    const isFailed = !!error;
+    const isFailed  = !!error;
     const isSuccess = !quotationLoading && currentQuotation && !error; 
     
+    // --- Acción principal ---
     const handleSolicitarCotizacion = () => {
         if (isFailed) {
             dispatch(clearQuotationError());
         }
         
         if (isLoading || total <= 0) return;
-        dispatch(createQuotation()); 
+
+        dispatch(createQuotation())
+            .unwrap()
+            .then(() => {
+                // 🔊 Notificación de éxito
+                notify(
+                    "Cotización generada con éxito 🎉",
+                    "success" // Si quieres sonido especial: "quotation_created"
+                );
+            })
+            .catch(() => {
+                // ❌ Notificación de fallo
+                notify(
+                    "Hubo un error al generar la cotización",
+                    "error"
+                );
+            });
     };
 
+    // --- Efecto cuando la cotización se generó ---
     useEffect(() => {
         if (isSuccess) {
             const timer = setTimeout(() => {
-                dispatch(resetQuotationUI()); 
-                dispatch(fetchCart()); 
-            }, 3000); 
-            return () => clearTimeout(timer); 
+                dispatch(resetQuotationUI());
+                dispatch(fetchCart());
+            }, 3000);
+
+            return () => clearTimeout(timer);
         }
-    }, [isSuccess, currentQuotation, dispatch]); 
-    
+    }, [isSuccess, currentQuotation, dispatch]);
+
     return (
         <div className="border-t pt-4 mt-4 space-y-4 animate-slide-up">
-            
-            {/* --- Sección de Totales comentada --- */}
-            {/*
-            <div className="space-y-2">
-                <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-600">Subtotal:</span>
-                    <span className="font-medium">${total.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-600">Envío:</span>
-                    <span className="font-medium text-green-600 animate-pulse">Disponible</span>
-                </div>
-                <div className="border-t pt-2">
-                    <div className="flex justify-between items-center">
-                        <span className="font-semibold text-gray-900">Total:</span>
-                        <span className="text-xl font-bold text-blue-600 hover:scale-105 transition-transform">
-                            ${total.toFixed(2)}
-                        </span>
-                    </div>
-                </div>
-            </div>
-            */}
 
-            {/* --- Mensajes de Estado --- */}
+            {/* --- Loading --- */}
             {isLoading && !isFailed && (
                 <div className="p-3 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium flex items-center justify-center space-x-2">
                     <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -73,19 +77,21 @@ const CartFooter = ({ total }) => {
                 </div>
             )}
             
+            {/* --- Error --- */}
             {isFailed && (
                 <div className="p-3 bg-red-100 text-red-700 rounded-lg text-sm font-medium">
                     ❌ Error: {error.message || error}
                 </div>
             )}
             
+            {/* --- Éxito --- */}
             {isSuccess && (
                 <div className="p-3 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
                     ✅ Cotización **#{currentQuotation.id.substring(0, 8)}** generada.
                 </div>
             )}
-            
-            {/* --- Botón de Acción --- */}
+
+            {/* --- Botón principal --- */}
             <button
                 onClick={handleSolicitarCotizacion}
                 disabled={isLoading || total <= 0 || isSuccess}

@@ -213,5 +213,30 @@ export const UserController = {
     }
   },
 
+  /// wishlist
+  getWishlist : async (req, res) => {
+    const { userId } = req.params;
 
-};
+    if (!userId) {
+      return res.status(400).json({ ok: false, message: 'Falta el ID de usuario' });
+    }
+
+    try {
+      const wishlist = await UserService.getWishlist(userId);
+      res.status(200).json({
+        ok: true,
+        message: 'Wishlist obtenida correctamente',
+        data: wishlist,
+      });
+    } catch (error) {
+      console.error('[getWishlist] Error:', error);
+      res.status(500).json({
+        ok: false,
+        message: 'Error al obtener wishlist',
+        error: error.message,
+      });
+    }
+  }
+
+
+}

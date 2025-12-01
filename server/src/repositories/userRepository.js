@@ -87,7 +87,6 @@ export const UserRepository = {
  
 
   getUserPurchaseHistory: async (userId) => {
-  // console.log("🟦 [Repository] Buscando historial de compras para usuario:", userId);
 
   try {
     // 1️⃣ Obtener todas las compras del usuario
@@ -97,8 +96,6 @@ export const UserRepository = {
       .eq('usuario_id', userId)
       .order('fecha_compra', { ascending: false });
 
-    // console.log("🟨 [Repository] Compras encontradas:", compras);
-    // console.log("🟥 [Repository] Error Compras:", comprasError);
 
     if (comprasError) throw comprasError;
     if (!compras || compras.length === 0) return [];
@@ -121,8 +118,6 @@ export const UserRepository = {
       `)
       .in('compra_id', compraIds);
 
-    // console.log("🟨 [Repository] Detalles encontrados:", detalles);
-    // console.log("🟥 [Repository] Error Detalles:", detallesError);
 
     if (detallesError) throw detallesError;
 
@@ -135,7 +130,6 @@ export const UserRepository = {
     return comprasConDetalles;
 
   } catch (err) {
-    // console.error("❌ [Repository] Error en getUserPurchaseHistory:", err);
     throw err;
   }
 },
@@ -150,4 +144,9 @@ export const UserRepository = {
     if (error) throw error;
     return data;
   },
+
+  
+
+
+  
 };

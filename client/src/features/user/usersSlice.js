@@ -198,6 +198,19 @@ export const fetchUserReviews = createAsyncThunk(
   }
 );
 
+//// lista de deseados
+export const fetchUserWishlist = createAsyncThunk(
+  'user/fetchUserWishlist',
+  async (userId, { rejectWithValue }) => {
+    try {
+      const res = await api.get(`/users/wishlist/${userId}`);
+      return res.data.data; // lista completa de productos deseados
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || 'Error al obtener wishlist');
+    }
+  }
+);
+
 
 // ===============================
 // SLICE
@@ -214,7 +227,8 @@ const userSlice = createSlice({
     successMessage: null,
     notificationMessage: null,
     purchaseHistory: [],   // 🟦 agregamos esto
-     reviews: [],
+    reviews: [],
+    wishlist: [],            // lista de deseos
     
 
   },
@@ -411,7 +425,18 @@ const userSlice = createSlice({
       .addCase(fetchUserReviews.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      }).addCase(fetchUserWishlist.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(fetchUserWishlist.fulfilled, (state, action) => {
+      state.loading = false;
+      state.wishlist = action.payload;
+    })
+    .addCase(fetchUserWishlist.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
   },
 });
 

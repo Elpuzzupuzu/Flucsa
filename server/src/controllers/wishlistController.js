@@ -2,43 +2,88 @@
 import { WishlistService } from '../services/wishlistService.js';
 
 export const WishlistController = {
+
   getWishlist: async (req, res) => {
     try {
       const userId = req.params.userId;
+
+      if (!userId) {
+        return res.status(400).json({ ok: false, message: "userId es requerido" });
+      }
+
       const wishlist = await WishlistService.getWishlist(userId);
-      res.status(200).json(wishlist);
+
+      return res.status(200).json({
+        ok: true,
+        message: "Wishlist obtenida correctamente",
+        data: wishlist
+      });
+
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      return res.status(500).json({ ok: false, message: error.message });
     }
   },
 
   addProduct: async (req, res) => {
     try {
       const { userId, productId } = req.body;
+
+      if (!userId || !productId) {
+        return res.status(400).json({ ok: false, message: "userId y productId son requeridos" });
+      }
+
       const result = await WishlistService.addProductToWishlist(userId, productId);
-      res.status(201).json(result);
+
+      return res.status(201).json({
+        ok: true,
+        message: "Producto agregado a la wishlist",
+        data: result
+      });
+
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      return res.status(500).json({ ok: false, message: error.message });
     }
   },
 
   removeProduct: async (req, res) => {
     try {
       const { userId, productId } = req.body;
+
+      if (!userId || !productId) {
+        return res.status(400).json({ ok: false, message: "userId y productId son requeridos" });
+      }
+
       const result = await WishlistService.removeProductFromWishlist(userId, productId);
-      res.status(200).json(result);
+
+      return res.status(200).json({
+        ok: true,
+        message: "Producto eliminado de la wishlist",
+        data: result
+      });
+
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      return res.status(500).json({ ok: false, message: error.message });
     }
   },
 
   toggleProduct: async (req, res) => {
     try {
       const { userId, productId, deseado } = req.body;
+
+      if (!userId || !productId || typeof deseado !== "boolean") {
+        return res.status(400).json({ ok: false, message: "Datos inválidos" });
+      }
+
       const result = await WishlistService.toggleWishlistProduct(userId, productId, deseado);
-      res.status(200).json(result);
+
+      return res.status(200).json({
+        ok: true,
+        message: "Estado de wishlist actualizado",
+        data: result
+      });
+
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      return res.status(500).json({ ok: false, message: error.message });
     }
   }
 };

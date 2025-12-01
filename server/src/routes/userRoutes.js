@@ -39,6 +39,8 @@ router.put('/password', authMiddleware, UserController.updatePassword);
 router.get('/full-profile', authMiddleware, UserController.getProfile);
 router.get("/purchase-history/:userId", authMiddleware, UserController.getUserPurchaseHistory);
 router.get('/reviews/:userId', UserController.getReviews);
+router.get('/wishlist/:userId', UserController.getWishlist);
+
 
 // ===============================
 // Refresh token

@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AlertCircle, ShoppingBag, Heart } from 'lucide-react';
-import { clearSuccessMessage, fetchUserPurchaseHistory } from '../../../features/user/usersSlice';
+import { 
+    clearSuccessMessage, 
+    fetchUserPurchaseHistory, 
+    fetchUserWishlist 
+} from '../../../features/user/usersSlice';
 
 import ProfilePictureSection from './components/ProfilePictureSection';
 import ProfileDetailsForm from './components/ProfileDetailsForm';
@@ -9,7 +13,8 @@ import PasswordChangeForm from './components/PasswordChangeForm';
 import ProfileInfoCards from './components/ProfileInfoCards';
 import ProfileSidebar from '../../Auth/ProfilePage/components/ProfileSidebar';
 import PurchaseHistoryList from './components/PurchaseHistoryList';
-import UserReviewsList from './components/UserReviewsList'; // 🔹 Importar componente de reseñas
+import UserReviewsList from './components/UserReviewsList'; 
+import WishlistList from './components/WishlistList'; // 🔹 Nuevo componente
 
 const ProfilePage = () => {
     const dispatch = useDispatch();
@@ -19,7 +24,8 @@ const ProfilePage = () => {
         error, 
         successMessage, 
         authChecked, 
-        purchaseHistory 
+        purchaseHistory,
+        wishlist
     } = useSelector((state) => state.user);
 
     const [selectedSection, setSelectedSection] = useState('details');
@@ -34,10 +40,19 @@ const ProfilePage = () => {
     }, [successMessage, error, dispatch]);
 
     useEffect(() => {
-        if (selectedSection === "orders" && user?.id) {
+        if (!user?.id) return;
+
+        if (selectedSection === "orders") {
             dispatch(fetchUserPurchaseHistory(user.id));
         }
+
+        if (selectedSection === "wishlist") {
+            dispatch(fetchUserWishlist(user.id));
+        }
     }, [selectedSection, dispatch, user?.id]);
+
+
+    /// FIn de la logica para construir el objeto 
 
     if (!authChecked) {
         return (
@@ -60,7 +75,6 @@ const ProfilePage = () => {
     }
 
     const isProfileDataReady = !!user.nombre;
-
     if (!isProfileDataReady) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -121,7 +135,7 @@ const ProfilePage = () => {
                     </div>
                 );
 
-            case 'reviews': // 🔹 Nueva sección
+            case 'reviews':
                 return (
                     <div className="space-y-6">
                         <h2 className="text-xl font-bold text-gray-800 mb-2">Tus Reseñas</h2>
@@ -131,12 +145,9 @@ const ProfilePage = () => {
 
             case 'wishlist':
                 return (
-                    <div className="p-8 bg-gradient-to-br from-pink-50 to-red-50 rounded-xl text-center border border-pink-100">
-                        <div className="bg-pink-600 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <Heart className="w-7 h-7 text-white" />
-                        </div>
-                        <h2 className="text-xl font-bold text-gray-800 mb-1.5">Lista de Deseos</h2>
-                        <p className="text-sm text-gray-600">Aquí guardaremos tus productos favoritos.</p>
+                    <div className="space-y-6">
+                        <h2 className="text-xl font-bold text-gray-800 mb-2">Lista de Deseos</h2>
+                        <WishlistList wishlist={wishlist?.data || []} loading={loading} />
                     </div>
                 );
 
@@ -149,7 +160,6 @@ const ProfilePage = () => {
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-4 sm:py-6">
             <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
                 <div className="flex flex-col lg:flex-row gap-3 sm:gap-5">
-
                     <ProfileSidebar 
                         selectedSection={selectedSection}
                         setSelectedSection={setSelectedSection}
@@ -158,7 +168,6 @@ const ProfilePage = () => {
                     <main className="flex-1 bg-white p-4 sm:p-6 rounded-xl shadow-lg border border-gray-100">
                         {renderContent()}
                     </main>
-
                 </div>
             </div>
         </div>
