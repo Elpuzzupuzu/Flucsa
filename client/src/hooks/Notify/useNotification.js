@@ -21,7 +21,7 @@ import soundQuotation from "../../assets/sounds/quotation_created.mp3";
 
 // 🆕 🎵 Wishlist / autenticación
 import soundWishlistAdded from "../../assets/sounds/like.mp3";
-import soundWishlistRemoved from "../../assets/sounds/like.mp3";
+import soundWishlistRemoved from "../../assets/sounds/wishlist_removed.mp3";
 import soundAuthRequired from "../../assets/sounds/info.mp3";
 
 // 📦 Mapa central de sonidos
