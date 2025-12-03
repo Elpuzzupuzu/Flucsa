@@ -27,7 +27,7 @@ const handleToggleLike = async (e) => {
 
   const result = await toggleWishlist(product.id);
 
-  console.log("Resultado del toggleWishlist:", result);
+  // console.log("Resultado del toggleWishlist:", result);
 
   if (result?.added === true) {
     notify(`"${product.name}" añadido a tu wishlist ❤️`, "wishlist_added");
