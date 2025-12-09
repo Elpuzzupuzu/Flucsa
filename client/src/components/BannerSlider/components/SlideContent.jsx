@@ -47,15 +47,9 @@ const SlideContent = ({ data, direction }) => {
       0
     );
 
-    // Animación del icono con rotación y escala
-    tl.fromTo(
-      iconRef.current,
-      { scale: 0, rotate: -180, opacity: 0 },
-      { scale: 1, rotate: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)" },
-      0.3
-    );
 
-    // Animación de la categoría desde arriba
+
+    // Animación de la categoría desde arriba (letra)
     tl.fromTo(
       categoryRef.current,
       { y: -50, opacity: 0 },
@@ -63,7 +57,7 @@ const SlideContent = ({ data, direction }) => {
       0.4
     );
 
-    // Animación del título con rotación en eje X
+    // Animación del título con rotación en eje X (letra)
     tl.fromTo(
       titleRef.current,
       { rotateX: direction * 90, opacity: 0, transformOrigin: "center center" },
@@ -71,7 +65,7 @@ const SlideContent = ({ data, direction }) => {
       0.5
     );
 
-    // Animación del subtítulo con rotación en eje X
+    // Animación del subtítulo con rotación en eje X (letra)
     tl.fromTo(
       subtitleRef.current,
       { rotateX: direction * 90, opacity: 0, transformOrigin: "center center" },
@@ -79,7 +73,7 @@ const SlideContent = ({ data, direction }) => {
       0.7
     );
 
-    // Animación de la descripción con efecto de fade
+    // Animación de la descripción con efecto de fade (letra)
     tl.fromTo(
       descriptionRef.current,
       { y: 30, opacity: 0 },
@@ -95,15 +89,7 @@ const SlideContent = ({ data, direction }) => {
       1.1
     );
 
-    // Animación continua del icono (pulso sutil)
-    gsap.to(iconRef.current, {
-      scale: 1.1,
-      duration: 2,
-      repeat: -1,
-      yoyo: true,
-      ease: "power1.inOut",
-      delay: 1.5,
-    });
+   
   }, [data, direction]); // Re-ejecutar al cambiar la data o la dirección
 
   return (
@@ -126,7 +112,7 @@ const SlideContent = ({ data, direction }) => {
       <div className="absolute inset-0 z-30 flex items-center">
         <div className="container mx-auto px-6 lg:px-16 max-w-7xl">
           <div className="max-w-3xl">
-            {/* Icono */}
+            {/* Icono - Ahora aparecerá sin animación de GSAP, solo con el reset inicial */}
             <div ref={iconRef} className="mb-6">
               <div className="w-16 h-16 md:w-20 md:h-20 bg-blue-600/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl">
                 <Icon className="w-8 h-8 md:w-10 md:h-10 text-white" />

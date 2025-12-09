@@ -1,221 +1,127 @@
-import 'leaflet/dist/leaflet.css'; // ¡IMPORTANTE! Añadir el CSS de Leaflet aquí
-import React, { useEffect, useState, useMemo } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import L from "leaflet";
-import { MapPin, Phone, Mail, Navigation } from "lucide-react";
-
-// Ícono custom de Leaflet
-const defaultIcon = new L.Icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
+import React from 'react';
+import { MapPin, Phone, Mail, Navigation } from 'lucide-react';
 
 const Location = () => {
-  const [userLocation, setUserLocation] = useState(null);
-  const [cityName, setCityName] = useState("tu ubicación");
-  const [closestStore, setClosestStore] = useState(null);
-
-  // Datos de las sucursales
-  const stores = [
-    {
-      name: "Matriz Playa del Carmen",
-      coords: { lat: 20.633370, lng: -87.081880 },
-      address:
-        "Avenida Juarez No. Ext 7 entre calle 55 y 60 Norte, Colonia Ejido, Playa del Carmen, Quintana Roo. C.P. 77710",
-      phone: "9841475861",
-    },
-    {
-      name: "Sucursal Mérida",
-      coords: { lat: 20.918226, lng: -89.683174 },
-      address:
-        "Calle 26a entre 47 y 51, Colonia El Roble, Ciudad Industrial, Mérida, Yucatán. C.P. 97256",
-      phone: "9995894846",
-    },
-    {
-      name: "Sucursal Tulum",
-      coords: { lat: 20.214077, lng: -87.460640 },
-      address:
-        "Avenida Tulum, Local 1, Zona 1, Tulum Centro. C.P. 77780",
-      phone: "9842317732",
-    },
-  ];
-
-  const generalPhone = "9993632630";
-  const generalEmail = "ventas@flucsa.com.mx";
-
-  // Calcular distancia entre 2 puntos geográficos
-  function haversine(lat1, lon1, lat2, lon2) {
-    const R = 6371;
-    const dLat = ((lat2 - lat1) * Math.PI) / 180;
-    const dLon = ((lon2 - lon1) * Math.PI) / 180;
-    const a =
-      Math.sin(dLat / 2) ** 2 +
-      Math.cos((lat1 * Math.PI) / 180) *
-        Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) ** 2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  }
-
-  // Obtener ubicación aproximada (sin API key)
-  useEffect(() => {
-    fetch("https://ipapi.co/json/")
-      .then((res) => res.json())
-      .then((data) => {
-        setUserLocation({ lat: data.latitude, lng: data.longitude });
-        setCityName(data.city || "tu zona");
-      })
-      .catch(() => console.log("No se pudo obtener ubicación aproximada"));
-  }, []);
-
-  // Determinar sucursal más cercana
-  useEffect(() => {
-    if (!userLocation) return;
-
-    let nearest = null;
-    let minDist = Infinity;
-
-    stores.forEach((store) => {
-      const d = haversine(
-        userLocation.lat,
-        userLocation.lng,
-        store.coords.lat,
-        store.coords.lng
-      );
-      if (d < minDist) {
-        minDist = d;
-        nearest = store;
-      }
-    });
-
-    setClosestStore(nearest);
-  }, [userLocation, stores]); // Añadida dependencia 'stores'
-
-  const mapCenter = useMemo(() => {
-    if (closestStore) return closestStore.coords;
-    return { lat: 20.918226, lng: -89.683174 }; // Mérida default
-  }, [closestStore]);
+  const companyInfo = {
+    address: 'Calle 26a entre 47 y 51. Colonia el Roble, Ciudad Industrial Mérida, Yucatán. C.P 97256',
+    phone: '+52 9993632630',
+    email: 'ventas@flucsa.com.mx',
+    mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3372.6079938646676!2d-89.68317442528853!3d20.91822699156695!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f5671bd64b9191f%3A0x1ac55c2e725e84a9!2sFLUCSA%20S.A%20DE%20C.V!5e1!3m2!1ses-419!2smx!4v1760195817751!5m2!1ses-419!2smx',
+  };
 
   return (
     <section className="bg-white py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-
-        {/* Header */}
-        <h2 className="text-3xl font-semibold text-gray-900 mb-2">
-          Nuestra Ubicación
-        </h2>
-        <p className="text-gray-600 mb-6">
-          {closestStore
-            ? `Estás viendo resultados cerca de ${cityName}. Sucursal más cercana: ${closestStore.name}.`
-            : "Buscando tu sucursal más cercana..."}
-        </p>
+        {/* Header minimalista */}
+        <div className="mb-12">
+          <h2 className="text-3xl font-semibold text-gray-900 mb-3">
+            Nuestra Ubicación
+          </h2>
+          <p className="text-gray-600 max-w-2xl">
+            Visítanos en nuestra sucursal o contáctanos por los medios que prefieras.
+          </p>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-          {/* Mapa dinámico */}
-          <div>
-            <div className="bg-gray-50 rounded-lg overflow-hidden border border-gray-200 shadow-sm h-full">
-              <MapContainer
-                center={mapCenter}
-                zoom={10}
-                style={{ height: "400px", width: "100%" }}
-              >
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' // Añadir atribución es una buena práctica
-                />
-
-                {/* Ubicación del usuario */}
-                {userLocation && (
-                  <Marker position={userLocation} icon={defaultIcon}>
-                    <Popup>Tu ubicación aproximada</Popup>
-                  </Marker>
-                )}
-
-                {/* Sucursal más cercana */}
-                {closestStore && (
-                  <Marker position={closestStore.coords} icon={defaultIcon}>
-                    <Popup>{closestStore.name}</Popup>
-                  </Marker>
-                )}
-              </MapContainer>
+          {/* Mapa */}
+          <div className="order-2 lg:order-1">
+            <div className="bg-gray-50 rounded-lg overflow-hidden border border-gray-200 h-full shadow-sm">
+              <iframe
+                title="Ubicación de la empresa"
+                src={companyInfo.mapEmbedUrl}
+                className="w-full h-96 lg:h-full min-h-96"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
             </div>
           </div>
 
-          {/* Información dinámica */}
-          <div className="space-y-6">
-
+          {/* Información de contacto */}
+          <div className="order-1 lg:order-2 space-y-6">
             {/* Dirección */}
-            {closestStore && (
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                  <MapPin className="w-5 h-5 text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold uppercase text-gray-800">
-                    Dirección
-                  </h3>
-                  <p className="text-gray-600">{closestStore.address}</p>
-                </div>
+            <div className="flex items-start gap-4 group">
+              <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-1 group-hover:bg-blue-100 transition-colors">
+                <MapPin className="w-5 h-5 text-blue-600" />
               </div>
-            )}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 mb-1 uppercase tracking-wide">
+                  Dirección
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {companyInfo.address}
+                </p>
+              </div>
+            </div>
 
-            <div className="border-t border-gray-200" />
+            <div className="border-t border-gray-200"></div>
 
-            {/* Teléfono dinámico */}
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
+            {/* Teléfono */}
+            <div className="flex items-start gap-4 group">
+              <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-1 group-hover:bg-green-100 transition-colors">
                 <Phone className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold uppercase text-gray-800">
+                <h3 className="text-sm font-semibold text-gray-900 mb-1 uppercase tracking-wide">
                   Teléfono
                 </h3>
-                <a
-                  href={`tel:${closestStore?.phone || generalPhone}`}
-                  className="text-gray-600 hover:text-green-600"
+                <a 
+                  href={`tel:${companyInfo.phone}`} 
+                  className="text-gray-600 hover:text-green-600 transition-colors"
                 >
-                  {closestStore?.phone || generalPhone}
+                  {companyInfo.phone}
                 </a>
               </div>
             </div>
 
-            <div className="border-t border-gray-200" />
+            <div className="border-t border-gray-200"></div>
 
             {/* Email */}
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
+            <div className="flex items-start gap-4 group">
+              <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-1 group-hover:bg-purple-100 transition-colors">
                 <Mail className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold uppercase text-gray-800">
+                <h3 className="text-sm font-semibold text-gray-900 mb-1 uppercase tracking-wide">
                   Email
                 </h3>
-                <a
-                  href={`mailto:${generalEmail}`}
-                  className="text-gray-600 hover:text-purple-600"
+                <a 
+                  href={`mailto:${companyInfo.email}`} 
+                  className="text-gray-600 hover:text-purple-600 transition-colors"
                 >
-                  {generalEmail}
+                  {companyInfo.email}
                 </a>
               </div>
             </div>
 
             {/* Botón Cómo llegar */}
-            {closestStore && (
+            <div className="pt-6">
               <a
-                // Enlace corregido para Google Maps
-                href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-                  closestStore.address
-                )}&travelmode=driving`}
+                href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(companyInfo.address)}&travelmode=driving`}
                 target="_blank"
-                rel="noopener noreferrer" // Buena práctica para target="_blank"
-                className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 bg-gray-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors w-full sm:w-auto"
               >
                 <Navigation className="w-4 h-4" />
-                Cómo llegar
+                <span>Cómo llegar</span>
               </a>
-            )}
+            </div>
+
+            {/* Horarios (opcional) */}
+            <div className="pt-4 pb-2">
+              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <h3 className="text-sm font-semibold text-gray-900 mb-2 uppercase tracking-wide">
+                  Horario de Atención
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Lunes a Viernes: 8:00 AM - 6:00 PM
+                </p>
+                <p className="text-sm text-gray-600">
+                  Sábado: 9:00 AM - 2:00 PM
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

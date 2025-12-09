@@ -1,9 +1,14 @@
 /* src/index.css */
 @import "tailwindcss";
 
-
-/* src/index.css */
-@import "tailwindcss";
+/* ---------------------------------------------------------------------- */
+/* 🚀 CORRECCIÓN GLOBAL DEL Z-INDEX PARA MAPAS LEAFLET 🚀 */
+/* Esto asegura que el Header (z-50) se muestre siempre por encima del mapa. */
+.leaflet-container {
+  /* El !important es necesario porque Leaflet aplica su alto z-index internamente. */
+  z-index: 0 !important; 
+}
+/* ---------------------------------------------------------------------- */
 
 /* Animaciones personalizadas */
 @keyframes slide-in-left {
