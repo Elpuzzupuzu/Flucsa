@@ -155,11 +155,74 @@ async function deleteQuotation(req, res) {
     }
 }
 
+//// tets
+
+// ==========================================================
+// 3.1 UPDATE (Actualizar Ítems de la Cotización)
+// ==========================================================
+
+async function updateQuotationItems(req, res) {
+    const { id } = req.params;
+    const usuarioId = req.user.id;
+    const rolUsuario = req.user.rol;
+    const items = req.body.items;
+
+    // 1. Validación básica del body
+    if (!Array.isArray(items)) {
+        return res.status(400).json({
+            message: "El cuerpo debe incluir un arreglo 'items'."
+        });
+    }
+
+    if (items.length === 0) {
+        return res.status(400).json({
+            message: "La lista de ítems no puede estar vacía."
+        });
+    }
+
+    try {
+        // IMPORTANTE: Verificar que la cotización pertenece al usuario o el usuario es admin
+        const cotizacion = await QuotationService.getQuotationDetails(id);
+
+        if (!cotizacion) {
+            return res.status(404).json({ message: "Cotización no encontrada." });
+        }
+
+        const esPropietario = cotizacion.usuario_id === usuarioId;
+        const esAdmin = rolUsuario === 'admin';
+
+        if (!esPropietario && !esAdmin) {
+            return res.status(403).json({
+                message: "No tienes permiso para editar esta cotización."
+            });
+        }
+
+        // 2. Ejecutar la actualización de ítems
+        const resultado = await QuotationService.updateQuotationItems(id, items);
+
+        return res.status(200).json({
+            message: resultado.message,
+            cotizacion: resultado.cotizacion
+        });
+
+    } catch (error) {
+        console.error("Error en updateQuotationItems:", error.message);
+
+        if (error.message.includes("No se pudo")) {
+            return res.status(400).json({ message: error.message });
+        }
+
+        res.status(500).json({ message: "Error al actualizar los ítems de la cotización." });
+    }
+}
+
+
 
 export {
     createQuotation,
     getQuotationDetails,
     getQuotationsByUser,
     updateQuotationStatus,
+    updateQuotationItems, // 👈 nuevo
     deleteQuotation
 };

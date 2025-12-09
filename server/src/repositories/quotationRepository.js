@@ -375,14 +375,171 @@ async function deleteQuotation(id) {
     }
     return true;
 }
+///// TESTING
 
+
+/**
+ * Obtener todos los ítems de una cotización por ID.
+ */
+async function getItemsByQuotationId(cotizacionId) {
+    const { data, error } = await supabase
+        .from(TABLA_COTIZACION_ITEMS)
+        .select('*')
+        .eq('cotizacion_id', cotizacionId);
+
+    if (error) {
+        console.error('Error en getItemsByQuotationId:', error);
+        throw new Error(`Error al obtener ítems de la cotización: ${error.message}`);
+    }
+
+    return data || [];
+}
+
+/**
+ * Actualizar un ítem existente (por cotizacion_id + producto_id).
+ */
+async function updateQuotationItem(cotizacionId, productoId, patch) {
+    if (!cotizacionId || !productoId) {
+        throw new Error("cotizacionId y productoId son obligatorios.");
+    }
+
+    if (!patch || typeof patch !== "object") {
+        throw new Error("patch debe ser un objeto con los campos a actualizar.");
+    }
+
+    const { data, error } = await supabase
+        .from(TABLA_COTIZACION_ITEMS)
+        .update(patch)
+        .match({
+            cotizacion_id: cotizacionId,
+            producto_id: productoId
+        })
+        .select();
+
+    if (error) {
+        console.error("Error en updateQuotationItem:", error);
+        throw new Error(`Error al actualizar ítem: ${error.message}`);
+    }
+
+    // data será un array; si no existe el ítem devolvemos null
+    return data?.[0] ?? null;
+}
+
+
+/**
+ * Insertar múltiples ítems nuevos.
+ */
+async function insertQuotationItems(itemsArray) {
+    const { data, error } = await supabase
+        .from(TABLA_COTIZACION_ITEMS)
+        .insert(itemsArray)
+        .select();
+
+    if (error) {
+        console.error('Error en insertQuotationItems:', error);
+        throw new Error(`Error al insertar ítems: ${error.message}`);
+    }
+
+    return data || [];
+}
+
+/**
+ * Eliminar ítems que no estén en la lista nueva de productos.
+ */
+async function deleteItemsNotInList(cotizacionId, productIdsToKeep = []) {
+    if (!productIdsToKeep.length) {
+        const { error } = await supabase
+            .from(TABLA_COTIZACION_ITEMS)
+            .delete()
+            .eq('cotizacion_id', cotizacionId);
+
+        if (error) {
+            console.error('Error en deleteItemsNotInList (delete all):', error);
+            throw new Error(`Error al eliminar ítems: ${error.message}`);
+        }
+
+        return true;
+    }
+
+    const idsString = `(${productIdsToKeep.join(',')})`;
+
+    const { error } = await supabase
+        .from(TABLA_COTIZACION_ITEMS)
+        .delete()
+        .eq('cotizacion_id', cotizacionId)
+        .filter('producto_id', 'not.in', idsString);   // ← ✔️ Corregido
+
+    if (error) {
+        console.error('Error en deleteItemsNotInList:', error);
+        throw new Error(`Error al eliminar ítems no incluidos: ${error.message}`);
+    }
+
+    return true;
+}
+
+
+
+/**
+ * Obtener datos mínimos del producto (para nombre, precio base, etc.).
+ */
+async function getProductById(productId) {
+    const { data, error } = await supabase
+        .from(TABLA_PRODUCTOS)
+        .select('id, nombre, precio, imagen')
+        .eq('id', productId)
+        .single();
+
+    if (error) {
+        console.error('Error en getProductById:', error);
+        throw new Error(`Error al obtener producto: ${error.message}`);
+    }
+
+    return data;
+}
+
+/**
+ * Recalcular total cotizado y actualizar cabecera.
+ */
+async function recalculateQuotationTotal(cotizacionId) {
+    const items = await getItemsByQuotationId(cotizacionId);
+
+    const total = items.reduce((sum, item) => {
+        const qty = Number(item.cantidad || 0);
+        const price = Number(item.precio_unitario_aplicado || 0);
+        return sum + qty * price;
+    }, 0);
+
+    const { data, error } = await supabase
+        .from(TABLA_COTIZACIONES)
+        .update({
+            total_cotizado: total,
+            fecha_actualizacion: new Date().toISOString()
+        })
+        .eq('id', cotizacionId)
+        .select()
+        .single();
+
+    if (error) {
+        console.error('Error en recalculateQuotationTotal:', error);
+        throw new Error(`Error al actualizar total: ${error.message}`);
+    }
+
+    return data;
+}
 
 export {
     createQuotation,
     addQuotationItems,
     getQuotationById,
     getQuotationsByUserId,
-    getAllQuotations, // Exportado para uso admin
+    getAllQuotations,
     updateQuotationStatus,
-    deleteQuotation
+    deleteQuotation,
+    // NUEVOS
+    getItemsByQuotationId,
+    updateQuotationItem,
+    insertQuotationItems,
+    deleteItemsNotInList,
+    getProductById,
+    recalculateQuotationTotal
 };

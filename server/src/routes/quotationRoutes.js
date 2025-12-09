@@ -1,4 +1,4 @@
-//qupatationRoutes.js
+//quotationRoutes.js
 import { Router } from 'express';
 // 💡 Importamos tus middlewares, renombrando authMiddleware a protect para claridad.
 // Asegúrate que la ruta a tu authMiddleware sea correcta.
@@ -8,6 +8,7 @@ import {
     getQuotationDetails,
     getQuotationsByUser,
     updateQuotationStatus, 
+    updateQuotationItems,     // 👈 nuevo import
     deleteQuotation 
 } from '../controllers/quotationController.js'; 
 
@@ -18,28 +19,28 @@ const ONLY_ADMIN = ['admin']; // Definición del rol de administrador
 // RUTAS DE COTIZACIÓN PROTEGIDAS
 // ==========================================================
 
-// 📝 RUTA 1: CREAR (Generate)
+//  RUTA 1: CREAR (Generate)
 router.post('/', protect, createQuotation); 
 // Ejemplo: POST /api/quotations
 
-// 📝 RUTA 2: LEER (Listar por Usuario/Admin)
-// La ruta es la misma, la lógica de filtrado se maneja en el Servicio.
+//  RUTA 2: LEER (Listar por Usuario/Admin)
 router.get('/', protect, getQuotationsByUser); 
 // Ejemplo: GET /api/quotations
 
-// 📝 RUTA 3: LEER (Detalle por ID)
+//  RUTA 3: LEER (Detalle por ID)
 router.get('/:id', protect, getQuotationDetails);
 // Ejemplo: GET /api/quotations/a1b2c3d4...
 
-// 📝 RUTA 4: ACTUALIZAR (Cambiar Estado)
-// Restringido a usuarios logueados (el servicio debe verificar la propiedad/rol).
+//  RUTA 4: ACTUALIZAR (Cambiar Estado)
 router.patch('/:id/status', protect, updateQuotationStatus);
 // Ejemplo: PATCH /api/quotations/a1b2c3d4.../status con { "estado": "ACEPTADA" }
 
-// 📝 RUTA 5: BORRAR / CANCELAR
-// Restringido a usuarios logueados (el servicio decide si es DELETE o PATCH a CANCELADA).
+//  RUTA 4.1: ACTUALIZAR ÍTEMS DE LA COTIZACIÓN
+router.patch('/:id/items', protect, updateQuotationItems);
+// Ejemplo: PATCH /api/quotations/a1b2c3d4.../items con { items: [...] }
+
+//  RUTA 5: BORRAR / CANCELAR
 router.delete('/:id', protect, deleteQuotation);
 // Ejemplo: DELETE /api/quotations/a1b2c3d4...
-
 
 export default router;

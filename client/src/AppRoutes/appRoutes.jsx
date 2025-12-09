@@ -32,6 +32,71 @@ import UserLayout from '../layouts/userLayout';
 import AdminLayout from '../layouts/adminLayout';
 import PublicLayout from '../layouts/PublicLayout';
 
+// export default function AppRoutes({ addToCart }) {
+//   return (
+//     <Routes>
+//       {/* ========================================================== */}
+//       {/* PÁGINAS PÚBLICAS */}
+//       {/* ========================================================== */}
+//       <Route path="/" element={<PublicLayout />}>
+//         <Route index element={<Home />} />
+//         <Route path="productos" element={<ProductsPage addToCart={addToCart} />} />
+//         <Route path="productos/:id" element={<ProductDetails onAddToCart={addToCart} />} />
+//         <Route path="catalogo-pdfs" element={<PDFCatalog />} />
+//         <Route path="acerca-de-nosotros" element={<AboutUsPage />} />
+//         <Route path="servicios" element={<ServicesPage />} />
+//         <Route path="servicios/:category" element={<ServiceMenuPage />} />
+//         <Route path="contacto" element={<ContactPage />} />
+//         <Route path="login" element={<Login />} />
+//         <Route path="register" element={<Register />} />
+//         <Route path="cotizaciones" element={<QuotationManager />} />
+//         <Route path="cotizaciones/:id" element={<QuotationDetailPage />} />
+//         {/* <Route path="cotizaciones" element={<QuotationManager />} /> */}
+//         {/* <Route path="natalie" element={<NatalieCatering />} /> */}
+
+
+//       </Route>
+
+//       {/* ========================================================== */}
+//       {/* RUTAS DE USUARIO */}
+//       {/* ========================================================== */}
+//       <Route
+//         path="/mi-cuenta"
+//         element={
+//           <ProtectedRoute>
+//             <UserLayout />
+//           </ProtectedRoute>
+//         }
+//       >
+//         <Route index element={<ProfilePage />} />
+//         <Route path="cotizaciones" element={<QuotationManager />} />
+//         <Route path="cotizaciones/:id" element={<QuotationDetailPage />} />
+//       </Route>
+
+//       {/* ========================================================== */}
+//       {/* RUTAS ADMIN */}
+//       {/* ========================================================== */}
+//       <Route
+//         path="/admin"
+//         element={
+//           <AdminRoute>
+//             <AdminLayout />
+//           </AdminRoute>
+//         }
+//       >
+//         <Route path="products" element={<AdminProducts />} />
+//         <Route path="quotations" element={<AdminQuotationManager />} />
+//         <Route path="cotizaciones/:id" element={<QuotationDetailPage />} />
+
+//       </Route>
+//     </Routes>
+//   );
+// }
+
+
+// Al inicio, agregar import
+import FacturasList from '../pages/Facturas/user/FacturasList';
+
 export default function AppRoutes({ addToCart }) {
   return (
     <Routes>
@@ -51,10 +116,6 @@ export default function AppRoutes({ addToCart }) {
         <Route path="register" element={<Register />} />
         <Route path="cotizaciones" element={<QuotationManager />} />
         <Route path="cotizaciones/:id" element={<QuotationDetailPage />} />
-        {/* <Route path="cotizaciones" element={<QuotationManager />} /> */}
-        {/* <Route path="natalie" element={<NatalieCatering />} /> */}
-
-
       </Route>
 
       {/* ========================================================== */}
@@ -71,6 +132,9 @@ export default function AppRoutes({ addToCart }) {
         <Route index element={<ProfilePage />} />
         <Route path="cotizaciones" element={<QuotationManager />} />
         <Route path="cotizaciones/:id" element={<QuotationDetailPage />} />
+
+        {/* NUEVA RUTA PARA FACTURAS */}
+        <Route path="mis-facturas" element={<FacturasList />} />
       </Route>
 
       {/* ========================================================== */}
@@ -87,7 +151,6 @@ export default function AppRoutes({ addToCart }) {
         <Route path="products" element={<AdminProducts />} />
         <Route path="quotations" element={<AdminQuotationManager />} />
         <Route path="cotizaciones/:id" element={<QuotationDetailPage />} />
-
       </Route>
     </Routes>
   );

@@ -1,4 +1,3 @@
-
 import { configureStore } from "@reduxjs/toolkit";
 
 // Slices existentes
@@ -10,12 +9,14 @@ import pdfsReducer from "../features/pdfs/pdfSlice";
 import cartReducer from "../features/cart/cartSlice";
 import quoteReducer from "../features/quotations/quotationSlice";
 
-//slices
+// Slices adicionales
 import mainCategoryReducer from "../features/mainCategory/mainCategorySlice";
 import locationReducer from "../features/location/locationSlice";
 import subCategoryReducer from "../features/subCategory/subCategorySlice";
 import reviewReducer from "../features/reviews/reviewSlice";
 
+// Nuevo slice de facturas
+import facturasReducer from "../features/facturas/facturasSlice";
 
 export const store = configureStore({
   reducer: {
@@ -27,12 +28,13 @@ export const store = configureStore({
     pdfs: pdfsReducer,
     quotations: quoteReducer,
 
-    //  Nuevos reducers
     mainCategory: mainCategoryReducer,
     location: locationReducer,
     subCategory: subCategoryReducer,
 
-    /// reviews
-     reviews: reviewReducer,
+    reviews: reviewReducer,
+
+    // Agregado
+    facturas: facturasReducer,
   },
 });

@@ -23,6 +23,7 @@ import mainCategoryRoutes from "./routes/categoriaPrincipalRoutes.js";
 import subCategoryRoutes from "./routes/subCategoriaRoutes.js";
 import ubicacionRoutes from "./routes/ubicacionRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
+import facturaRoutes from "./routes/facturaRoutes.js"
 
 
 // =======================================================
@@ -112,6 +113,9 @@ app.use("/api/quotations", quotationRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/facturas", facturaRoutes);
+
+
 
 
 // =======================================================

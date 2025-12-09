@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { LogIn, User, Power, List, Truck, UserPlus } from "lucide-react";
+import { LogIn, User, Power, List, Truck, UserPlus, FileText } from "lucide-react";
 
 const getInitials = (name) => {
   if (!name) return "??";
@@ -137,6 +137,9 @@ const UserDropdown = ({
                     </LinkItem>
                     <LinkItem to="/listas/crear" onClick={handleLinkClick} Icon={List}>
                       Mis Listas de Deseos
+                    </LinkItem>
+                    <LinkItem to="/mi-cuenta/mis-facturas" onClick={handleLinkClick} Icon={FileText}>
+                      Mis Facturas
                     </LinkItem>
                   </ul>
                 </div>

@@ -35,6 +35,7 @@ export const fetchQuotations = createAsyncThunk(
     }
 );
 
+
 export const fetchQuotationById = createAsyncThunk(
     "quotation/fetchQuotationById",
     async (id, thunkAPI) => {
@@ -62,6 +63,31 @@ export const updateQuotationStatus = createAsyncThunk(
         }
     }
 );
+
+
+
+
+//// test
+
+    export const updateQuotationItems = createAsyncThunk(
+    "quotation/updateQuotationItems",
+    async ({ id, items }, thunkAPI) => {
+        try {
+            const response = await api.patch(`/quotations/${id}/items`, { items });
+            return response.data.cotizacion;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(
+                error.response?.data || "Error al actualizar los ítems de la cotización"
+            );
+        }
+    }
+);
+
+
+
+
+
+////
 
 export const deleteQuotation = createAsyncThunk(
     "quotation/deleteQuotation",
@@ -206,9 +232,27 @@ const quotationSlice = createSlice({
             .addCase(deleteQuotation.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })// --- updateQuotationItems ---
+            .addCase(updateQuotationItems.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateQuotationItems.fulfilled, (state, action) => {
+                state.loading = false;
+                quotationSlice.caseReducers.quotationUpdated(state, action);
+
+                // También actualizar currentQuotation si corresponde
+                if (state.currentQuotation && state.currentQuotation.id === action.payload.id) {
+                    state.currentQuotation = action.payload;
+                }
+            })
+            .addCase(updateQuotationItems.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
-    },
-});
+
+         },
+        });
 
 // Export reducers
 export const { 
@@ -216,7 +260,7 @@ export const {
     resetQuotationUI, 
     quotationAdded, 
     quotationUpdated,
-    quotationRemoved 
+    quotationRemoved,
 } = quotationSlice.actions;
 
 export default quotationSlice.reducer;

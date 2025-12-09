@@ -10,12 +10,6 @@ import { CarritoRepository } from '../repositories/cartRepository.js';
 // MÉTODOS CRUD (Delegación + RBAC)
 // ==========================================================
 
-
-
-/**
- * Genera una cotización permanente a partir del carrito activo del usuario,
- * y luego desactiva dicho carrito.
- */
 async function generateQuotation(usuarioId) {
     try {
         const carritoId = await CarritoRepository.getOrCreateActiveCartId(usuarioId);
@@ -41,7 +35,7 @@ async function generateQuotation(usuarioId) {
             itemsCotizacion.push({
                 producto_id: item.producto_id,
                 nombre_producto: producto.nombre,
-                precio_unitario: producto.precio,
+                precio_unitario_aplicado: producto.precio,
                 cantidad: item.cantidad,
             });
         }
@@ -82,21 +76,6 @@ async function generateQuotation(usuarioId) {
     }
 }
 
-
-
-//// end test
-/**
- * Obtiene la lista de cotizaciones, filtrando por usuario a menos que sea admin.
- */
-// async function getQuotations(usuarioId, rolUsuario) {
-//     if (rolUsuario === 'admin') {
-//         // ADMIN: Obtiene TODAS las cotizaciones
-//         return QuotationRepo.getAllQuotations(); 
-//     } else {
-//         // USER: Obtiene SOLO las suyas
-//         return QuotationRepo.getQuotationsByUserId(usuarioId);
-//     }
-// }
 
 
 async function getQuotations(usuarioId, rolUsuario, params) { // <<-- Aceptar params
@@ -164,10 +143,94 @@ async function deleteOrCancelQuotation(cotizacionId, usuarioId, rolUsuario) {
 }
 
 
+////// test
+async function updateQuotationItems(cotizacionId, itemsNuevos) {
+    try {
+        // 1️⃣ Cargar ítems actuales
+        const itemsActuales = await QuotationRepo.getItemsByQuotationId(cotizacionId);
+
+        const mapActuales = new Map(
+            itemsActuales.map(item => [item.producto_id, item])
+        );
+
+        const productIdsNuevos = itemsNuevos.map(i => i.producto_id);
+
+        // 2️⃣ Eliminar los que ya no están
+        await QuotationRepo.deleteItemsNotInList(cotizacionId, productIdsNuevos);
+
+        // 3️⃣ Procesar ítems uno por uno
+        const itemsParaInsertar = [];
+
+        for (const itemNuevo of itemsNuevos) {
+            const { producto_id, cantidad, tipo_precio } = itemNuevo;
+
+            // 🔥 Obtener el producto de BD para calcular el precio
+            const producto = await QuotationRepo.getProductById(producto_id);
+
+            if (!producto || !producto.precio) {
+                throw new Error(`El producto ${producto_id} no tiene precio base.`);
+            }
+
+            // 🔥 Reglas TEMPORALES de precio aplicado
+            let precioAplicado = producto.precio;
+
+            if (tipo_precio === "mayorista") {
+                precioAplicado = producto.precio * 0.9; // regla temporal
+            } else if (tipo_precio === "liquidacion") {
+                precioAplicado = producto.precio * 0.7; // ejemplo extendido
+            }
+            // público = precio base
+
+            const existe = mapActuales.has(producto_id);
+
+            if (existe) {
+                // 3A - actualizar
+                await QuotationRepo.updateQuotationItem(cotizacionId, producto_id, {
+                    cantidad,
+                    tipo_precio,
+                    precio_unitario_aplicado: precioAplicado
+                });
+            } else {
+                // 3B - insertar uno nuevo
+                itemsParaInsertar.push({
+                    cotizacion_id: cotizacionId,
+                    producto_id,
+                    nombre_producto: producto.nombre,
+                    cantidad,
+                    tipo_precio,
+                    precio_unitario_aplicado: precioAplicado
+                });
+            }
+        }
+
+        // 4️⃣ Insertar los nuevos ítems
+        if (itemsParaInsertar.length > 0) {
+            await QuotationRepo.insertQuotationItems(itemsParaInsertar);
+        }
+
+        // 5️⃣ Recalcular total
+        const cotizacionActualizada = await QuotationRepo.recalculateQuotationTotal(cotizacionId);
+
+        return {
+            message: "Ítems actualizados correctamente.",
+            cotizacion: cotizacionActualizada
+        };
+
+    } catch (error) {
+        console.error("Error en updateQuotationItems Service:", error);
+        throw new Error(`No se pudo actualizar los ítems: ${error.message}`);
+    }
+}
+
+
+
+
+
 export {
     generateQuotation,
-    getQuotations, // Nuevo para manejar listado por rol
+    getQuotations,
     getQuotationDetails,
     updateQuotationStatus,
-    deleteOrCancelQuotation // Nuevo para manejar eliminación/cancelación por rol
+    deleteOrCancelQuotation,
+    updateQuotationItems // 👈 nuevo
 };
