@@ -29,6 +29,11 @@ const QuotationDetailsCard = ({ quotation, onGoBack }) => {
         quotation.cotizaciones_items?.map(i => ({ ...i })) || []
     );
 
+        // Cada vez que cambie la cotización → reinicia items
+    React.useEffect(() => {
+        setEditItems(quotation.cotizaciones_items?.map(i => ({ ...i })) || []);
+    }, [quotation?.id]);
+
     // === Funciones de edición (Manejadores de estado) ===
     const handleIncrease = (index) => {
         const updated = [...editItems];

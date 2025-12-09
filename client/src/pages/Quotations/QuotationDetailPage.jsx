@@ -1,5 +1,3 @@
-// En src/features/quotations/QuotationDetailPage.jsx
-
 import React, { useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,32 +11,19 @@ const QuotationDetailPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    // Obtener usuario
     const currentUser = useSelector(state => state.user);
-
-    // Tomar solo la cotización actual
     const quotation = useSelector(state => state.quotations.currentQuotation);
-
     const { loading, error } = useSelector(state => state.quotations);
 
-    // 🔥 LOGS al montar el componente
+    // 🔥 FETCH CORREGIDO: pedir SIEMPRE cuando el ID no coincide
     useEffect(() => {
-       console.log("quotation object:", quotation);
-
-    }, [id, quotation, loading, error]);
-
-    // 🔥 Fetch cuando no hay información (URL directa o F5)
-    useEffect(() => {
-        if (!quotation && id) {
-            console.log("➡️ No hay cotización cargada. Disparando fetchQuotationById...");
+        if (!quotation || quotation.id !== id) {
+            console.log("🔄 Solicitando cotización desde backend...");
             dispatch(fetchQuotationById(id));
-        } else {
-            console.log("✔️ La cotización ya está en Redux. No se vuelve a pedir.");
         }
     }, [dispatch, id, quotation]);
-    
 
-    // Botón para regresar
+
     const handleGoBack = useCallback(() => {
         if (currentUser.user.rol === "admin") {
             navigate('/admin/quotations');
@@ -47,8 +32,8 @@ const QuotationDetailPage = () => {
         }
     }, [navigate, currentUser]);
 
-    // Estado de carga
-    if (loading && !quotation) {
+    // 🔥 LOADING SEGURO: solo mostrar loading si no es la cotización correcta
+    if (!quotation || quotation.id !== id) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
                 <div className="text-center">
@@ -61,8 +46,8 @@ const QuotationDetailPage = () => {
         );
     }
 
-    // Error
-    if (error && !quotation) {
+    // 🔥 ERROR: solo aparece si no hay una cotización válida cargada
+    if (error && (!quotation || quotation.id !== id)) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
                 <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center border border-slate-200">
@@ -85,13 +70,7 @@ const QuotationDetailPage = () => {
         );
     }
 
-    // Estado transitorio
-    if (!quotation) {
-        console.log("⏳ Esperando cargar la cotización...");
-        return null;
-    }
-
-    // Vista normal
+    // 🔥 AHORA SÍ — Render seguro y sin parpadeos
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -107,6 +86,7 @@ const QuotationDetailPage = () => {
                 </div>
 
                 <QuotationDetailsCard 
+                    key={quotation.id}
                     quotation={quotation}
                     onGoBack={handleGoBack}
                 />
