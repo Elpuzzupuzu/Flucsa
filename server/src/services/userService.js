@@ -93,6 +93,25 @@ export const UserService = {
     }
   },
 
+  ////// get user by id
+
+
+    // ===============================
+  // Obtener usuario por ID (servicio simple)
+  // ===============================
+  getUserById: async (userId) => {
+    if (!userId) throw new Error("userId es requerido");
+
+    const user = await UserRepository.getUserById(userId);
+    if (!user) throw new Error("Usuario no encontrado");
+
+    // Quitar contraseña del objeto
+    const { contraseña, ...userSafe } = user;
+
+    return userSafe;
+  },
+
+
 
 ///// retorna solo los campos esenciales : id,nombre , correo 
 getUserProfile: async (userId) => {

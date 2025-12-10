@@ -70,7 +70,7 @@ const ProfileSidebar = ({ selectedSection, setSelectedSection }) => {
 
             {/* Sidebar para desktop - Vertical */}
             <aside className="hidden lg:flex flex-col w-64 bg-white p-5 rounded-xl shadow-lg border border-gray-100 flex-shrink-0 h-fit sticky top-24">
-                <h3 className="text-base font-bold text-gray-800 mb-3 pb-2 border-b border-gray-200">Menú de Cuenta</h3>
+                <h3 className="text-base font-bold text-gray-800 mb-3 pb-2 border-b border-gray-200">Mi cuenta</h3>
                 <div className="space-y-1.5">
                     <SidebarLink
                         Icon={User}

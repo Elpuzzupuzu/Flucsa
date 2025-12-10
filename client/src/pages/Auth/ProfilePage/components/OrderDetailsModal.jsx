@@ -67,7 +67,7 @@ const OrderDetailsModal = ({ open, onClose, purchase }) => {
 
                                 <div className="text-right">
                                     <p className="text-sm font-semibold text-slate-900 tracking-tight">
-                                        ${item.precio_unitario_aplicado.toFixed(2)}
+                                        ${item.precio_unitario.toFixed(2)}
                                     </p>
                                     <p className="text-xs text-slate-500 font-medium mt-0.5">
                                         por unidad

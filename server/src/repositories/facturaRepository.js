@@ -1,57 +1,3 @@
-// import { supabase } from '../config/supabaseClient.js';
-
-// export const FacturaRepository = {
-
-//   createFactura: async (facturaData) => {
-//     const { data, error } = await supabase
-//       .from('facturas')
-//       .insert(facturaData)
-//       .select()
-//       .single();
-
-//     if (error) throw error;
-//     return data;
-//   },
-
-
-  
-
-//   getFacturaById: async (id) => {
-//     const { data, error } = await supabase
-//       .from('facturas')
-//       .select('*')
-//       .eq('id', id)
-//       .single();
-
-//     if (error) throw error;
-//     return data;
-//   },
-
-
-
-
-// getFacturasByUser: async (userId) => {
-//   console.log("Repositorio: getFacturasByUser llamado con userId:", userId);
-
-//   const { data, error } = await supabase
-//     .from('facturas')
-//     .select('*')
-//     .eq('usuario_id', userId)
-//     .order('created_at', { ascending: false });
-
-//   if (error) {
-//     console.error("Repositorio: error al obtener facturas:", error);
-//     throw error;
-//   }
-
-//   console.log("Repositorio: data obtenida:", data);
-//   console.log("Repositorio: tipo de data:", Array.isArray(data) ? "Array" : typeof data);
-
-//   return data;
-// }
-
-// };
-
 
 ////
 import { supabase } from '../config/supabaseClient.js';
@@ -68,7 +14,7 @@ export const FacturaRepository = {
     if (error) throw error;
     return data;
   },
-
+/////////////////////
   getFacturaById: async (id) => {
     const { data, error } = await supabase
       .from('facturas')
@@ -79,6 +25,10 @@ export const FacturaRepository = {
     if (error) throw error;
     return data;
   },
+
+
+
+  /////////////////////////////
 
   getFacturasByUser: async (userId, page = 1, pageSize = 10, filter = 'default', date = null) => {
     let query = supabase

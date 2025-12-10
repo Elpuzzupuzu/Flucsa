@@ -103,8 +103,11 @@ async function getQuotationDetails(id) {
     return QuotationRepo.getQuotationById(id);
 }
 
+
+
+
 async function updateQuotationStatus(id, nuevoEstado) {
-    // 💡 Lógica adicional podría ir aquí para restringir quién puede cambiar estados críticos.
+    //  Lógica adicional podría ir aquí para restringir quién puede cambiar estados críticos.
     return QuotationRepo.updateQuotationStatus(id, nuevoEstado);
 }
 
