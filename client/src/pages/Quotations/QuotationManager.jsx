@@ -18,7 +18,7 @@ const QuotationManager = () => {
         list: quotations, 
         loading, 
         error,
-        // 💡 CAMBIO CLAVE 1: Extraer el objeto de paginación del estado de Redux
+        // 💡 CAMBIO CLAVE : Extraer el objeto de paginación del estado de Redux
         pagination 
     } = useSelector(state => state.quotations); 
 

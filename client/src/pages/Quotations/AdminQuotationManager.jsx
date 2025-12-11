@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { fetchQuotations, updateQuotationStatus } from '../../features/quotations/quotationSlice';
 import useNotification from '../../hooks/Notify/useNotification';
 import { FileText } from 'lucide-react';
@@ -21,7 +20,6 @@ import ErrorDisplay from './adminComponents/ErrorDisplay';
  */
 const AdminQuotationManager = () => {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
     const { notify } = useNotification();
     
     // Estado desde Redux
@@ -128,19 +126,21 @@ const AdminQuotationManager = () => {
      * Render principal
      */
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="min-h-screen bg-neutral-50" style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
             
             {/* Header */}
-            <div className="bg-white shadow-sm border-b border-gray-200">
+            <div className="bg-white border-b border-neutral-200">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                            <div className="p-2 bg-blue-100 rounded-lg">
-                                <FileText className="w-8 h-8 text-blue-600" />
+                        <div className="flex items-center space-x-4">
+                            <div className="p-2.5 bg-blue-50 border border-blue-100 rounded-md">
+                                <FileText className="w-7 h-7 text-blue-600" strokeWidth={2} />
                             </div>
                             <div>
-                                <h1 className="text-3xl font-bold text-gray-900">Administración de Cotizaciones</h1>
-                                <p className="text-sm text-gray-500 mt-1">
+                                <h1 className="text-2xl font-semibold text-neutral-900" style={{ letterSpacing: '-0.02em' }}>
+                                    Administración de Cotizaciones
+                                </h1>
+                                <p className="text-sm text-neutral-600 mt-0.5 font-normal">
                                     Gestiona y monitorea todas las cotizaciones del sistema
                                 </p>
                             </div>
